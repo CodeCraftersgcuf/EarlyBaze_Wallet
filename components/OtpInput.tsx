@@ -1,15 +1,21 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { View, TextInput, StyleSheet, Image, Text, TouchableOpacity } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { images, COLORS } from '@/constants';
 
+// Integration
+import { resendOtp } from '@/utils/mutations/authMutations';
+import { useMutation } from '@tanstack/react-query';
+
 interface OtpInputProps {
     length: number;
     onComplete: (otp: string) => void;
+    email: string;
 }
 
-const OtpInput: React.FC<OtpInputProps> = ({ length, onComplete }) => {
-    
+const OtpInput: React.FC<OtpInputProps> = ({ length, onComplete, email }) => {
+    console.log("The Email From the OTP Input is:", email);
+
     const textColor = useThemeColor({ light: '#000', dark: '#fff' }, 'text');
     const borderColor = useThemeColor({ light: '#E0E0E0', dark: '#333' }, 'border');
     const backgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#1A1A1A' }, 'background');
@@ -18,19 +24,44 @@ const OtpInput: React.FC<OtpInputProps> = ({ length, onComplete }) => {
     const inputRefs = useRef<Array<TextInput | null>>([]);
 
     const [timer, setTimer] = useState(60);
-    const [isTimerActive, setIsTimerActive] = useState(true);
+    const [isTimerActive, setIsTimerActive] = useState(false); // Start inactive
 
+    // ✅ Optimized Timer Handling
     useEffect(() => {
-        let interval: NodeJS.Timeout;
-        if (isTimerActive && timer > 0) {
-            interval = setInterval(() => {
-                setTimer((prev) => prev - 1);
-            }, 1000);
-        } else if (timer === 0) {
-            setIsTimerActive(false);
-        }
+        if (!isTimerActive) return;
+
+        const interval = setInterval(() => {
+            setTimer((prev) => {
+                if (prev === 1) {
+                    setIsTimerActive(false); // ✅ Stop timer at zero
+                    clearInterval(interval);
+                }
+                return prev - 1;
+            });
+        }, 1000);
+
         return () => clearInterval(interval);
-    }, [timer, isTimerActive]);
+    }, [isTimerActive]);
+
+    // ✅ Resend OTP Mutation
+    // ✅ Resend OTP Mutation
+    const { mutate: resendOTP, isPending: isResendingOTP } = useMutation({
+        mutationFn: async () => await resendOtp({ data: { email } }), // ✅ Wrap `email` in `data`
+        onSuccess: (data) => {
+            console.log("✅ OTP Resent:", data);
+            setTimer(60);
+            setIsTimerActive(true);
+        },
+        onError: (error) => {
+            console.log("❌ Resend OTP Error:", error);
+        },
+    });
+
+
+    const handleResendOTP = useCallback(() => {
+        if (isResendingOTP) return;
+        resendOTP();
+    }, [isResendingOTP]);
 
     const handleChange = (text: string, index: number) => {
         if (!/^\d*$/.test(text)) return;
@@ -56,7 +87,7 @@ const OtpInput: React.FC<OtpInputProps> = ({ length, onComplete }) => {
                     <TextInput
                         key={index}
                         ref={(ref) => (inputRefs.current[index] = ref)}
-                        style={[styles.input, { borderColor: borderColor, color: textColor, backgroundColor: backgroundColor }]}
+                        style={[styles.input, { borderColor, color: textColor, backgroundColor }]}
                         keyboardType="numeric"
                         maxLength={1}
                         secureTextEntry
@@ -78,17 +109,13 @@ const OtpInput: React.FC<OtpInputProps> = ({ length, onComplete }) => {
 
             {/* Resend OTP Text */}
             <Text style={{ paddingBottom: 10, marginTop: 16, fontWeight: 'bold', textAlign: 'center', color: textColor }}>
-                {isTimerActive && timer > 0 ? (
-                    <Text>
-                        OTP can be resent in
-                        <Text style={{ color: COLORS.primary }}> {`00 : ${timer} Sec`}</Text>
-                    </Text>
+                {isTimerActive ? (
+                    `OTP can be resent in 00:${timer < 10 ? `0${timer}` : timer} Sec`
                 ) : (
-                    <TouchableOpacity onPress={() => {
-                        setTimer(60);
-                        setIsTimerActive(true);
-                    }}>
-                        <Text style={{ color: COLORS.primary, textAlign: 'center' }}>Resend OTP</Text>
+                    <TouchableOpacity onPress={handleResendOTP}>
+                        <Text style={{ color: COLORS.primary, textAlign: 'center' }}>
+                            {isResendingOTP ? "Resending..." : "Resend OTP"}
+                        </Text>
                     </TouchableOpacity>
                 )}
             </Text>

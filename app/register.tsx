@@ -40,18 +40,19 @@ const Register = () => {
   const [selectedImage, setSelectedImage] = useState(null);
 
 
-  // Mutation for Register
+  // ✅ Mutation for Register
   const { isPending: isPendingRegister, mutate: mutateRegister } = useMutation({
     mutationFn: (data: InputValues) => signUpUser(data),
-    onSuccess: (data) => {
+    onSuccess: (data, variables) => { // ✅ Get variables (form input data)
       console.log("✅ Register Successful:", data);
-      push("/Otp"); // ✅ Navigate to OTP screen after successful registration
+      push({ pathname: "/Otp", params: { email: variables.email } }); // ✅ Pass email to OTP screen
     },
     onError: (error) => {
       console.error("❌ Register Failed:", error);
       alert(error.message || "Register failed, please try again.");
     },
   });
+
 
 
   const pickImage = async () => {

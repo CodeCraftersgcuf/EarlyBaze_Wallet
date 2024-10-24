@@ -14,14 +14,12 @@ export const loginUser = async (
   return await apiCall(API_ENDPOINTS.AUTH.Login, "POST", data);
 };
 
-export const verifyEmailOTP = async ({
-  data,
-  token,
-}: {
-  data: { otp: string };
-  token: string;
-}) => {
-  return await apiCall(API_ENDPOINTS.AUTH.VerfiyEmailOtp, "POST", data, token);
+export const verifyEmailOTP = async (data: { otp: string; email: string }) => {
+  return await apiCall(API_ENDPOINTS.AUTH.VerfiyEmailOtp, "POST", data);
+};
+
+export const resendOtp = async ({ data }: { data: { email: string } }) => {
+  return await apiCall(API_ENDPOINTS.AUTH.ResendOtp, "POST", data);
 };
 
 export const verifyPasswordOTP = async (data: {
@@ -29,6 +27,14 @@ export const verifyPasswordOTP = async (data: {
   userId: string;
 }) => {
   return await apiCall(API_ENDPOINTS.AUTH.VerifyPasswordOtp, "POST", data);
+};
+
+export const setPin = async (data: { email: string; pin: string }) => {
+  return await apiCall(API_ENDPOINTS.USER.SetPin, "POST", data);
+};
+
+export const verifyPin = async (data: { email: string; pin: string }) => {
+  return await apiCall(API_ENDPOINTS.USER.VerifyPin, "POST", data);
 };
 
 export const forgotPassword = async (data: { email: string }) => {
@@ -41,16 +47,6 @@ export const resetPassword = async (data: {
   userId: string;
 }) => {
   return await apiCall(API_ENDPOINTS.AUTH.ResetPassword, "POST", data);
-};
-
-export const resendOtp = async ({
-  data,
-  token,
-}: {
-  data: { email: string };
-  token: string;
-}) => {
-  return await apiCall(API_ENDPOINTS.AUTH.ResendOtp, "POST", data, token);
 };
 
 export const generateBvnLink = async ({
