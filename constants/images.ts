@@ -8,6 +8,11 @@ const notification = require("../assets/images/notification.png");
 const scan = require("../assets/images/scan.png");
 const back_icon = require("../assets/images/back_icon.png");
 const filter_icon = require("../assets/images/filter_icon.png");
+const authImg = require('../assets/images/auth-bg.jpg');
+const authMidCircle = require('../assets/images/auth-midCircle.png');
+const radiusAuth = require('../assets/images/radiusAuth.png');
+const arrowLeft = require('../assets/images/arrow-left.png');
+
 const images = {
   indexService,
   slider_bg,
@@ -19,6 +24,10 @@ const images = {
   scan,
   back_icon,
   filter_icon,
+  authImg,
+  authMidCircle,
+  radiusAuth,
+  arrowLeft
 };
 
 export default images;
