@@ -1,15 +1,12 @@
-import { DarkTheme, DefaultTheme } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
+import { ThemeProvider } from '@/contexts/themeContext';
+import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
-import 'react-native-reanimated';
-import { ThemeProvider } from '@/contexts/themeContext';
-
 import { useColorScheme } from '@/hooks/useColorScheme';
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
+// Prevent splash screen auto-hide before loading
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
@@ -31,8 +28,12 @@ export default function RootLayout() {
   return (
     <ThemeProvider>
       <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="Buy" options={{ headerShown: false }} />
+        <Stack.Screen name="SendReceive" options={{ headerShown: false }} />
+        <Stack.Screen name="Swap"  options={{ headerShown: false }}/>
+        <Stack.Screen name='PaymentSummary' options={{ headerShown: false }} />
         <Stack.Screen name="+not-found" />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>

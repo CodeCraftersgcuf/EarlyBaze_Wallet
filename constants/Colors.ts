@@ -14,6 +14,10 @@ export const Colors = {
     icon: '#687076',
     tabIconDefault: '#687076',
     tabIconSelected: tintColorLight,
+    inputBackground: '#F5F5F5',  // Background color for input fields in light mode
+    buttonBackground: '#0a7ea4',  // Example button color
+    borderColor: '#DCDCDC',  // Border color for general elements
+    cardBackground: '#FFFFFF',  // Background color for cards in light mode
   },
   dark: {
     text: '#ECEDEE',
@@ -22,5 +26,9 @@ export const Colors = {
     icon: '#9BA1A6',
     tabIconDefault: '#9BA1A6',
     tabIconSelected: tintColorDark,
+    inputBackground: '#2D2D2D',  // Background color for input fields in dark mode
+    buttonBackground: '#0a7ea4',  // Example button color
+    borderColor: '#333333',  // Border color for general elements
+    cardBackground: '#1A1A1A',  // Background color for cards in dark mode
   },
 };

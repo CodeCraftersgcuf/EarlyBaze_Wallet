@@ -1,55 +1,24 @@
-const logo = require('../assets/images/logo2.png') as string;
-const onboardingSplash = require('../assets/images/onboarding_splash1.png');
-const onboardingSplashDark = require('../assets/images/onboarding_splash1_dark.png');
-const idAvatar = require('../assets/images/id_avatar.png');
-const avatar = require('../assets/images/avatar.png');
-const card = require('../assets/images/card.png');
-const face = require('../assets/images/face.png');
-const scanCard = require('../assets/images/scan_card.png');
-const user1 = require('../assets/images/users/user1.jpeg');
-const user2 = require('../assets/images/users/user2.jpeg');
-const user3 = require('../assets/images/users/user3.jpeg');
-const user4 = require('../assets/images/users/user4.jpeg');
-const user5 = require('../assets/images/users/user5.jpeg');
-const user6 = require('../assets/images/users/user6.jpeg');
-const user7 = require('../assets/images/users/user7.jpeg');
-const user8 = require('../assets/images/users/user8.jpeg');
-const user9 = require('../assets/images/users/user9.jpeg');
-const user10 = require('../assets/images/users/user10.jpeg');
-const user11 = require('../assets/images/users/user11.jpeg');
-const elipseCard = require('../assets/images/elipse-card.png');
-const rectangleCard = require('../assets/images/rectangle-card.png');
-const mxlogo = require('../assets/images/mxlogo.png');
-const eyefill = require('../assets/images/eyefill.png');
-const infoCircleFilled = require('../assets/images/infocirclefilled.png');
-const coverImage = require('../assets/images/coverImg.jpg');
-
+const indexService = require("../assets/images/index_servicepng.png");
+const slider_bg = require("../assets/images/slider_bg.png");
+const buy_index = require("../assets/images/buy_index.png");
+const cil_send = require("../assets/images/cil_send.png");
+const cil_receive = require("../assets/images/cil_receive.png");
+const swap_indexpng = require("../assets/images/swap_indexpng.png");
+const notification = require("../assets/images/notification.png");
+const scan = require("../assets/images/scan.png");
+const back_icon = require("../assets/images/back_icon.png");
+const filter_icon = require("../assets/images/filter_icon.png");
 const images = {
-  coverImage,
-  mxlogo,
-  logo,
-  eyefill,
-  onboardingSplash,
-  onboardingSplashDark,
-  idAvatar,
-  avatar,
-  card,
-  face,
-  infoCircleFilled,
-  scanCard,
-  user1,
-  user2,
-  user3,
-  user4,
-  user5,
-  user6,
-  user7,
-  user8,
-  user9,
-  user10,
-  user11,
-  elipseCard,
-  rectangleCard,
+  indexService,
+  slider_bg,
+  buy_index,
+  cil_send,
+  cil_receive,
+  swap_indexpng,
+  notification,
+  scan,
+  back_icon,
+  filter_icon,
 };
 
 export default images;
