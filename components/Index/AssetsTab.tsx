@@ -30,10 +30,20 @@ const AssetsTab: React.FC = () => {
         {TABS.map((tab) => (
           <TouchableOpacity
             key={tab}
-            style={[styles.tabButton, selectedTab === tab && styles.activeTab, { backgroundColor: selectedTab === tab ? activeTabColor : 'transparent' }]}
+            style={[
+              styles.tabButton,
+              selectedTab === tab && styles.activeTab,
+              { backgroundColor: selectedTab === tab ? activeTabColor : 'transparent' },
+            ]}
             onPress={() => setSelectedTab(tab)}
           >
-            <Text style={[styles.tabText, selectedTab === tab && styles.activeTabText, { color: selectedTab === tab ? '#fff' : textColor }]}>
+            <Text
+              style={[
+                styles.tabText,
+                selectedTab === tab && styles.activeTabText,
+                { color: selectedTab === tab ? '#fff' : textColor },
+              ]}
+            >
               {tab}
             </Text>
           </TouchableOpacity>
@@ -43,7 +53,7 @@ const AssetsTab: React.FC = () => {
       {/* List of Assets */}
       <FlatList
         data={getData()}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.id.toString()} // ✅ Ensure all keys are strings
         renderItem={({ item }) => <AssetItem item={item} />}
         showsVerticalScrollIndicator={false}
       />
@@ -60,7 +70,6 @@ const styles = StyleSheet.create({
   tabsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    // backgroundColor: '#F2F2F2',
     borderRadius: 10,
     marginBottom: 10,
     padding: 4,

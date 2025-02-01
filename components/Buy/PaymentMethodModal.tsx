@@ -12,18 +12,19 @@ import { useThemeColor } from '@/hooks/useThemeColor'; // Import theme color hoo
 import icons from '@/constants/icons'; // Ensure this path matches your icons file
 
 interface PaymentMethodModalProps {
+  title: string;
   visible: boolean;
   onClose: () => void;
 }
 
-const PaymentMethodModal: React.FC<PaymentMethodModalProps> = ({ visible, onClose }) => {
+const PaymentMethodModal: React.FC<PaymentMethodModalProps> = ({ title, visible, onClose }) => {
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
   const [selectedAccount, setSelectedAccount] = useState<number | null>(null);
 
-  const backgroundColor = useThemeColor({ light: '#EFFEF9', dark: '#000000' }, 'background');
+  const backgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#000000' }, 'background');
   const textColor = useThemeColor({ light: '#000000', dark: '#FFFFFF' }, 'text');
   const borderColor = useThemeColor({ light: '#228B22', dark: '#90EE90' }, 'border');
-
+  const containerBackgroundColor = useThemeColor({ light: '#FFFFF', dark: '#161616' }, "containerBackgroundColor");
   const accounts = [
     { id: 1, bankName: 'Access Bank', accountName: 'Early Baze', accountNumber: '123456789' },
     { id: 2, bankName: 'Access Bank', accountName: 'Early Baze', accountNumber: '123456789' },
@@ -35,7 +36,7 @@ const PaymentMethodModal: React.FC<PaymentMethodModalProps> = ({ visible, onClos
         <View style={[styles.modalContainer, { backgroundColor }]}>
           {/* Modal Header */}
           <View style={styles.header}>
-            <Text style={[styles.title, { color: textColor }]}>Payment Method</Text>
+            <Text style={[styles.title, { color: textColor }]}>{title}</Text>
             <TouchableOpacity onPress={onClose} style={styles.closeButton}>
               <Text style={[styles.closeText, { color: textColor }]}>✕</Text>
             </TouchableOpacity>
@@ -43,7 +44,7 @@ const PaymentMethodModal: React.FC<PaymentMethodModalProps> = ({ visible, onClos
 
           {/* Payment Option (Bank Transfer) */}
           <TouchableOpacity
-            style={[styles.paymentOption, { backgroundColor }]}
+            style={[styles.paymentOption,  { backgroundColor: containerBackgroundColor }]}
             onPress={() => setIsDropdownVisible(!isDropdownVisible)}
           >
             {/* Bank Icon */}
@@ -59,7 +60,7 @@ const PaymentMethodModal: React.FC<PaymentMethodModalProps> = ({ visible, onClos
 
           {/* Dropdown Accounts List */}
           {isDropdownVisible && (
-            <View style={styles.accountContainer}>
+            <View style={[styles.accountContainer, { backgroundColor: containerBackgroundColor }]}>
               <FlatList
                 data={accounts}
                 keyExtractor={(item) => item.id.toString()}
@@ -155,8 +156,8 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   arrowIcon: {
-    width: 20,
-    height: 20,
+    width: 15,
+    height: 15,
     transform: [{ rotate: '0deg' }],
   },
   arrowRotated: {

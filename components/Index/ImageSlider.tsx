@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -12,8 +12,8 @@ import {
 import images from '@/constants/images';
 
 const { width } = Dimensions.get('window');
-const CONTAINER_WIDTH = width - 32; // Subtracting 16px margin on both sides
-const ITEM_WIDTH = CONTAINER_WIDTH; // Match slide width to container width
+const CONTAINER_WIDTH = width - 32;
+const ITEM_WIDTH = CONTAINER_WIDTH;
 const SLIDER_DATA = [
   { id: '1', image: images.slider_bg, heading: 'Get the best', subheading: 'crypto deals' },
   { id: '2', image: images.slider_bg, heading: 'Buy and sell', subheading: 'and swap your tokens at the best rate' },
@@ -25,22 +25,22 @@ const ImageSlider: React.FC = () => {
   const flatListRef = useRef<FlatList>(null);
   const currentIndex = useRef(0);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      moveToNextSlide();
-    }, 9000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  const moveToNextSlide = () => {
+  const moveToNextSlide = useCallback(() => {
     if (currentIndex.current < SLIDER_DATA.length - 1) {
       currentIndex.current += 1;
     } else {
       currentIndex.current = 0;
     }
     flatListRef.current?.scrollToIndex({ index: currentIndex.current, animated: true });
-  };
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      moveToNextSlide();
+    }, 9000);
+
+    return () => clearInterval(interval);
+  }, [moveToNextSlide]);
 
   return (
     <View style={styles.container}>
@@ -77,8 +77,8 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     backgroundColor: '#5E0C59',
     marginTop: 10,
-    marginHorizontal: 16, // Added horizontal margin
-    overflow: 'hidden', // Ensure rounded corners clip content
+    marginHorizontal: 16,
+    overflow: 'hidden',
   },
   slide: {
     width: ITEM_WIDTH,
@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     height: '100%',
-    resizeMode: 'cover', // Fill the entire space without distortion
+    resizeMode: 'cover',
   },
   heading: {
     position: 'absolute',
@@ -101,8 +101,8 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     paddingHorizontal: 10,
     borderRadius: 5,
-    left: 16, // Align with container padding
-    right: 16, // Align with container padding
+    left: 16,
+    right: 16,
   },
   subheading: {
     position: 'absolute',

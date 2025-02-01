@@ -18,7 +18,7 @@ const SendReceive: React.FC = () => {
   return (
     <View style={[styles.container, { backgroundColor }]}>
       {/* Custom Header */}
-      <Header title="Assets" onBackPress={() => console.log('Back pressed')} onFilterPress={() => console.log('Filter pressed')} />
+      <Header title="Assets"  onFilterPress={() => console.log('Filter pressed')} />
 
       {/* Search Bar */}
       <View style={styles.horPadding}>  

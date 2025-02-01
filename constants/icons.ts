@@ -7,13 +7,33 @@ const bank = require('../assets/images/bank.png');
 const copy  = require('../assets/icons/copy.png');
 const eye = require("../assets/icons/eye.svg");
 const camera = require("../assets/icons/camera.svg");
+const upload = require("../assets/icons/upload.png");
+const checkmark = require("../assets/icons/checkmark.png");
+const check_circle  = require("../assets/icons/check_circle.png");
+const close = require("../assets/icons/close.png");
+
+const home = require("../assets/icons/home.png");
+const assests = require("../assets/icons/assests.png");
+const tnxs = require('../assets/icons/tnxs.png');
+const bills = require('../assets/icons/bills.png');
+const settings = require('../assets/icons/settings.png');
+
 const icons = {
   bitCoin,
   down_arrow,
   bank,
   copy,
   eye,
-  camera
+  camera,
+  upload,
+  checkmark,
+  check_circle,
+  close,
+  home,
+  assests,
+  tnxs,
+  bills,
+  settings
 };
 
 export default icons;

@@ -1,0 +1,102 @@
+import React from 'react';
+import { View, Text, StyleSheet, Image } from 'react-native';
+import { useThemeColor } from '@/hooks/useThemeColor';
+import icons from '@/constants/icons';
+import TransactionDetailItem from '@/components/Buy/TransactionDetailItem';
+
+const TransactionSuccess: React.FC = () => {
+  // Theme colors
+  const backgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#1A1A1A' }, 'background');
+  const textColor = useThemeColor({ light: '#000000', dark: '#FFFFFF' }, 'text');
+  const borderColor = useThemeColor({ light: '#22A45D', dark: '#157347' }, 'border');
+  const successTextColor = useThemeColor({ light: '#0C5E3F', dark: '#22A45D' }, 'successText');
+
+  return (
+    <View style={styles.successContainer}>
+      {/* Success Badge with Checkmark */}
+      <View style={styles.successBadgeContainer}>
+        <View style={[styles.successBadge, { backgroundColor }]}>
+          <Image source={icons.checkmark} style={styles.successIcon} />
+        </View>
+      </View>
+
+      {/* Transaction Box */}
+      <View style={[styles.successBox, { backgroundColor, borderColor }]}>
+        <Text style={[styles.successTitle, { color: successTextColor }]}>Transaction Successful</Text>
+        <Text style={[styles.successAmount, { color: textColor }]}>
+          <Text style={styles.boldText}>0.0023 BTC</Text> has been credited to your crypto wallet
+        </Text>
+
+        {/* Transaction Details */}
+        <View style={styles.detailContainer}>
+          <TransactionDetailItem label="Crypto bought" value="Bitcoin" icon={icons.bitCoin} />
+          <TransactionDetailItem label="Network" value="Bitcoin" icon={icons.bitCoin} />
+          <TransactionDetailItem label="Amount Paid" value="NGN 14,000,000" />
+        </View>
+      </View>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  successContainer: {
+    alignItems: 'center',
+    marginBottom: 20,
+    flex: 1,
+  },
+  successBadgeContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'absolute',
+    top: -30, // Positioned above the success box
+    zIndex: 2,
+  },
+  successBadge: {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+  },
+  successIcon: {
+    width: 50,
+    height: 50,
+  },
+  successBox: {
+    width: '100%',
+    borderRadius: 10,
+    padding: 20,
+    borderWidth: 1,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+    paddingTop: 50, // Space for badge overlap
+  },
+  successTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 5,
+  },
+  successAmount: {
+    fontSize: 14,
+    textAlign: 'center',
+    marginBottom: 15,
+  },
+  boldText: {
+    fontWeight: 'bold',
+  },
+  detailContainer: {
+    width: '100%',
+    marginTop: 10,
+  },
+});
+
+export default TransactionSuccess;

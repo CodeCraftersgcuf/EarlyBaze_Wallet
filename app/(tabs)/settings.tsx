@@ -8,7 +8,7 @@ const chat = () => {
   console.log(dark);
   return (
     <ThemedView>
-      <Text>chat</Text>
+      <Text>Settings</Text>
     </ThemedView>
   );
 };

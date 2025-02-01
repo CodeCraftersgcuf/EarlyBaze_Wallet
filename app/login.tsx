@@ -15,7 +15,7 @@ import { Formik } from "formik";
 import React from "react";
 import Input from "@/utils/CustomInput";
 import Button from "@/utils/Button";
-import { useRouter } from "expo-router";
+import { router, useRouter } from "expo-router";
 
 const Login = () => {
   const { dark } = useTheme();
@@ -122,7 +122,7 @@ const Login = () => {
                         </Text>
                       </TouchableOpacity>
                       <View>
-                        <Button title="Login" onPress={() => handleSubmit()} />
+                        <Button title="Login" onPress={() => router.push('/(tabs)')} />
                       </View>
                       <View style={styles.bottomBoxText}>
                         <Text

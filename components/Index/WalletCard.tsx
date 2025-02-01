@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import WalletItem from './WalletItem';
 import Icon from 'react-native-vector-icons/Ionicons';
-
+import { useRouter, router } from 'expo-router';
 type WalletCardProps = {
   isCrypto: boolean;
   onToggle: () => void;
@@ -39,7 +39,7 @@ const WalletCard: React.FC<WalletCardProps> = ({ isCrypto, onToggle }) => {
       <View style={[styles.card, isCrypto ? styles.cryptoCard : styles.nairaCard]}>
         {/* Withdraw Button Positioned in the Bottom-Right Corner */}
         {!isCrypto && (
-          <TouchableOpacity style={styles.withdrawButton}>
+          <TouchableOpacity style={styles.withdrawButton} onPress={() => router.push('/Withdraw')}>
             <Text style={styles.withdrawText}>Withdraw</Text>
           </TouchableOpacity>
         )}

@@ -7,8 +7,12 @@ import BuyCard from '@/components/BuyCard';
 import NoteBox from '@/components/Buy/NoteBox';
 import PrimaryButton from '@/components/Buy/PrimaryButton';
 import { useNavigation } from '@react-navigation/native';
+import { router, useRouter } from "expo-router";
+
 
 const Buy: React.FC = () => {
+  const { push } = useRouter();
+
   const backgroundColor = useThemeColor({ light: '#EFFEF9', dark: '#000000' }, 'background');
   const navigation = useNavigation();
 
@@ -18,14 +22,14 @@ const Buy: React.FC = () => {
         <Header />
       </View>
       <View style={styles.content}>
-        <BuyHead />
-        <BuyCard />
+      <BuyHead buttonText="Buy Bitcoin" exchangeRate="$1 = NGN1,750" />
+      <BuyCard />
         <NoteBox />
       </View>
 
       {/* Navigate to Payment Summary on Click */}
       <View style={styles.buttonContainer}>
-        <PrimaryButton title="Proceed" onPress={() => navigation.navigate('PaymentSummary')} />
+        <PrimaryButton title="Proceed" onPress={() => router.push('/PaymentSummary')} />
       </View>
     </ScrollView>
   );

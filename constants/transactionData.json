@@ -1,0 +1,17 @@
+{
+    "accountDetails": [
+      { "label": "Bank Name", "value": "Kuda Bank" },
+      { "label": "Account Name", "value": "Qamardeen Abdulmalik" },
+      { "label": "Account Number", "value": "123456789", "isCopyable": true }
+    ],
+    "paymentSummary": [
+      { "label": "Coin", "value": "Bitcoin" },
+      { "label": "Network", "value": "Bitcoin" },
+      { "label": "Amount - BTC", "value": "0.00023BTC" },
+      { "label": "Amount - USD", "value": "$2,350" },
+      { "label": "Amount to pay", "value": "NGN10,450,445" },
+      { "label": "Transaction Reference", "value": "23JFJ46GKDR", "isCopyable": true },
+      { "label": "Transaction Date", "value": "24 Dec, 2024 - 07:22 AM" }
+    ]
+  }
+  

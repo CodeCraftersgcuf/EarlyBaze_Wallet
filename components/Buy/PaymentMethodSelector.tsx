@@ -28,7 +28,7 @@ const PaymentMethodSelector: React.FC = () => {
       </TouchableOpacity>
 
       {/* Payment Method Modal */}
-      <PaymentMethodModal visible={modalVisible} onClose={() => setModalVisible(false)} />
+      <PaymentMethodModal title='Payment Method' visible={modalVisible} onClose={() => setModalVisible(false)} />
     </>
   );
 };
