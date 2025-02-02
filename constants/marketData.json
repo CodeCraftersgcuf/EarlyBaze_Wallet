@@ -1,0 +1,40 @@
+
+[
+    {
+      "id": "1",
+      "name": "BTC",
+      "symbol": "USDT",
+      "price": "$95,547.38",
+      "change": "+17.25%",
+      "marketCap": "2.41B",
+      "icon": "../assets/images/bitcoin.png"
+    },
+    {
+      "id": "2",
+      "name": "ETH",
+      "symbol": "USDT",
+      "price": "$95,547.38",
+      "change": "-22.45%",
+      "marketCap": "2.41B",
+      "icon": "../assets/images/bitcoin.png"
+    },
+    {
+      "id": "3",
+      "name": "SOL",
+      "symbol": "USDT",
+      "price": "$95,547.38",
+      "change": "+17.25%",
+      "marketCap": "2.41B",
+      "icon": "../assets/images/bitcoin.png"
+    },
+    {
+      "id": "4",
+      "name": "USDT",
+      "symbol": "USDT",
+      "price": "$95,547.38",
+      "change": "+17.25%",
+      "marketCap": "2.41B",
+      "icon": "../assets/images/bitcoin.png"
+    }
+  ]
+  

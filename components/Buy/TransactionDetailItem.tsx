@@ -39,11 +39,11 @@ const styles = StyleSheet.create({
     borderBottomColor: '#ddd',
   },
   label: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: 'bold',
   },
   value: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '500',
   },
   row: {

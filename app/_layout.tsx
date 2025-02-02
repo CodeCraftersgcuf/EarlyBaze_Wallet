@@ -38,6 +38,7 @@ export default function RootLayout() {
         <Stack.Screen name="TransactionPage" options={{ headerShown: false }} />
         <Stack.Screen name="Withdraw" options={{ headerShown: false }} />
         <Stack.Screen name="SwapSummary" options={{ headerShown: false }} />
+        <Stack.Screen name='TransactionSummary' options={{ headerShown: false }} />
 
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="login" options={{ headerShown: false }} />

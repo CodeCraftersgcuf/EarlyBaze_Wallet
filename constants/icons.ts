@@ -18,6 +18,13 @@ const tnxs = require('../assets/icons/tnxs.png');
 const bills = require('../assets/icons/bills.png');
 const settings = require('../assets/icons/settings.png');
 
+const bar = require('../assets/icons/bar.png');
+const arrow = require('../assets/icons/arrow.png');
+
+const cross = require('../assets/icons/cross.png');
+
+const share = require('../assets/icons/share.png');
+
 const icons = {
   bitCoin,
   down_arrow,
@@ -33,7 +40,11 @@ const icons = {
   assests,
   tnxs,
   bills,
-  settings
+  settings,
+  bar,
+  arrow,
+  cross,
+  share,
 };
 
 export default icons;

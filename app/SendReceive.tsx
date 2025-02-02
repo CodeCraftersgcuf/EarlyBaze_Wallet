@@ -38,7 +38,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     // paddingHorizontal: 16,
-    paddingTop: 16,
+    // paddingTop: 16,
+    marginTop: 25,
   },
   horPadding: {
     paddingHorizontal: 16,

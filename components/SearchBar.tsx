@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
     height: 45,
     width: '100%',
     borderRadius: 22.5, // Making it rounded
-    paddingHorizontal: 26,
+    paddingHorizontal: 20,
     backgroundColor: '#FFFFFF',
     shadowColor: '#000',
     shadowOpacity: 0.1,
@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   icon: {
-    marginRight: 10,
+    marginRight: 8,
   },
   input: {
     flex: 1,
