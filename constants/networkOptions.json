@@ -1,0 +1,27 @@
+[
+    {
+      "id": "1",
+      "name": "Bitcoin",
+      "icon": "../assets/images/solana.png",
+      "color": "#FFA500"
+    },
+    {
+      "id": "2",
+      "name": "Ethereum",
+      "icon": "../assets/images/solana.png",
+      "color": "#627EEA"
+    },
+    {
+      "id": "3",
+      "name": "Solana",
+      "icon": "../assets/images/solana.png",
+      "color": "#9945FF"
+    },
+    {
+      "id": "4",
+      "name": "Tron",
+      "icon": "../assets/images/solana.png",
+      "color": "#EB0029"
+    }
+  ]
+  

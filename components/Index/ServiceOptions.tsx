@@ -1,12 +1,7 @@
 import React from 'react';
 import { View, TouchableOpacity, Image, Text, StyleSheet, GestureResponderEvent } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 import images from '../../constants/images';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList } from '@/constants/RootStackParamList';
-
-// Define the navigation prop type for this screen
-type NavigationProp = StackNavigationProp<RootStackParamList>;
 
 // Define the interface for ServiceButton props
 interface ServiceButtonProps {
@@ -27,7 +22,7 @@ const ServiceButton: React.FC<ServiceButtonProps> = ({ icon, label, onPress }) =
 };
 
 const ServiceOptions: React.FC = () => {
-  const navigation = useNavigation<NavigationProp>(); // Properly type the navigation prop
+  const router = useRouter(); // expo-router navigation
 
   return (
     <View style={styles.container}>
@@ -39,7 +34,7 @@ const ServiceOptions: React.FC = () => {
           label="Send"
           onPress={() => {
             console.log('Navigating to SendReceive with type:', { type: 'send' });
-            navigation.navigate('SendReceive', { type: 'send' });
+            router.push({ pathname: '/SendReceive', params: { type: 'send' } });
           }}
         />
         <View style={styles.divider} />
@@ -48,7 +43,7 @@ const ServiceOptions: React.FC = () => {
           label="Receive"
           onPress={() => {
             console.log('Navigating to SendReceive with type:', { type: 'receive' });
-            navigation.navigate('SendReceive', { type: 'receive' });
+            router.push({ pathname: '/SendReceive', params: { type: 'receive' } });
           }}
         />
 
@@ -56,18 +51,20 @@ const ServiceOptions: React.FC = () => {
         <ServiceButton
           icon={images.buy_index}
           label="Buy"
-          onPress={() => navigation.navigate('Buy')}
+          onPress={() => router.push('/Buy')}
         />
         <View style={styles.divider} />
         <ServiceButton
           icon={images.swap_indexpng}
           label="Swap"
-          onPress={() => navigation.navigate('Swap')}
+          onPress={() => router.push('/Swap')}
         />
       </View>
     </View>
   );
 };
+
+export default ServiceOptions;
 
 const styles = StyleSheet.create({
   container: {
@@ -103,9 +100,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 5,
   },
-  icon: {
-    fontSize: 24,
-  },
   text: {
     fontSize: 14,
     fontWeight: 'bold',
@@ -117,5 +111,3 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
 });
-
-export default ServiceOptions;

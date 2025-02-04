@@ -24,6 +24,7 @@ const arrow = require('../assets/icons/arrow.png');
 const cross = require('../assets/icons/cross.png');
 
 const share = require('../assets/icons/share.png');
+const save = require('../assets/icons/save.png');
 
 const icons = {
   bitCoin,
@@ -45,6 +46,7 @@ const icons = {
   arrow,
   cross,
   share,
+  save,
 };
 
 export default icons;

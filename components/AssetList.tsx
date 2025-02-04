@@ -1,8 +1,9 @@
 import React from 'react';
-import { View, FlatList, StyleSheet } from 'react-native';
+import { View, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 import AssetCard from '@/components/AssetCard';
 import icons from '@/constants/icons';
 import { useThemeColor } from '@/hooks/useThemeColor';
+import { useRouter } from 'expo-router';
 
 const assetData = [
     { id: '1', name: 'BTC', fullName: 'Bitcoin', balance: '0.00234', price: '$97,456.33', icon: icons.bitCoin },
@@ -15,8 +16,14 @@ const assetData = [
     { id: '8', name: 'DOGE', fullName: 'Dogecoin', balance: '20,000', price: '$0.08', icon: icons.bitCoin },
 ];
 
-const AssetList: React.FC<{ selectedTab: 'All Assets' | 'My Assets'; searchQuery: string }> = ({ selectedTab, searchQuery }) => {
+const AssetList: React.FC<{ selectedTab: 'All Assets' | 'My Assets'; searchQuery: string; type: string }> = ({
+    selectedTab,
+    searchQuery,
+    type,
+}) => {
+    console.log("Type from SendReceive:", type);
     const backgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#000000' }, 'background');
+    const router = useRouter();
 
     let filteredData = selectedTab === 'All Assets' ? assetData : assetData.filter((asset) => Number(asset.balance) > 0);
 
@@ -36,9 +43,27 @@ const AssetList: React.FC<{ selectedTab: 'All Assets' | 'My Assets'; searchQuery
                 keyExtractor={(item) => item.id}
                 numColumns={2} // Ensures two items per row
                 renderItem={({ item }) => (
-                    <View style={styles.cardContainer}>
+                    <TouchableOpacity
+                        style={styles.cardContainer}
+                        onPress={() => {
+                            if (type === 'receive') {
+                                router.push({
+                                    pathname: '/Receive',
+                                    params: { assetName: item.name, fullName: item.fullName, icon: item.icon },
+                                });
+                            } else if (type === 'send') {
+                                router.push({
+                                    pathname: '/Send',
+                                    params: { assetName: item.name, fullName: item.fullName, icon: item.icon },
+                                });
+                            }
+                            else {
+                                console.log(`Normal action for ${item.name}`);
+                            }
+                        }}
+                    >
                         <AssetCard {...item} />
-                    </View>
+                    </TouchableOpacity>
                 )}
                 contentContainerStyle={styles.list}
             />
@@ -48,24 +73,24 @@ const AssetList: React.FC<{ selectedTab: 'All Assets' | 'My Assets'; searchQuery
 
 const styles = StyleSheet.create({
     mainContainer: {
-        borderTopLeftRadius: 30,  // Top-left border radius
-        borderTopRightRadius: 30, // Top-right border radius
+        borderTopLeftRadius: 30,
+        borderTopRightRadius: 30,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.25,
         shadowRadius: 4,
-        elevation: 4, // For Android shadow effect
+        elevation: 4,
         flex: 1,
-        alignSelf: 'stretch', // Makes sure it stretches if needed
-        marginHorizontal: 10, // Adds margin on left and right
+        alignSelf: 'stretch',
+        marginHorizontal: 10,
     },
     list: {
         paddingBottom: 20,
-        paddingHorizontal: 8, // Adjust padding for better alignment
+        paddingHorizontal: 8,
     },
     cardContainer: {
         flex: 1,
-        margin: 6, // Adds spacing between items
+        margin: 6,
     },
 });
 

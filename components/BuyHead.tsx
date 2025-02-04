@@ -4,9 +4,10 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 interface BuyHeadProps {
   buttonText: string; // Required Buy button text
   exchangeRate?: string; // Optional exchange rate text
+  topLabel?: string; // Optional top label
 }
 
-const BuyHead: React.FC<BuyHeadProps> = ({ buttonText, exchangeRate }) => {
+const BuyHead: React.FC<BuyHeadProps> = ({ buttonText, exchangeRate, topLabel }) => {
   return (
     <View style={styles.container}>
       {/* Buy Button */}
@@ -16,7 +17,7 @@ const BuyHead: React.FC<BuyHeadProps> = ({ buttonText, exchangeRate }) => {
         {/* Exchange Rate Label - Show only if passed via props */}
         {exchangeRate && (
           <View style={styles.exchangeRateContainer}>
-            <Text style={styles.exchangeRateText}>Exchange Rate</Text>
+            <Text style={styles.exchangeRateText}>{topLabel}</Text>
             <Text style={styles.exchangeRateValue}>{exchangeRate}</Text>
           </View>
         )}
@@ -63,9 +64,9 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 0, // bottom-right radius
     borderBottomLeftRadius: 15, // bottom-left radius
     paddingVertical: 8,
-    paddingHorizontal: 12,
+    paddingHorizontal: 14,
     justifyContent: 'center',
-    alignItems: 'center',
+    // alignItems: 'center',
     shadowColor: '#0C4A7E',
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.5,

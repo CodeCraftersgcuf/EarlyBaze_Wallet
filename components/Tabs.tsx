@@ -5,6 +5,7 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 interface TabsProps {
   selectedTab: 'All Assets' | 'My Assets';
   onTabSelect: (tab: 'All Assets' | 'My Assets') => void;
+ 
 }
 
 const Tabs: React.FC<TabsProps> = ({ selectedTab, onTabSelect }) => {

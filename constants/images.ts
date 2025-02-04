@@ -12,6 +12,8 @@ const authImg = require('../assets/images/auth-bg.jpg');
 const authMidCircle = require('../assets/images/auth-midCircle.png');
 const radiusAuth = require('../assets/images/radiusAuth.png');
 const arrowLeft = require('../assets/images/arrow-left.png');
+const qrcode = require('../assets/images/qrcode.png');
+const solana = require('../assets/images/solana.png');
 
 const images = {
   indexService,
@@ -27,7 +29,9 @@ const images = {
   authImg,
   authMidCircle,
   radiusAuth,
-  arrowLeft
+  arrowLeft,
+  qrcode,
+  solana, 
 };
 
 export default images;

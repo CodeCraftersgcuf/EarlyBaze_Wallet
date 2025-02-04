@@ -22,8 +22,8 @@ const Buy: React.FC = () => {
         <Header />
       </View>
       <View style={styles.content}>
-      <BuyHead buttonText="Buy Bitcoin" exchangeRate="$1 = NGN1,750" />
-      <BuyCard />
+        <BuyHead buttonText="Buy Bitcoin" topLabel="Exchange Rate" exchangeRate="$1 = NGN1,750" />
+        <BuyCard />
         <NoteBox />
       </View>
 

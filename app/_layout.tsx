@@ -39,6 +39,9 @@ export default function RootLayout() {
         <Stack.Screen name="Withdraw" options={{ headerShown: false }} />
         <Stack.Screen name="SwapSummary" options={{ headerShown: false }} />
         <Stack.Screen name='TransactionSummary' options={{ headerShown: false }} />
+        <Stack.Screen name="Receive" options={{ headerShown: false }} />
+        <Stack.Screen name="SummaryReceive" options={{ headerShown: false }} />
+        <Stack.Screen name="Send" options={{ headerShown: false }} />
 
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="login" options={{ headerShown: false }} />
