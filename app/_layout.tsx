@@ -43,6 +43,7 @@ export default function RootLayout() {
         <Stack.Screen name="SummaryReceive" options={{ headerShown: false }} />
         <Stack.Screen name="Send" options={{ headerShown: false }} />
 
+
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="login" options={{ headerShown: false }} />
         <Stack.Screen name="forgetpassword" options={{ headerShown: false }} />

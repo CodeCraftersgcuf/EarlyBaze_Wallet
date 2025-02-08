@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     View,
     Text,
@@ -6,7 +6,9 @@ import {
     TouchableOpacity,
     Image,
     StyleSheet,
+    Modal
 } from 'react-native';
+// import { BarCodeScanner } from 'expo-barcode-scanner';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { images } from '@/constants';
 
@@ -20,6 +22,25 @@ const SendCryptoForm: React.FC<SendCryptoFormProps> = ({ selectedTab, setSelecte
     const cardBackgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#1A1A1A' }, 'card');
     const textColor = useThemeColor({ light: '#222222', dark: '#FFFFFF' }, 'text');
     const borderColor = useThemeColor({ light: '#E5E5E5', dark: '#333333' }, 'border');
+
+    // QR Scanner State
+    const [scannedAddress, setScannedAddress] = useState('');
+    const [hasPermission, setHasPermission] = useState<boolean | null>(null);
+    const [isScannerOpen, setIsScannerOpen] = useState(false);
+
+    // Request Camera Permission
+    useEffect(() => {
+        (async () => {
+            // const { status } = await BarCodeScanner.requestPermissionsAsync();
+            setHasPermission(status === 'granted');
+        })();
+    }, []);
+
+    // Handle QR Code Scanning
+    const handleBarCodeScanned = ({ data }: { data: string }) => {
+        setScannedAddress(data);
+        setIsScannerOpen(false);
+    };
 
     return (
         <View>
@@ -49,8 +70,10 @@ const SendCryptoForm: React.FC<SendCryptoFormProps> = ({ selectedTab, setSelecte
                         placeholder="Input Address"
                         placeholderTextColor="#A1A1A1"
                         style={[styles.inputField, { color: textColor }]}
+                        value={scannedAddress}
+                        onChangeText={setScannedAddress}
                     />
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={() => setIsScannerOpen(true)}>
                         <Image source={images.scan} style={styles.scanIcon} />
                     </TouchableOpacity>
                 </View>
@@ -65,21 +88,21 @@ const SendCryptoForm: React.FC<SendCryptoFormProps> = ({ selectedTab, setSelecte
                     <TouchableOpacity style={styles.swapButton}>
                         <Image source={images.solana} style={styles.swapIcon} />
                     </TouchableOpacity>
-                    <View style={[styles.amountBox, { borderColor }]}>
-                        <Text style={styles.amountLabel}>USD</Text>
-                        <Text style={styles.amountValue}>2,345</Text>
-                        <Text style={styles.maxText}>Max</Text>
-                    </View>
-                </View>
-
-                {/* Coin & Network Selection */}
-                <View style={styles.selectionContainer}>
                     <View style={[styles.selectionBox, { borderColor }]}>
                         <Text style={styles.selectionLabel}>Coin</Text>
                         <View style={styles.coinWrapper}>
                             <Text style={styles.coinText}>Bitcoin</Text>
                             <Image source={images.solana} style={styles.coinIcon} />
                         </View>
+                    </View>
+                </View>
+
+                {/* Coin & Network Selection */}
+                <View style={styles.selectionContainer}>
+                    <View style={[styles.amountBox, { borderColor }]}>
+                        <Text style={styles.amountLabel}>USD</Text>
+                        <Text style={styles.amountValue}>2,345</Text>
+                        <Text style={styles.maxText}>Max</Text>
                     </View>
                     <View style={[styles.selectionBox, { borderColor }]}>
                         <Text style={styles.selectionLabel}>Network</Text>
@@ -90,6 +113,20 @@ const SendCryptoForm: React.FC<SendCryptoFormProps> = ({ selectedTab, setSelecte
                     </View>
                 </View>
             </View>
+
+            {/* QR Scanner Modal */}
+            <Modal visible={isScannerOpen} animationType="slide">
+                <View style={styles.scannerContainer}>
+                    <Text style={styles.scannerText}>Scan the QR Code or Choose an Image</Text>
+                    {/* <BarCodeScanner
+                        onBarCodeScanned={isScannerOpen ? handleBarCodeScanned : undefined}
+                        style={styles.qrScanner}
+                    /> */}
+                    <TouchableOpacity onPress={() => setIsScannerOpen(false)} style={styles.closeScannerButton}>
+                        <Text style={styles.closeScannerText}>Close Scanner</Text>
+                    </TouchableOpacity>
+                </View>
+            </Modal>
         </View>
     );
 };
@@ -144,6 +181,31 @@ const styles = StyleSheet.create({
         width: 22,
         height: 22,
     },
+    scannerContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#1A1A1A',
+    },
+    scannerText: {
+        color: '#FFFFFF',
+        fontSize: 16,
+        marginBottom: 10,
+    },
+    qrScanner: {
+        width: '80%',
+        height: '50%',
+    },
+    closeScannerButton: {
+        backgroundColor: '#FFFFFF',
+        padding: 10,
+        borderRadius: 8,
+        marginTop: 20,
+    },
+    closeScannerText: {
+        fontSize: 14,
+        color: '#000',
+    },
     amountContainer: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -155,7 +217,7 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         paddingHorizontal: 14,
         borderRadius: 10,
-        alignItems: 'center',
+        // alignItems: 'center',
         borderWidth: 1,
     },
     amountLabel: {
@@ -166,21 +228,27 @@ const styles = StyleSheet.create({
     amountValue: {
         fontSize: 18,
         fontWeight: 'bold',
-        alignSelf: 'center',
+        marginTop: 4,
     },
     maxText: {
         fontSize: 12,
         color: '#25AE7A',
-        alignSelf: 'flex-end',
+        position: 'absolute',
+        right: 2,
+        top: 17,
+        
     },
     swapButton: {
         padding: 14,
         borderRadius: 50,
-        backgroundColor: '#F6F6F6',
         marginHorizontal: 8,
         borderWidth: 1,
         borderColor: '#E5E5E5',
+        position: 'absolute',
+        zIndex: 1,
+        top: '70%', 
     },
+
     swapIcon: {
         width: 28,
         height: 28,

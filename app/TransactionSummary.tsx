@@ -7,11 +7,21 @@ import Header from '@/components/Header';
 import TransactionDetailItem from '@/components/Buy/TransactionDetailItem';
 import { ThemedText } from '@/components/ThemedText';
 import icons from '@/constants/icons';
+import { useLocalSearchParams } from 'expo-router';
+import VerificationModal from '@/components/Send/VerificationModal';
+import { useState } from 'react';
+import TransactionFailedModal from '@/components/Send/TransactionFailedModal';
 
 const TransactionSummary: React.FC = () => {
+  const { type } = useLocalSearchParams();
+
+  console.log('Received type from navigation:', type);
   const backgroundColor = useThemeColor({ light: '#EFFEF9', dark: '#000000' }, 'background');
   const cardBackgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#1A1A1A' }, 'card');
   const textBackgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#0000' }, 'textBackground');
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [isVerificationVisible, setVerificationVisible] = useState(false);
+  const [isFailedModalVisible, setFailedModalVisible] = useState(false);
   const navigation = useNavigation();
 
   return (
@@ -31,7 +41,7 @@ const TransactionSummary: React.FC = () => {
         <Text style={styles.amountText}>0.0023 BTC</Text>
 
         <TransactionDetailItem label="Recipient Address" value="1oefkfdnosk23jkdksndw..." isCopyable />
-        <TransactionDetailItem label="Network" value="Bitcoin" icon={icons.bitCoin}/>
+        <TransactionDetailItem label="Network" value="Bitcoin" icon={icons.bitCoin} />
         <TransactionDetailItem label="Amount in BTC" value="0.0023" />
         <TransactionDetailItem label="Amount in USD" value="$3,546" />
         <TransactionDetailItem label="Network fee" value="0.000023 BTC" />
@@ -39,11 +49,32 @@ const TransactionSummary: React.FC = () => {
         <TransactionDetailItem label="Transaction Date" value="24 Dec, 2024 - 07:22 AM" />
       </View>
 
-      {/* View on Blockchain Button */}
+      {/* Action Button */}
       <View style={styles.buttonContainer}>
-        <PrimaryButton title="View on blockchain" onPress={() => console.log('Viewing blockchain')} />
+        {type === 'send' && (
+          <PrimaryButton
+            title="Proceed"
+            onPress={() => setVerificationVisible(true)}  
+          />
+        )}
       </View>
-    </ScrollView>
+
+      {/* Show the modal when 'send' is clicked */}
+      {/* Show Verification Modal */}
+      <VerificationModal
+        visible={isVerificationVisible}
+        onClose={() => setVerificationVisible(false)}
+        onFail={() => {
+          setVerificationVisible(false); // Close Verification Modal
+          setFailedModalVisible(true);  // Open Transaction Failed Modal
+        }}
+      />
+
+      {/* Show Transaction Failed Modal */}
+      <TransactionFailedModal
+        visible={isFailedModalVisible}
+        onClose={() => setFailedModalVisible(false)}
+      />    </ScrollView>
   );
 };
 

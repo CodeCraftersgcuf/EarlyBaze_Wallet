@@ -17,13 +17,13 @@ const NoteBox: React.FC = () => {
       {/* Content */}
       <View style={styles.content}>
         <Text style={[styles.noteText, { color: textColor }]}>
-          • Crosscheck all addresses before pasting
+           Crosscheck all addresses before pasting
         </Text>
         <Text style={[styles.noteText, { color: textColor }]}>
-          • Make sure you select the right network
+           Make sure you select the right network
         </Text>
         <Text style={[styles.noteText, { color: textColor }]}>
-          • Originating account name must match with wallet name
+           Originating account name must match with wallet name
         </Text>
       </View>
     </View>
@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     boxShadow: '0px 0px 4px rgba(165, 165, 165, 0.25)',
     borderRadius: 15,
-    paddingVertical: 10,
+    // paddingVertical: 10,
   },
   header: {
     borderBottomWidth: 1,

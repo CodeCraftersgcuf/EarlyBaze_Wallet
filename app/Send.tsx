@@ -31,7 +31,7 @@ const Send: React.FC = () => {
 
             {/* Navigate to Payment Summary on Click */}
             <View style={styles.buttonContainer}>
-                <PrimaryButton title="Proceed" onPress={() => router.push('/PaymentSummary')} />
+                <PrimaryButton title="Proceed" onPress={() => router.push({ pathname: '/TransactionSummary', params: { type: 'send' } })} />
             </View>
         </ScrollView>
     );
