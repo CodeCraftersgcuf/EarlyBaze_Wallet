@@ -1,18 +1,45 @@
-import { StyleSheet, Text, View } from 'react-native';
 import React from 'react';
-import { ThemedView } from '@/components/ThemedView';
-import { useTheme } from '@react-navigation/native';
+import { ScrollView, View, StyleSheet } from 'react-native';
+import ProfileHeader from '@/components/Setting/ProfileHeader';
+import SettingsList from '@/components/Setting/SettingsList';
+import OtherSettings from '@/components/Setting/OtherSettings';
+import { useThemeColor } from '@/hooks/useThemeColor';
+import { useRouter, router } from 'expo-router';
+import { images } from '@/constants';
 
-const chat = () => {
-  const { colors, dark } = useTheme();
-  console.log(dark);
+const SettingsScreen: React.FC = () => {
+  const backgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#000000' }, 'background');
   return (
-    <ThemedView>
-      <Text>Settings</Text>
-    </ThemedView>
+    <ScrollView>
+      <ProfileHeader name="Qamardeen" email="Qamardeenoladimaji@gmail.com" cryptoBalance="35,000" nairaBalance="35,000" />
+
+      {/* Settings Grid */}
+      <View style={[styles.gridContainer, { backgroundColor }]}>
+        <SettingsList
+          options={[
+            { title: 'Edit Profile', image: images.edit_profile, onPress: () => { router.push('/EditProfile') } },
+            { title: 'Account', image: images.account, onPress: () => { router.push('/Account')} },
+            { title: 'Referral', image: images.referral, onPress: () => {router.push('/Referral') } },
+            { title: 'KYC', image: images.kyc, onPress: () => { } },
+            { title: 'Support', image: images.support, onPress: () => { } },
+            { title: 'Security', image: images.security, onPress: () => { } },
+          ]}
+        />
+      </View>
+
+      <OtherSettings isDarkMode={false} onToggleTheme={() => { }} />
+    </ScrollView>
   );
 };
 
-export default chat;
+const styles = StyleSheet.create({
+  gridContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    marginTop: 20,
+  },
+});
 
-const styles = StyleSheet.create({});
+export default SettingsScreen;

@@ -8,13 +8,22 @@ const notification = require("../assets/images/notification.png");
 const scan = require("../assets/images/scan.png");
 const back_icon = require("../assets/images/back_icon.png");
 const filter_icon = require("../assets/images/filter_icon.png");
-const authImg = require('../assets/images/auth-bg.jpg');
-const authMidCircle = require('../assets/images/auth-midCircle.png');
-const radiusAuth = require('../assets/images/radiusAuth.png');
-const arrowLeft = require('../assets/images/arrow-left.png');
-const qrcode = require('../assets/images/qrcode.png');
-const solana = require('../assets/images/solana.png');
-const failed = require('../assets/images/failed.png');
+const authImg = require("../assets/images/auth-bg.jpg");
+const authMidCircle = require("../assets/images/auth-midCircle.png");
+const radiusAuth = require("../assets/images/radiusAuth.png");
+const arrowLeft = require("../assets/images/arrow-left.png");
+const qrcode = require("../assets/images/qrcode.png");
+const solana = require("../assets/images/solana.png");
+const failed = require("../assets/images/failed.png");
+const profile = require("../assets/images/profile.png");
+const wallet = require("../assets/images/wallet.png");
+const tick = require("../assets/images/tick.png");
+const edit_profile= require("../assets/images/edit_profile.png");
+const account = require("../assets/images/account.png");
+const referral = require("../assets/images/referral.png");
+const kyc = require("../assets/images/kyc.png");
+const support=  require("../assets/images/support.png");
+const security = require("../assets/images/security.png");
 
 const images = {
   indexService,
@@ -32,8 +41,18 @@ const images = {
   radiusAuth,
   arrowLeft,
   qrcode,
-  solana, 
-  failed
+  solana,
+  failed,
+  profile,
+  wallet,
+  tick,
+  edit_profile,
+  account,
+  referral,
+  kyc,
+  support,
+  security,
+
 };
 
 export default images;
