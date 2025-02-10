@@ -1,11 +1,11 @@
 import React from 'react';
-import { StyleSheet, View, Image } from 'react-native';
+import { StyleSheet, View, Image, TouchableOpacity } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useThemeColor } from '@/hooks/useThemeColor'; // Assuming you have this hook for theming
 import { images } from '@/constants';
-
+import { useRouter, router } from 'expo-router';
 export type HeaderProps = {
   username: string;
   greeting: string;
@@ -17,6 +17,12 @@ export function Header({ username, greeting }: HeaderProps) {
     'background'
   );
 
+  // Function to handle icon press
+  const handleIconPress = (iconName: string) => {
+    router.push('/Notification');
+    console.log(`${iconName} icon clicked`);
+  };
+
   return (
     <SafeAreaView>
       <ThemedView style={styles.headerContainer}>
@@ -25,9 +31,13 @@ export function Header({ username, greeting }: HeaderProps) {
           <ThemedText type="subtitle">{greeting} 👋</ThemedText>
         </View>
         <View style={styles.iconsContainer}>
-          {/* Replace FontAwesome icons with images */}
-          <Image source={images.scan} style={styles.icon} />
-          <Image source={images.notification} style={styles.icon} />
+          {/* Replace FontAwesome icons with images and make them clickable */}
+          <TouchableOpacity onPress={() => handleIconPress('Scan')}>
+            <Image source={images.scan} style={styles.icon} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => handleIconPress('Notification')}>
+            <Image source={images.notification} style={styles.icon} />
+          </TouchableOpacity>
         </View>
       </ThemedView>
     </SafeAreaView>
@@ -54,11 +64,5 @@ const styles = StyleSheet.create({
     width: 24,  // Adjust icon size based on the image size
     height: 24, // Adjust icon size based on the image size
     borderRadius: 16,
-    backgroundColor: '#ffffff',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2, // For Android shadow
   },
 });

@@ -29,6 +29,7 @@ const dots = require("../assets/images/dots.png");
 const front = require("../assets/images/front.png");
 const picker = require("../assets/images/picker.png");
 const empty = require("../assets/images/empty.png");
+const sample = require("../assets/images/sample.png");
 
 const images = {
   indexService,
@@ -62,6 +63,7 @@ const images = {
   front,
   picker,
   empty,
+  sample,
 
 };
 
