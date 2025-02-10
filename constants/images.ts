@@ -24,6 +24,11 @@ const referral = require("../assets/images/referral.png");
 const kyc = require("../assets/images/kyc.png");
 const support=  require("../assets/images/support.png");
 const security = require("../assets/images/security.png");
+const shield = require("../assets/images/shield.png");
+const dots = require("../assets/images/dots.png");
+const front = require("../assets/images/front.png");
+const picker = require("../assets/images/picker.png");
+const empty = require("../assets/images/empty.png");
 
 const images = {
   indexService,
@@ -52,6 +57,11 @@ const images = {
   kyc,
   support,
   security,
+  shield,
+  dots,
+  front,
+  picker,
+  empty,
 
 };
 

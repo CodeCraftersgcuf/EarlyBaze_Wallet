@@ -12,15 +12,23 @@ interface ReferralListItemProps {
 const ReferralListItem: React.FC<ReferralListItemProps> = ({ name, amount, date, imageUrl }) => {
   const cardBackgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#1A1A1A' }, 'card');
   const textColor = useThemeColor({ light: '#222222', dark: '#FFFFFF' }, 'text');
+  const secondaryTextColor = useThemeColor({ light: '#777777', dark: '#AAAAAA' }, 'secondaryText');
 
   return (
     <View style={[styles.container, { backgroundColor: cardBackgroundColor }]}>
+      {/* User Avatar */}
       <Image source={{ uri: imageUrl }} style={styles.avatar} />
-      <View style={styles.info}>
+
+      {/* Info Container */}
+      <View style={styles.infoContainer}>
         <Text style={[styles.name, { color: textColor }]}>{name}</Text>
-        <Text style={styles.date}>{date}</Text>
       </View>
-      <Text style={[styles.amount, { color: textColor }]}>{amount}</Text>
+
+      {/* Amount and Date Column */}
+      <View style={styles.amountContainer}>
+        <Text style={[styles.amount, { color: textColor }]}>{amount}</Text>
+        <Text style={[styles.date, { color: secondaryTextColor }]}>{date}</Text>
+      </View>
     </View>
   );
 };
@@ -29,30 +37,38 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 12,
-    borderRadius: 10,
-    marginBottom: 10,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    borderRadius: 16,
+    marginBottom: 12,
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowRadius: 5,
+    elevation: 2,
   },
   avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 50,
+    height: 50,
+    borderRadius: 25,
   },
-  info: {
+  infoContainer: {
     flex: 1,
-    marginLeft: 10,
+    marginLeft: 12,
   },
   name: {
     fontSize: 16,
     fontWeight: 'bold',
   },
-  date: {
-    fontSize: 12,
-    color: '#777',
+  amountContainer: {
+    alignItems: 'flex-end', // Align amount and date to the right
   },
   amount: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
+  },
+  date: {
+    fontSize: 12,
+    marginTop: 4,
   },
 });
 

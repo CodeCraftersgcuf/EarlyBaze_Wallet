@@ -46,6 +46,8 @@ export default function RootLayout() {
         <Stack.Screen name="Account" options={{ headerShown: false }} />
         <Stack.Screen name="AddAccount" options={{ headerShown: false }} />
         <Stack.Screen name="Referral" options={{ headerShown: false }} />
+        <Stack.Screen name="Kyc" options={{ headerShown: false }} />
+        <Stack.Screen name="KycDetail" options={{ headerShown: false }} />
 
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="login" options={{ headerShown: false }} />

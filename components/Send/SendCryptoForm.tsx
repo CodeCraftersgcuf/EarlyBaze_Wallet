@@ -16,6 +16,7 @@ interface SendCryptoFormProps {
     selectedTab: 'Crypto Address' | 'Internal Transfer';
     setSelectedTab: (tab: 'Crypto Address' | 'Internal Transfer') => void;
 }
+import TabSwitcher from './TabSwitcher';
 
 const SendCryptoForm: React.FC<SendCryptoFormProps> = ({ selectedTab, setSelectedTab }) => {
     // Theme-based colors
@@ -44,23 +45,8 @@ const SendCryptoForm: React.FC<SendCryptoFormProps> = ({ selectedTab, setSelecte
 
     return (
         <View>
-            {/* Tab Switcher */}
-            <View style={styles.tabContainer}>
-                <TouchableOpacity
-                    style={[styles.tabButton, selectedTab === 'Crypto Address' && styles.activeTab]}
-                    onPress={() => setSelectedTab('Crypto Address')}>
-                    <Text style={[styles.tabText, selectedTab === 'Crypto Address' && styles.activeTabText]}>
-                        Crypto Address
-                    </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={[styles.tabButton, selectedTab === 'Internal Transfer' && styles.activeTab]}
-                    onPress={() => setSelectedTab('Internal Transfer')}>
-                    <Text style={[styles.tabText, selectedTab === 'Internal Transfer' && styles.activeTabText]}>
-                        Internal Transfer
-                    </Text>
-                </TouchableOpacity>
-            </View>
+            <TabSwitcher selectedTab={selectedTab} setSelectedTab={setSelectedTab} />
+
 
             {/* Main Card Container */}
             <View style={[styles.mainContainer, { backgroundColor: cardBackgroundColor, borderColor }]}>
@@ -146,17 +132,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         borderRadius: 10,
     },
-    activeTab: {
-        backgroundColor: '#25AE7A',
-    },
-    tabText: {
-        fontSize: 14,
-        fontWeight: '600',
-        color: '#999',
-    },
-    activeTabText: {
-        color: '#FFFFFF',
-    },
     mainContainer: {
         borderRadius: 12,
         marginHorizontal: 16,
@@ -236,7 +211,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         right: 2,
         top: 17,
-        
+
     },
     swapButton: {
         padding: 14,
@@ -246,7 +221,7 @@ const styles = StyleSheet.create({
         borderColor: '#E5E5E5',
         position: 'absolute',
         zIndex: 1,
-        top: '70%', 
+        top: '70%',
     },
 
     swapIcon: {
