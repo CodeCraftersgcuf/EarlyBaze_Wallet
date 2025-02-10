@@ -30,7 +30,10 @@ const front = require("../assets/images/front.png");
 const picker = require("../assets/images/picker.png");
 const empty = require("../assets/images/empty.png");
 const sample = require("../assets/images/sample.png");
-
+const support_girl = require("../assets/images/support_girl.png");
+const ticket = require("../assets/images/ticket.png");
+const email = require("../assets/images/email.png");
+const call = require("../assets/images/call.png");
 const images = {
   indexService,
   slider_bg,
@@ -64,7 +67,10 @@ const images = {
   picker,
   empty,
   sample,
-
+  support_girl,
+  ticket,
+  email,
+  call
 };
 
 export default images;
