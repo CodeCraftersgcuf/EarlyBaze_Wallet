@@ -22,7 +22,7 @@ const SettingsScreen: React.FC = () => {
             { title: 'Referral', image: images.referral, onPress: () => {router.push('/Referral') } },
             { title: 'KYC', image: images.kyc, onPress: () => { router.push('/Kyc') } },
             { title: 'Support', image: images.support, onPress: () => {router.push('/Support') } },
-            { title: 'Security', image: images.security, onPress: () => { } },
+            { title: 'Security', image: images.security, onPress: () => {router.push('/Security') } },
           ]}
         />
       </View>
