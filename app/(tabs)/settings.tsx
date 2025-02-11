@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ScrollView, View, StyleSheet } from 'react-native';
 import ProfileHeader from '@/components/Setting/ProfileHeader';
 import SettingsList from '@/components/Setting/SettingsList';
@@ -8,7 +8,13 @@ import { useRouter, router } from 'expo-router';
 import { images } from '@/constants';
 
 const SettingsScreen: React.FC = () => {
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const backgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#000000' }, 'background');
+
+  const handleThemeToggle = (theme: 'Light' | 'Dark') => {
+    setIsDarkMode(theme === 'Dark');
+  };
+
   return (
     <ScrollView>
       <ProfileHeader name="Qamardeen" email="Qamardeenoladimaji@gmail.com" cryptoBalance="35,000" nairaBalance="35,000" />
@@ -27,7 +33,7 @@ const SettingsScreen: React.FC = () => {
         />
       </View>
 
-      <OtherSettings isDarkMode={false} onToggleTheme={() => { }} />
+      <OtherSettings isDarkMode={isDarkMode} onToggleTheme={handleThemeToggle} />
     </ScrollView>
   );
 };

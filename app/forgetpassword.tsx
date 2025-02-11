@@ -217,7 +217,6 @@ const styles = StyleSheet.create({
     width: "100%",
     justifyContent: "center",
     paddingVertical: 20,
-    alignItems: "center",
     zIndex: 10,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
@@ -225,6 +224,7 @@ const styles = StyleSheet.create({
   formContainer: {
     width: "100%",
     paddingHorizontal: 20,
+    paddingBottom: 20,
   },
   inputLabel: {
     fontSize: 16,

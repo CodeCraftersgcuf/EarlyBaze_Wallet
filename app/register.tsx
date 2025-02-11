@@ -231,7 +231,8 @@ const Register = () => {
                       <View>
                         <Button
                           title="Register"
-                          onPress={() => handleSubmit()}
+                          // onPress={() => handleSubmit()}
+                          onPress={() => push("/Otp")} // 
                         />
                       </View>
                       <View style={styles.bottomBoxText}>
@@ -247,8 +248,7 @@ const Register = () => {
                               style={{
                                 color: COLORS.primary,
                                 fontWeight: "bold",
-                                position: "relative",
-                                top: 4,
+                                marginLeft: 5,
                               }}
                             >
                               Sign In
@@ -310,7 +310,6 @@ const styles = StyleSheet.create({
     bottom: 0,
     top: 200,
     justifyContent: "center",
-    paddingVertical: 20,
     alignItems: "center",
     zIndex: 2,
     borderTopLeftRadius: 20,

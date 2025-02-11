@@ -137,8 +137,6 @@ const Login = () => {
                               style={{
                                 color: COLORS.primary,
                                 fontWeight: "bold",
-                                position: "relative",
-                                top: 4,
                               }}
                             >
                               {" "}
@@ -198,14 +196,17 @@ const styles = StyleSheet.create({
     width: "100%",
     justifyContent: "center",
     paddingVertical: 20,
-    alignItems: "center",
     zIndex: 10,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
   },
   formContainer: {
     width: "100%",
+    flex: 1,
+    height: "100%",
+    marginBottom: 20,
     paddingHorizontal: 20,
+    paddingBottom: 20,
   },
   inputLabel: {
     fontSize: 16,
@@ -219,7 +220,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    alignItems: "center",
     width: "100%",
   },
   loginText: {
@@ -231,6 +231,7 @@ const styles = StyleSheet.create({
   bottomBoxText: {
     fontSize: 16,
     marginTop: 10,
+    marginBottom: 10,
   },
 });
 
