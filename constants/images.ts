@@ -34,6 +34,12 @@ const support_girl = require("../assets/images/support_girl.png");
 const ticket = require("../assets/images/ticket.png");
 const email = require("../assets/images/email.png");
 const call = require("../assets/images/call.png");
+const bar = require("../assets/images/bar.png");
+const card_back = require("../assets/images/card_back.png");
+const card_back2 = require("../assets/images/card_back2.png");
+const map = require("../assets/images/map.png");
+
+
 const images = {
   indexService,
   slider_bg,
@@ -70,7 +76,11 @@ const images = {
   support_girl,
   ticket,
   email,
-  call
+  call,
+  bar,
+  card_back,
+  card_back2,
+  map,
 };
 
 export default images;
