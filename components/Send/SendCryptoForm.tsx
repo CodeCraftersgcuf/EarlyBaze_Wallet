@@ -23,6 +23,8 @@ const SendCryptoForm: React.FC<SendCryptoFormProps> = ({ selectedTab, setSelecte
     const cardBackgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#1A1A1A' }, 'card');
     const textColor = useThemeColor({ light: '#222222', dark: '#FFFFFF' }, 'text');
     const borderColor = useThemeColor({ light: '#E5E5E5', dark: '#333333' }, 'border');
+    const doublearrow = useThemeColor({ light: images.double_arrow_white, dark: images.double_arrow_black }, 'doublearrow');
+    const arrowBorderColor = useThemeColor({ light: '#E5E5E5', dark: '#095D3F' }, 'arrowBorder');
 
     // QR Scanner State
     const [scannedAddress, setScannedAddress] = useState('');
@@ -43,8 +45,10 @@ const SendCryptoForm: React.FC<SendCryptoFormProps> = ({ selectedTab, setSelecte
         setIsScannerOpen(false);
     };
 
+
+
     return (
-        <View>
+        <View style={styles.container}>
             <TabSwitcher selectedTab={selectedTab} setSelectedTab={setSelectedTab} />
 
 
@@ -71,8 +75,8 @@ const SendCryptoForm: React.FC<SendCryptoFormProps> = ({ selectedTab, setSelecte
                         <Text style={styles.amountValue}>0.000234</Text>
                         <Text style={styles.maxText}>Max</Text>
                     </View>
-                    <TouchableOpacity style={styles.swapButton}>
-                        <Image source={images.solana} style={styles.swapIcon} />
+                    <TouchableOpacity style={[styles.swapButton, { borderColor: arrowBorderColor }]}>
+                        <Image source={doublearrow} style={styles.swapIcon} />
                     </TouchableOpacity>
                     <View style={[styles.selectionBox, { borderColor }]}>
                         <Text style={styles.selectionLabel}>Coin</Text>
@@ -118,6 +122,9 @@ const SendCryptoForm: React.FC<SendCryptoFormProps> = ({ selectedTab, setSelecte
 };
 
 const styles = StyleSheet.create({
+    container: {
+        marginTop: 27,
+    },
     tabContainer: {
         flexDirection: 'row',
         backgroundColor: '#F6F6F6',
@@ -217,8 +224,7 @@ const styles = StyleSheet.create({
         padding: 14,
         borderRadius: 50,
         marginHorizontal: 8,
-        borderWidth: 1,
-        borderColor: '#E5E5E5',
+        borderWidth: 2,
         position: 'absolute',
         zIndex: 1,
         top: '70%',

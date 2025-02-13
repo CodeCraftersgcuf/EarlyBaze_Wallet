@@ -14,12 +14,17 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ title, onBackPress, onFilterPress }) => {
   // Using useThemeColor to dynamically pick the background color
   const backgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#0D0D0D' }, 'background');
-  
+
   // Now using useThemeColor to decide which back icon to show based on the theme
-  const backIcon = useThemeColor({ 
-    light: images.back_icon_white, 
-    dark: images.back_icon_black 
+  const backIcon = useThemeColor({
+    light: images.back_icon_white,
+    dark: images.back_icon_black
   }, 'backIcon');
+
+  const filterIcon = useThemeColor({
+    light: images.filter_icon,
+    dark: images.filter_icon_black
+  }, 'filterIcon');
 
   const navigation = useNavigation();
 
@@ -35,8 +40,8 @@ const Header: React.FC<HeaderProps> = ({ title, onBackPress, onFilterPress }) =>
 
       {/* Show Filter Button only if onFilterPress exists */}
       {title && onFilterPress && (
-        <TouchableOpacity style={styles.iconButton} onPress={onFilterPress}>
-          <Image source={images.filter_icon} style={styles.icon} />
+        <TouchableOpacity style={[styles.iconButton, { backgroundColor }]} onPress={onFilterPress}>
+          <Image source={filterIcon} style={styles.icon} />
         </TouchableOpacity>
       )}
     </View>

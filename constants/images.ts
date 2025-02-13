@@ -42,7 +42,12 @@ const map = require("../assets/images/map.png");
 const hand = require("../assets/images/hand.png");
 const scan_black = require("../assets/images/scan_black.png");
 const notification_black = require("../assets/images/notification_black.png");
-
+const filter_icon_black = require("../assets/images/filter_icon_black.png");
+const double_arrow_white = require("../assets/images/double_arrow_white.png");
+const double_arrow_black = require("../assets/images/double_arrow_black.png");
+const cross_black = require("../assets/images/cross_black.png");
+const cross_white = require("../assets/images/cross_white.png");
+const face = require("../assets/images/face.png");
 const images = {
   indexService,
   slider_bg,
@@ -87,7 +92,13 @@ const images = {
   map,
   hand,
   scan_black,
-  notification_black
+  notification_black,
+  filter_icon_black,
+  double_arrow_white,
+  double_arrow_black,
+  cross_black,
+  cross_white,
+  face,
 };
 
 export default images;

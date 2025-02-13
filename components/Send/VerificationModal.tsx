@@ -5,11 +5,13 @@ import {
     TextInput,
     TouchableOpacity,
     Modal,
-    StyleSheet
+    StyleSheet,
+    Image
 } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import PrimaryButton from '@/components/Buy/PrimaryButton';
 import { Ionicons } from '@expo/vector-icons';
+import { images } from '@/constants';
 
 interface VerificationModalProps {
     visible: boolean;
@@ -19,12 +21,18 @@ interface VerificationModalProps {
 
 const VerificationModal: React.FC<VerificationModalProps> = ({ visible, onClose, onFail }) => {
     const cardBackgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#1A1A1A' }, 'card');
-    const textTitleColor = useThemeColor({ light: '#25AE7A', dark: '#FFFFFF' }, 'textTitle');
+    const textTitleColor = useThemeColor({ light: '#25AE7A', dark: '#25AE7A' }, 'textTitle');
     const textColor = useThemeColor({ light: '#222222', dark: '#FFFFFF' }, 'text');
+    const backgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#2A2A2A' }, 'background');
+    const borderColor = useThemeColor({ light: '#E5E5E5', dark: '#444' }, 'border');
+
+    const close = useThemeColor({ light: images.cross_white, dark: images.cross_black }, 'close');
 
     const [otp, setOtp] = useState('');
     const [pin, setPin] = useState('');
     const [timer, setTimer] = useState(0);
+    const [isOtpFocused, setIsOtpFocused] = useState(false);
+    const [isPinFocused, setIsPinFocused] = useState(false);
 
     // Start countdown when timer > 0
     useEffect(() => {
@@ -48,8 +56,8 @@ const VerificationModal: React.FC<VerificationModalProps> = ({ visible, onClose,
                     {/* Header */}
                     <View style={styles.header}>
                         <Text style={[styles.title, { color: textTitleColor }]}>Verification</Text>
-                        <TouchableOpacity onPress={onClose}>
-                            <Ionicons name="close-circle-outline" size={28} color={textColor} />
+                        <TouchableOpacity onPress={onClose} style={[styles.closeButton, { backgroundColor: backgroundColor }]}>
+                            <Image source={close} style={styles.closeIcon} />
                         </TouchableOpacity>
                     </View>
                     <View style={styles.horizontalLine} />
@@ -57,13 +65,15 @@ const VerificationModal: React.FC<VerificationModalProps> = ({ visible, onClose,
                     {/* OTP Input */}
                     <View style={styles.inputContainer}>
                         <Text style={[styles.label, { color: textColor }]}>Email OTP</Text>
-                        <View style={styles.inputRow}>
+                        <View style={[styles.inputRow, { borderColor: isOtpFocused ? '#25AE7A' : borderColor }]}>
                             <TextInput
                                 placeholder="Input OTP"
                                 placeholderTextColor="#A1A1A1"
                                 style={[styles.inputField, { color: textColor }]}
                                 value={otp}
                                 onChangeText={setOtp}
+                                onFocus={() => setIsOtpFocused(true)}
+                                onBlur={() => setIsOtpFocused(false)}
                             />
                             <TouchableOpacity
                                 style={styles.sendOtpButton}
@@ -76,7 +86,7 @@ const VerificationModal: React.FC<VerificationModalProps> = ({ visible, onClose,
                             </TouchableOpacity>
                         </View>
 
-                        {/* Resend Timer */}
+                        {/* Resend Timer Fix */}
                         {timer > 0 && (
                             <Text style={styles.resendText}>
                                 Resend in <Text style={styles.timer}>00 : {timer < 10 ? `0${timer}` : timer}</Text>
@@ -85,7 +95,7 @@ const VerificationModal: React.FC<VerificationModalProps> = ({ visible, onClose,
 
                         {/* PIN Input */}
                         <Text style={[styles.label, { color: textColor, marginTop: 20 }]}>Input Pin</Text>
-                        <View style={styles.inputRow}>
+                        <View style={[styles.inputRow, { borderColor: isPinFocused ? '#25AE7A' : borderColor }]}>
                             <TextInput
                                 placeholder="Input Pin"
                                 placeholderTextColor="#A1A1A1"
@@ -93,13 +103,15 @@ const VerificationModal: React.FC<VerificationModalProps> = ({ visible, onClose,
                                 secureTextEntry
                                 value={pin}
                                 onChangeText={setPin}
+                                onFocus={() => setIsPinFocused(true)}
+                                onBlur={() => setIsPinFocused(false)}
                             />
                             <View style={styles.iconContainer}>
                                 <TouchableOpacity style={styles.authButton}>
                                     <Ionicons name="finger-print" size={28} color="#fff" />
                                 </TouchableOpacity>
                                 <TouchableOpacity style={styles.authButton}>
-                                    <Ionicons name="scan-outline" size={28} color="#fff" />
+                                    <Image source={images.face} style={styles.authIcon} />
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -136,7 +148,7 @@ const styles = StyleSheet.create({
     horizontalLine: {
         width: '100%',
         height: 1,
-        backgroundColor: '#E6E6E6',
+        backgroundColor: '#0F714D',
     },
     header: {
         flexDirection: 'row',
@@ -167,7 +179,6 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         paddingHorizontal: 10,
         borderWidth: 1,
-        borderColor: '#E5E5E5',
         height: 50,
     },
     inputField: {
@@ -214,6 +225,15 @@ const styles = StyleSheet.create({
         width: '100%',
         marginTop: 20,
         paddingHorizontal: 16,
+    },
+    closeButton: {
+        padding: 5,
+        borderRadius: 25,
+        borderWidth: 1,
+    },
+    closeIcon: {
+        width: 20,
+        height: 20,
     },
 });
 

@@ -21,14 +21,16 @@ const TransactionFailedModal: React.FC<TransactionFailedModalProps> = ({ visible
     const textColor = useThemeColor({ light: '#222222', dark: '#FFFFFF' }, 'text');
     const titleColor = useThemeColor({ light: '#D32F2F', dark: '#FF6B6B' }, 'title');
     const buttonColor = useThemeColor({ light: '#25AE7A', dark: '#22A45D' }, 'button');
+    const close = useThemeColor({ light: images.cross_white, dark: images.cross_black }, 'close');
+    const backgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#2A2A2A' }, 'background');
 
     return (
         <Modal visible={visible} transparent animationType="slide">
             <View style={styles.overlay}>
                 <View style={[styles.modalContainer, { backgroundColor: cardBackgroundColor }]}>
                     {/* Close Button */}
-                    <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-                        <Ionicons name="close-circle-outline" size={30} color={textColor} />
+                    <TouchableOpacity style={[styles.closeButton, { backgroundColor: backgroundColor }]} onPress={onClose}>
+                        <Image source={close} style={styles.closeIcon} />
                     </TouchableOpacity>
 
                     {/* Failed Icon */}
@@ -62,11 +64,15 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         padding: 20,
         alignItems: 'center',
+
     },
     closeButton: {
         position: 'absolute',
         top: 15,
-        right: 15,
+        right: 25,
+        padding: 5,
+        borderRadius: 20,
+
     },
     failedIcon: {
         width: 80,
@@ -82,6 +88,10 @@ const styles = StyleSheet.create({
         fontSize: 14,
         textAlign: 'center',
         marginBottom: 20,
+    },
+    closeIcon: {
+        width: 25,
+        height: 25,
     },
 });
 

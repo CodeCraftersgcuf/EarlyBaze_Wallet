@@ -73,8 +73,6 @@ const AssetList: React.FC<{ selectedTab: 'All Assets' | 'My Assets'; searchQuery
 
 const styles = StyleSheet.create({
     mainContainer: {
-        borderTopLeftRadius: 30,
-        borderTopRightRadius: 30,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.25,
@@ -82,7 +80,6 @@ const styles = StyleSheet.create({
         elevation: 4,
         flex: 1,
         alignSelf: 'stretch',
-        marginHorizontal: 10,
     },
     list: {
         paddingBottom: 20,

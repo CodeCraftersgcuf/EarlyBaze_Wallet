@@ -52,6 +52,10 @@ const styles = StyleSheet.create({
     buttonContainer: {
         paddingHorizontal: 16,
         paddingBottom: 20,
+        position: 'absolute',
+        bottom: 0,
+        width: '100%',
+        alignSelf: 'center',
     },
 });
 

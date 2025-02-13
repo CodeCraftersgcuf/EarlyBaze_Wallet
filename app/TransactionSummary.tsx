@@ -54,7 +54,7 @@ const TransactionSummary: React.FC = () => {
         {type === 'send' && (
           <PrimaryButton
             title="Proceed"
-            onPress={() => setVerificationVisible(true)}  
+            onPress={() => setVerificationVisible(true)}
           />
         )}
       </View>
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
   },
   iconWrapper: {
     alignItems: 'center',
-    marginBottom: -35, // Pulls it into the card
+    marginBottom: -45, // Pulls it into the card
     zIndex: 10,
   },
   iconContainer: {
@@ -126,7 +126,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#22A45D',
     textAlign: 'center',
-    marginBottom: 10,
+    marginVertical: 10,
+
   },
   buttonContainer: {
     marginTop: 20,

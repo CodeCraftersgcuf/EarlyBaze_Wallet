@@ -9,7 +9,7 @@ import { useLocalSearchParams } from 'expo-router';
 
 const SendReceive: React.FC = () => {
   const backgroundColor = useThemeColor({ light: '#EFFEF9', dark: '#000000' }, 'background');
-
+  const subBackgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#000000' }, 'background');
   // Retrieve the passed parameter
   const { type } = useLocalSearchParams();
 
@@ -31,14 +31,16 @@ const SendReceive: React.FC = () => {
       <View style={styles.horPadding}>
         <SearchBar placeholder="Search Crypto" value={searchQuery} onChangeText={setSearchQuery} />
       </View>
+      <View style={[styles.subcontainer, { backgroundColor: subBackgroundColor }]}>
+        {/* Tabs */}
+        <View style={styles.horPadding}>
+          <Tabs selectedTab={selectedTab} onTabSelect={setSelectedTab} />
+        </View>
 
-      {/* Tabs */}
-      <View style={styles.horPadding}>
-        <Tabs selectedTab={selectedTab} onTabSelect={setSelectedTab} />
+        {/* Asset List */}
+
+        <AssetList selectedTab={selectedTab} searchQuery={searchQuery} type={type} />
       </View>
-
-      {/* Asset List */}
-      <AssetList selectedTab={selectedTab} searchQuery={searchQuery}  type={type}/>
     </View>
   );
 };
@@ -50,6 +52,12 @@ const styles = StyleSheet.create({
   },
   horPadding: {
     paddingHorizontal: 16,
+  },
+  subcontainer: {
+    flex: 1,
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    marginTop: 20,
   },
 });
 
