@@ -1,8 +1,14 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, ImageBackground } from 'react-native';
 import WalletItem from './WalletItem';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useRouter, router } from 'expo-router';
+import { images } from '@/constants';
+import { LinearGradient } from 'expo-linear-gradient';
+// Importing background image
+const card_back = images.card_back;
+const card_back2 = images.card_back2;
+
 type WalletCardProps = {
   isCrypto: boolean;
   onToggle: () => void;
@@ -30,13 +36,22 @@ const WalletCard: React.FC<WalletCardProps> = ({ isCrypto, onToggle }) => {
 
   return (
     <>
+      {/* Switch Button with Glowing Effect */}
       <View style={styles.cusButton}>
         <TouchableOpacity onPress={onToggle} style={[styles.switchButton, isCrypto ? styles.cryptoSwitchButton : styles.nairaSwitchButton]}>
           <Text style={styles.switchText}>{switchText}</Text>
         </TouchableOpacity>
       </View>
 
-      <View style={[styles.card, isCrypto ? styles.cryptoCard : styles.nairaCard]}>
+      {/* Wallet Card with Image Background */}
+      <ImageBackground source={isCrypto ? card_back : card_back2} style={styles.card} imageStyle={styles.cardImage}>
+        <LinearGradient
+          colors={isCrypto
+            ? ['rgba(11, 86, 12, 0.75)', 'rgba(6, 48, 82, 0.75)'] // For Crypto Wallet
+            : ['rgba(83, 5, 74, 0.75)', 'rgba(6, 48, 82, 0.75)']} // For Naira Wallet
+          style={styles.cardOverlay}
+        />
+
         {/* Withdraw Button Positioned in the Bottom-Right Corner */}
         {!isCrypto && (
           <TouchableOpacity style={styles.withdrawButton} onPress={() => router.push('/Withdraw')}>
@@ -45,25 +60,26 @@ const WalletCard: React.FC<WalletCardProps> = ({ isCrypto, onToggle }) => {
         )}
 
         {/* Card Header */}
-        <View style={styles.header}>
-          <Text style={styles.cardTitle}>{walletTitle}</Text>
-        </View>
+        <View style={styles.pad}>
+          <View style={styles.header}>
+            <Text style={styles.cardTitle}>{walletTitle}</Text>
+          </View>
 
-        {/* Card Balance with Eye Icon */}
-        <View style={styles.balanceContainer}>
-          <Text style={styles.cardBalance}>
-            {isBalanceVisible ? walletBalance : '*****'}
-          </Text>
-          <TouchableOpacity onPress={toggleBalanceVisibility}>
-            <Icon
-              name={isBalanceVisible ? 'eye-off' : 'eye'}
-              size={24}
-              color="#FFF"
-              style={styles.eyeIcon}
-            />
-          </TouchableOpacity>
+          {/* Card Balance with Eye Icon */}
+          <View style={styles.balanceContainer}>
+            <Text style={styles.cardBalance}>
+              {isBalanceVisible ? walletBalance : '*****'}
+            </Text>
+            <TouchableOpacity onPress={toggleBalanceVisibility}>
+              <Icon
+                name={isBalanceVisible ? 'eye-off' : 'eye'}
+                size={24}
+                color="#FFF"
+                style={styles.eyeIcon}
+              />
+            </TouchableOpacity>
+          </View>
         </View>
-
         {/* Wallet Items or Content */}
         {isCrypto ? (
           <View style={styles.cryptoInfoContainer}>
@@ -72,7 +88,7 @@ const WalletCard: React.FC<WalletCardProps> = ({ isCrypto, onToggle }) => {
             <WalletItem label="ETH" value="0.234" icon="ethereum" />
           </View>
         ) : null}
-      </View>
+      </ImageBackground>
     </>
   );
 };
@@ -80,11 +96,10 @@ const WalletCard: React.FC<WalletCardProps> = ({ isCrypto, onToggle }) => {
 export default WalletCard;
 
 const styles = StyleSheet.create({
-  // Card Container
+  // Wallet Card with Image Background
   card: {
     margin: 16,
     borderRadius: 20, // Matches the provided design
-    padding: 16,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
@@ -92,12 +107,23 @@ const styles = StyleSheet.create({
     elevation: 5,
     position: 'relative',
     height: 243, // Fixed height as per design
+    overflow: 'hidden', // Ensures rounded corners work with ImageBackground
+    zIndex: 1, // Ensure the card is above the Switch Button
   },
-  cryptoCard: {
-    backgroundColor: '#007F5F',
+
+  cardImage: {
+    borderRadius: 20, // Ensures image background follows rounded corners
+    position: 'absolute',
+    zIndex: -1,
   },
-  nairaCard: {
-    backgroundColor: '#4C4C6D',
+  pad: {
+    paddingHorizontal: 16,
+    paddingTop: 14,
+  },
+  cardOverlay: {
+    ...StyleSheet.absoluteFillObject, // Covers the entire ImageBackground
+    padding: 16,
+    borderRadius: 20,
   },
 
   // Card Header
@@ -164,42 +190,47 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 
-  // Switch Button Base Style
+  // SWITCH BUTTON WITH GLOW EFFECT
   switchButton: {
-    borderRadius: 20,  // Adjusting for the border-radius as per the provided CSS
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    borderBottomRightRadius: 0,
+    borderBottomLeftRadius: 15,
     paddingHorizontal: 16,
     paddingVertical: 10,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
-    shadowRadius: 8,
-    elevation: 5,
-    width: 136,  // Adjusted width
-    height: 57,  // Adjusted height
+    width: 136,
+    height: 57,
     justifyContent: 'center',
     alignItems: 'center',
+
+    // Shadow for glow effect
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.9,
+    shadowRadius: 10,
+    elevation: 10,
   },
 
-  // For Crypto Switch Background Color
+  // For Crypto Switch Background Color with Glow
   cryptoSwitchButton: {
-    backgroundColor: '#084B82',  // Crypto background color
-    shadowColor: '#5CE3B0',  // Crypto shadow color
+    backgroundColor: '#084B82',
+    shadowColor: '#5CE3B0',
   },
 
-  // For Naira Switch Background Color
+  // For Naira Switch Background Color with Glow
   nairaSwitchButton: {
-    backgroundColor: '#25AE7A',  // Naira background color
-    shadowColor: '#77BBF2',  // Naira shadow color
+    backgroundColor: '#25AE7A',
+    shadowColor: '#77BBF2',
   },
 
   cusButton: {
     alignItems: 'center',
     justifyContent: 'center',
     position: 'absolute',
-    top: 110,
+    top: 120,
     right: 15,
     zIndex: 100,
   },
-  
+
   switchText: {
     position: 'relative',
     color: '#FFF',
@@ -209,10 +240,10 @@ const styles = StyleSheet.create({
 
   // Glow Text Style for "Naira" and "Crypto" words
   glowText: {
-    fontWeight: 'bold',  // Making text bold
-    fontStyle: 'italic',  // Making text italic
+    fontWeight: 'bold',
+    fontStyle: 'italic',
     textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 10,  // Radius of the glow
+    textShadowRadius: 10,
     fontSize: 18,
   },
 });

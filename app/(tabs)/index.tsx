@@ -6,7 +6,7 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 import WalletCard from '@/components/Index/WalletCard';
 import ServiceOptions from '@/components/Index/ServiceOptions';
 import ImageSlider from '@/components/Index/ImageSlider';
-import AssetsTab from '@/components/Index/AssetsTab'; // ✅ Import the new component
+import AssetsTab from '@/components/Index/AssetsTab';
 
 export default function HomeScreen() {
   const [isCrypto, setIsCrypto] = useState(true);
@@ -14,20 +14,21 @@ export default function HomeScreen() {
   const toggleWallet = () => setIsCrypto(!isCrypto);
 
   return (
-    <ThemedView style={[styles.container, { backgroundColor }]}>
-      <ScrollView>
-        <Header username="Qamardeen" greeting="Good Morning" />
-        <WalletCard isCrypto={isCrypto} onToggle={toggleWallet} />
-        <ServiceOptions />
-        <ImageSlider />
-        <AssetsTab /> ✅ Added the new AssetsTab
-      </ScrollView>
-    </ThemedView>
+    <ScrollView style={[styles.container, { backgroundColor }]} showsVerticalScrollIndicator={false}>
+      <Header username="Qamardeen" greeting="Good Morning" />
+      <WalletCard isCrypto={isCrypto} onToggle={toggleWallet} />
+      <ServiceOptions />
+      <ImageSlider />
+      
+      {/* Ensure the FlatList doesn't break layout */}
+      <AssetsTab />
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
   },
 });
+

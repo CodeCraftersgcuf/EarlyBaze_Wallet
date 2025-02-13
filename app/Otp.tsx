@@ -11,6 +11,7 @@ const Otp: React.FC = () => {
     const backgroundColor = useThemeColor({ light: '#EFFEF9', dark: '#000000' }, 'background');
     const textColor = useThemeColor({ light: '#000', dark: '#fff' }, 'text');
     const buttonColor = useThemeColor({ light: '#22A45D', dark: '#2E7D32' }, 'button');
+    const titleColor = useThemeColor({ light: '#0C5E3F', dark: '#25AE7A' }, 'title');
 
     const [step, setStep] = useState(1);
     const [otp, setOtp] = useState('');
@@ -42,11 +43,12 @@ const Otp: React.FC = () => {
     };
 
     return (
+
         <View style={[styles.container, { backgroundColor }]}>
             <Header title={headerTitle} />
 
             <View style={{ paddingHorizontal: 20 }}>
-                <Text style={[styles.title]}>
+                <Text style={[styles.title, { color: titleColor }]}>
                     {step === 1 ? 'Input OTP' : step === 2 ? 'Enter Pin' : 'Re-enter Pin'}
                 </Text>
 
@@ -76,7 +78,6 @@ const styles = StyleSheet.create({
         fontSize: 48,
         fontWeight: 'bold',
         marginVertical: 10,
-        color: '#0C5E3F',
     },
     subtitle: {
         fontSize: 14,

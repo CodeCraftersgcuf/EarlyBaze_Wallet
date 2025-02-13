@@ -6,7 +6,8 @@ const cil_receive = require("../assets/images/cil_receive.png");
 const swap_indexpng = require("../assets/images/swap_indexpng.png");
 const notification = require("../assets/images/notification.png");
 const scan = require("../assets/images/scan.png");
-const back_icon = require("../assets/images/back_icon.png");
+const back_icon_white = require("../assets/images/back_icon_white.png");
+const back_icon_black = require("../assets/images/back_icon_black.png");
 const filter_icon = require("../assets/images/filter_icon.png");
 const authImg = require("../assets/images/auth-bg.jpg");
 const authMidCircle = require("../assets/images/auth-midCircle.png");
@@ -38,7 +39,9 @@ const bar = require("../assets/images/bar.png");
 const card_back = require("../assets/images/card_back.png");
 const card_back2 = require("../assets/images/card_back2.png");
 const map = require("../assets/images/map.png");
-
+const hand = require("../assets/images/hand.png");
+const scan_black = require("../assets/images/scan_black.png");
+const notification_black = require("../assets/images/notification_black.png");
 
 const images = {
   indexService,
@@ -49,7 +52,8 @@ const images = {
   swap_indexpng,
   notification,
   scan,
-  back_icon,
+  back_icon_white,
+  back_icon_black,
   filter_icon,
   authImg,
   authMidCircle,
@@ -81,6 +85,9 @@ const images = {
   card_back,
   card_back2,
   map,
+  hand,
+  scan_black,
+  notification_black
 };
 
 export default images;

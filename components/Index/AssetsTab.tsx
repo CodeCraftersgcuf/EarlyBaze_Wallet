@@ -11,6 +11,7 @@ const AssetsTab: React.FC = () => {
   const backgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#000000' }, 'background');
   const textColor = useThemeColor({ light: '#8A8A8A', dark: '#FFFFFF' }, 'text');
   const activeTabColor = useThemeColor({ light: '#25AE7A', dark: '#007C57' }, 'background');
+  const tabBackgroundColor = useThemeColor({ light: '#F2F2F2', dark: '#1A1A1A' }, 'tabBackground');
 
   const getData = () => {
     switch (selectedTab) {
@@ -26,7 +27,7 @@ const AssetsTab: React.FC = () => {
   return (
     <View style={[styles.container, { backgroundColor }]}>
       {/* Tabs */}
-      <View style={styles.tabsContainer}>
+      <View style={[styles.tabsContainer, {backgroundColor: tabBackgroundColor}]}>
         {TABS.map((tab) => (
           <TouchableOpacity
             key={tab}
@@ -56,6 +57,8 @@ const AssetsTab: React.FC = () => {
         keyExtractor={(item) => item.id.toString()} // ✅ Ensure all keys are strings
         renderItem={({ item }) => <AssetItem item={item} />}
         showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.flatListContainer} // Optional, ensures content is centered/has padding
+        scrollEnabled={false} // ✅ Prevents nested scrolling issues
       />
     </View>
   );
@@ -66,6 +69,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingHorizontal: 16,
     marginTop: 15,
+    flex: 1, // Ensures the container takes up all available space
   },
   tabsContainer: {
     flexDirection: 'row',
@@ -97,6 +101,9 @@ const styles = StyleSheet.create({
   activeTabText: {
     color: 'white',
     fontWeight: 'bold',
+  },
+  flatListContainer: {
+    paddingBottom: 16, // Optional: Adds extra space at the bottom if content is small
   },
 });
 
