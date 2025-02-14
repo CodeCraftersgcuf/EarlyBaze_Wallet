@@ -17,6 +17,7 @@ interface SendCryptoFormProps {
     setSelectedTab: (tab: 'Crypto Address' | 'Internal Transfer') => void;
 }
 import TabSwitcher from './TabSwitcher';
+import QrModal from './QrModal';
 
 const SendCryptoForm: React.FC<SendCryptoFormProps> = ({ selectedTab, setSelectedTab }) => {
     // Theme-based colors
@@ -31,6 +32,10 @@ const SendCryptoForm: React.FC<SendCryptoFormProps> = ({ selectedTab, setSelecte
     const [hasPermission, setHasPermission] = useState<boolean | null>(null);
     const [isScannerOpen, setIsScannerOpen] = useState(false);
 
+    const scan = useThemeColor({
+        light: images.scan,
+        dark: images.scan_black
+    }, 'scan');
     // Request Camera Permission
     useEffect(() => {
         (async () => {
@@ -64,7 +69,7 @@ const SendCryptoForm: React.FC<SendCryptoFormProps> = ({ selectedTab, setSelecte
                         onChangeText={setScannedAddress}
                     />
                     <TouchableOpacity onPress={() => setIsScannerOpen(true)}>
-                        <Image source={images.scan} style={styles.scanIcon} />
+                        <Image source={scan} style={styles.scanIcon} />
                     </TouchableOpacity>
                 </View>
 
@@ -72,7 +77,7 @@ const SendCryptoForm: React.FC<SendCryptoFormProps> = ({ selectedTab, setSelecte
                 <View style={styles.amountContainer}>
                     <View style={[styles.amountBox, { borderColor }]}>
                         <Text style={styles.amountLabel}>BTC</Text>
-                        <Text style={styles.amountValue}>0.000234</Text>
+                        <Text style={[styles.amountValue, { color: textColor }]}>0.000234</Text>
                         <Text style={styles.maxText}>Max</Text>
                     </View>
                     <TouchableOpacity style={[styles.swapButton, { borderColor: arrowBorderColor }]}>
@@ -81,7 +86,7 @@ const SendCryptoForm: React.FC<SendCryptoFormProps> = ({ selectedTab, setSelecte
                     <View style={[styles.selectionBox, { borderColor }]}>
                         <Text style={styles.selectionLabel}>Coin</Text>
                         <View style={styles.coinWrapper}>
-                            <Text style={styles.coinText}>Bitcoin</Text>
+                            <Text style={[styles.coinText, { color: textColor }]}>Bitcoin</Text>
                             <Image source={images.solana} style={styles.coinIcon} />
                         </View>
                     </View>
@@ -91,13 +96,13 @@ const SendCryptoForm: React.FC<SendCryptoFormProps> = ({ selectedTab, setSelecte
                 <View style={styles.selectionContainer}>
                     <View style={[styles.amountBox, { borderColor }]}>
                         <Text style={styles.amountLabel}>USD</Text>
-                        <Text style={styles.amountValue}>2,345</Text>
+                        <Text style={[styles.amountValue, { color: textColor }]}>2,345</Text>
                         <Text style={styles.maxText}>Max</Text>
                     </View>
                     <View style={[styles.selectionBox, { borderColor }]}>
                         <Text style={styles.selectionLabel}>Network</Text>
                         <View style={styles.coinWrapper}>
-                            <Text style={styles.coinText}>Bitcoin</Text>
+                            <Text style={[styles.coinText, { color: textColor }]}>Bitcoin</Text>
                             <Image source={images.solana} style={styles.coinIcon} />
                         </View>
                     </View>
@@ -105,18 +110,7 @@ const SendCryptoForm: React.FC<SendCryptoFormProps> = ({ selectedTab, setSelecte
             </View>
 
             {/* QR Scanner Modal */}
-            <Modal visible={isScannerOpen} animationType="slide">
-                <View style={styles.scannerContainer}>
-                    <Text style={styles.scannerText}>Scan the QR Code or Choose an Image</Text>
-                    {/* <BarCodeScanner
-                        onBarCodeScanned={isScannerOpen ? handleBarCodeScanned : undefined}
-                        style={styles.qrScanner}
-                    /> */}
-                    <TouchableOpacity onPress={() => setIsScannerOpen(false)} style={styles.closeScannerButton}>
-                        <Text style={styles.closeScannerText}>Close Scanner</Text>
-                    </TouchableOpacity>
-                </View>
-            </Modal>
+            <QrModal isVisible={isScannerOpen} onClose={() => setIsScannerOpen(false)} />
         </View>
     );
 };
@@ -162,31 +156,6 @@ const styles = StyleSheet.create({
     scanIcon: {
         width: 22,
         height: 22,
-    },
-    scannerContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#1A1A1A',
-    },
-    scannerText: {
-        color: '#FFFFFF',
-        fontSize: 16,
-        marginBottom: 10,
-    },
-    qrScanner: {
-        width: '80%',
-        height: '50%',
-    },
-    closeScannerButton: {
-        backgroundColor: '#FFFFFF',
-        padding: 10,
-        borderRadius: 8,
-        marginTop: 20,
-    },
-    closeScannerText: {
-        fontSize: 14,
-        color: '#000',
     },
     amountContainer: {
         flexDirection: 'row',

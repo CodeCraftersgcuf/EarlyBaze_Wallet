@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import icons from '@/constants/icons';
-
+import { images } from '@/constants';
 interface TransactionDetailItemProps {
   label: string;
   value: string;
@@ -13,6 +13,7 @@ interface TransactionDetailItemProps {
 const TransactionDetailItem: React.FC<TransactionDetailItemProps> = ({ label, value, isCopyable, icon }) => {
   const textColor = useThemeColor({ light: '#000000', dark: '#FFFFFF' }, 'text');
   const labelColor = useThemeColor({ light: '#808080', dark: '#A0A0A0' }, 'label');
+  const copy = useThemeColor({ light: images.copy_white, dark: images.copy_black }, 'copy');
 
   return (
     <View style={styles.paymentRow}>
@@ -20,7 +21,7 @@ const TransactionDetailItem: React.FC<TransactionDetailItemProps> = ({ label, va
       <View style={styles.row}>
         {isCopyable && (
           <TouchableOpacity onPress={() => console.log(`Copied: ${value}`)}>
-            <Image source={icons.copy} style={styles.icon} />
+            <Image source={copy} style={styles.icon} />
           </TouchableOpacity>
         )}
         <Text style={[styles.value, { color: textColor }]}>{value}</Text>
@@ -53,7 +54,7 @@ const styles = StyleSheet.create({
   icon: {
     width: 18,
     height: 18,
-    marginLeft: 5, // Ensure proper spacing for the optional icon
+    marginRight: 5, // Ensure proper spacing for the optional icon
   },
 });
 

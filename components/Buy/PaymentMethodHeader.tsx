@@ -3,13 +3,21 @@ import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import PaymentMethodModal from '@/components/Buy/PaymentMethodModal';
 import icons from '@/constants/icons'; // Your arrow icon
+import { images } from '@/constants';
 
 const PaymentMethodHeader: React.FC = () => {
   const backgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#1A1A1A' }, 'cardBackground');
   const borderColor = useThemeColor({ light: '#C2C2C2', dark: '#444' }, 'border');
   const textColor = useThemeColor({ light: '#A0A0A0', dark: '#C2C2C2' }, 'placeholder'); // Gray text
-
+  const arrow = useThemeColor({ light: images.down_arrow, dark: images.down_arrow_black }, 'arrow');
+  
   const [modalVisible, setModalVisible] = useState(false);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string | null>(null);
+
+  const handleSelectPaymentMethod = (method: string) => {
+    setSelectedPaymentMethod(method);
+    setModalVisible(false); // Close modal after selection
+  };
 
   return (
     <>
@@ -17,22 +25,28 @@ const PaymentMethodHeader: React.FC = () => {
         style={[styles.container, { backgroundColor, borderColor }]}
         onPress={() => setModalVisible(true)}
       >
-        {/* Payment Method Placeholder Text */}
-        <Text style={[styles.text, { color: textColor }]}>Payment Method</Text>
+        {/* Display Selected Payment Method or Placeholder */}
+        <Text style={[styles.text, { color: textColor }]}>
+          {selectedPaymentMethod || 'Payment Method'}
+        </Text>
 
         {/* Arrow Icon */}
-        <Image source={icons.down_arrow} style={styles.arrowIcon} />
+        <Image source={arrow} style={styles.arrowIcon} />
       </TouchableOpacity>
 
       {/* Payment Method Modal */}
-      <PaymentMethodModal visible={modalVisible} onClose={() => setModalVisible(false)} />
+      <PaymentMethodModal 
+        title='Payment Method' 
+        visible={modalVisible} 
+        onClose={() => setModalVisible(false)} 
+        onSelectPaymentMethod={handleSelectPaymentMethod} 
+      />
     </>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-
     height: 60,
     borderWidth: 0.3,
     borderColor: '#C2C2C2',
@@ -53,7 +67,6 @@ const styles = StyleSheet.create({
   arrowIcon: {
     width: 16,
     height: 16,
-    tintColor: '#000000', // Black color for the arrow
   },
 });
 

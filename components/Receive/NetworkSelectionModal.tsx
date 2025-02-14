@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useThemeColor } from '@/hooks/useThemeColor';
-
+import { images } from '@/constants';
 // Define network type
 interface NetworkOption {
     id: string;
@@ -39,21 +39,25 @@ const NetworkSelectionModal: React.FC<NetworkSelectionModalProps> = ({
     const textColor = useThemeColor({ light: '#004d00', dark: '#F6FBFF' }, 'text');
     const borderColor = useThemeColor({ light: '#DCDCDC', dark: '#1F1F1F' }, 'border');
     const itemBackgroundColor = useThemeColor({ light: '#F6FBFF', dark: '#181818' }, 'background');
+    const titleTextColor = useThemeColor({ light: '#25AE7A', dark: '#25AE7A' }, 'text');
+    const close = useThemeColor({ light: images.cross_white, dark: images.cross_black }, 'close');
 
     return (
         <Modal visible={visible} animationType="slide" transparent>
             <View style={styles.modalContainer}>
                 <View style={[styles.modalContent, { backgroundColor, borderColor }]}>
                     {/* Modal Header */}
-                    <View style={styles.modalHeader}>
-                        <Text style={[styles.modalTitle, { color: textColor }]}>Select Network</Text>
-                        <TouchableOpacity onPress={onClose}>
-                            <Ionicons name="close" size={28} color={textColor} />
+                    <View style={styles.header}>
+                        <Text style={[styles.title, { color: titleTextColor }]}>Select Network</Text>
+                        <TouchableOpacity onPress={onClose} style={[styles.closeButton, { backgroundColor: backgroundColor }]}>
+                            <Image source={close} style={styles.closeIcon} />
                         </TouchableOpacity>
                     </View>
+                    <View style={styles.horizontalLine} />
 
                     {/* Network Options */}
-                    <FlatList
+                    <View style={styles.modalHeader}>                  
+                         <FlatList
                         data={networks}
                         keyExtractor={(item) => item.id}
                         numColumns={3}
@@ -76,6 +80,8 @@ const NetworkSelectionModal: React.FC<NetworkSelectionModalProps> = ({
                             </TouchableOpacity>
                         )}
                     />
+                    </View>
+
                 </View>
             </View>
         </Modal>
@@ -89,12 +95,39 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: 'rgba(0, 0, 0, 0.4)',
     },
+    header: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        width: '100%',
+        paddingHorizontal: 20,
+
+    },
+    title: {
+        fontSize: 17,
+        fontWeight: 'bold',
+    },
+    horizontalLine: {
+        marginBottom: 19,
+        marginTop: 5,
+        width: '100%',
+        height: 1,
+        backgroundColor: '#0F714D',
+    },
     modalContent: {
-        width: '90%',
+        width: '94%',
         borderRadius: 20,
         paddingVertical: 20,
-        paddingHorizontal: 10,
         borderWidth: 1,
+    },
+    closeButton: {
+        padding: 5,
+        borderRadius: 25,
+        borderWidth: 1,
+    },
+    closeIcon: {
+        width: 20,
+        height: 20,
     },
     modalHeader: {
         flexDirection: 'row',
@@ -116,9 +149,11 @@ const styles = StyleSheet.create({
         margin: 8,
         paddingVertical: 15,
         borderRadius: 15,
+
     },
     selectedNetwork: {
         borderWidth: 2,
+
         borderColor: '#004d00',
     },
     networkIconContainer: {
@@ -128,6 +163,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         marginBottom: 5,
+
     },
     networkIcon: {
         width: 30,

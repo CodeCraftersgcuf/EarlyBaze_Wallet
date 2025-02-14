@@ -4,6 +4,7 @@ import * as MediaLibrary from 'expo-media-library';
 import * as FileSystem from 'expo-file-system';
 import { Ionicons } from '@expo/vector-icons';
 import { images } from '@/constants';
+import { useThemeColor } from '@/hooks/useThemeColor';
 
 interface QRCodeCardProps {
     cardBackgroundColor: string;
@@ -19,7 +20,9 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ cardBackgroundColor, selectedTa
         "sampleaddress@wallet.com",
     ];
     const randomEmail = randomEmails[Math.floor(Math.random() * randomEmails.length)];
-
+    const save = useThemeColor({ light: images.save_white, dark: images.save_black }, 'save');
+    const share = useThemeColor({ light: images.share_white, dark: images.share_black }, 'share');
+    const iconBackground = useThemeColor({ light: '#E9E9E9', dark: '#000000' }, 'iconBackground');
     const handleSaveImage = async () => {
         try {
             // Request permission for storage
@@ -55,14 +58,14 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ cardBackgroundColor, selectedTa
             <Image source={images.qrcode} style={styles.qrCode} />
             <View style={styles.iconRow}>
                 <TouchableOpacity style={styles.iconButton} onPress={handleSaveImage}>
-                    <View style={styles.iconBackground}>
-                        <Ionicons name="save-outline" size={28} color="black" />
+                    <View style={[styles.iconBackground, { backgroundColor: iconBackground }]}>
+                        <Image source={save}/>
                     </View>
                     <Text style={styles.iconText}>Save</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.iconButton}>
-                    <View style={styles.iconBackground}>
-                        <Ionicons name="share-social-outline" size={28} color="black" />
+                    <View style={[styles.iconBackground, { backgroundColor: iconBackground }]}>
+                        <Image source={share}/>
                     </View>
                     <Text style={styles.iconText}>Share</Text>
                 </TouchableOpacity>
@@ -103,16 +106,15 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     iconBackground: {
-        width: 80,
-        height: 80,
+        width: 50,
+        height: 50,
         borderRadius: 40,
-        backgroundColor: '#E6E6E6',
         alignItems: 'center',
         justifyContent: 'center',
     },
     iconText: {
-        fontSize: 14,
-        color: 'black',
+        fontSize: 12,
+        color: '#000000B2',
         marginTop: 5,
         fontWeight: '500',
     },

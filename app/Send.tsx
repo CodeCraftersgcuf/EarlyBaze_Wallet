@@ -57,6 +57,7 @@ const styles = StyleSheet.create({
         width: '100%',
         alignSelf: 'center',
     },
+ 
 });
 
 export default Send;

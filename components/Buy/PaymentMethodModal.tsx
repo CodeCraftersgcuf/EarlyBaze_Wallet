@@ -8,23 +8,30 @@ import {
   Image,
   FlatList,
 } from 'react-native';
-import { useThemeColor } from '@/hooks/useThemeColor'; // Import theme color hook
-import icons from '@/constants/icons'; // Ensure this path matches your icons file
+import { useThemeColor } from '@/hooks/useThemeColor';
+import icons from '@/constants/icons';
+import { images } from '@/constants';
 
 interface PaymentMethodModalProps {
   title: string;
   visible: boolean;
   onClose: () => void;
+  onSelectPaymentMethod: (method: string) => void; // Callback to pass selected method
 }
 
-const PaymentMethodModal: React.FC<PaymentMethodModalProps> = ({ title, visible, onClose }) => {
+const PaymentMethodModal: React.FC<PaymentMethodModalProps> = ({ title, visible, onClose, onSelectPaymentMethod }) => {
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
   const [selectedAccount, setSelectedAccount] = useState<number | null>(null);
 
   const backgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#000000' }, 'background');
   const textColor = useThemeColor({ light: '#000000', dark: '#FFFFFF' }, 'text');
   const borderColor = useThemeColor({ light: '#228B22', dark: '#90EE90' }, 'border');
-  const containerBackgroundColor = useThemeColor({ light: '#FFFFF', dark: '#161616' }, "containerBackgroundColor");
+  const containerBackgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#161616' }, 'containerBackgroundColor');
+  const close = useThemeColor({ light: images.cross_white, dark: images.cross_black }, 'close');
+  const titleTextColor = useThemeColor({ light: '#25AE7A', dark: '#25AE7A' }, 'text');
+  const arrow = useThemeColor({ light: images.down_arrow, dark: images.down_arrow_black }, 'arrow');
+  const closeButtonColor = useThemeColor({ light: '#F5F5F5', dark: '#161616' }, 'button');
+
   const accounts = [
     { id: 1, bankName: 'Access Bank', accountName: 'Early Baze', accountNumber: '123456789' },
     { id: 2, bankName: 'Access Bank', accountName: 'Early Baze', accountNumber: '123456789' },
@@ -36,26 +43,20 @@ const PaymentMethodModal: React.FC<PaymentMethodModalProps> = ({ title, visible,
         <View style={[styles.modalContainer, { backgroundColor }]}>
           {/* Modal Header */}
           <View style={styles.header}>
-            <Text style={[styles.title, { color: textColor }]}>{title}</Text>
-            <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-              <Text style={[styles.closeText, { color: textColor }]}>✕</Text>
+            <Text style={[styles.title, { color: titleTextColor }]}>{title}</Text>
+            <TouchableOpacity onPress={onClose} style={[styles.closeButton, { backgroundColor: closeButtonColor }]}>
+              <Image style={styles.closeText} source={close} />
             </TouchableOpacity>
           </View>
 
           {/* Payment Option (Bank Transfer) */}
           <TouchableOpacity
-            style={[styles.paymentOption,  { backgroundColor: containerBackgroundColor }]}
+            style={[styles.paymentOption, { backgroundColor: containerBackgroundColor }]}
             onPress={() => setIsDropdownVisible(!isDropdownVisible)}
           >
-            {/* Bank Icon */}
             <Image source={icons.bank} style={styles.bankIcon} />
-            <Text style={[styles.paymentText, { color: textColor }]}>Bank Transfer</Text>
-
-            {/* Dropdown Toggle Arrow */}
-            <Image
-              source={icons.down_arrow}
-              style={[styles.arrowIcon, isDropdownVisible && styles.arrowRotated]}
-            />
+            <Text style={[styles.paymentText, { color: titleTextColor }]}>Bank Transfer</Text>
+            <Image source={arrow} style={[styles.arrowIcon, isDropdownVisible && styles.arrowRotated]} />
           </TouchableOpacity>
 
           {/* Dropdown Accounts List */}
@@ -65,29 +66,44 @@ const PaymentMethodModal: React.FC<PaymentMethodModalProps> = ({ title, visible,
                 data={accounts}
                 keyExtractor={(item) => item.id.toString()}
                 renderItem={({ item }) => (
-                  <TouchableOpacity
-                    style={[
-                      styles.accountItem,
-                      { borderColor },
-                      selectedAccount === item.id && styles.accountSelected,
-                    ]}
-                    onPress={() => setSelectedAccount(item.id)}
-                  >
+                  <View style={styles.accountRow}>
                     {/* Radio Button */}
-                    <View style={[styles.radioCircle, { borderColor }]}>
-                      {selectedAccount === item.id && (
-                        <View style={[styles.radioSelected, { backgroundColor: borderColor }]} />
-                      )}
-                    </View>
+                    <TouchableOpacity onPress={() => setSelectedAccount(item.id)}>
+                      <View style={[styles.radioCircle, { borderColor }]}>
+                        {selectedAccount === item.id && (
+                          <View style={[styles.radioSelected, { backgroundColor: borderColor }]} />
+                        )}
+                      </View>
+                    </TouchableOpacity>
 
                     {/* Account Info */}
-                    <View style={styles.accountDetails}>
+                    <TouchableOpacity
+                      style={[
+                        styles.accountItem,
+                        { borderColor },
+                        selectedAccount === item.id && styles.accountSelected,
+                      ]}
+                      onPress={() => {
+                        setSelectedAccount(item.id);
+                        onSelectPaymentMethod(item.accountName); // Pass selected account to parent
+                        onClose(); // Close modal after selection
+                      }}
+                    >
                       <Text style={[styles.accountTitle, { color: textColor }]}>Account {item.id}</Text>
-                      <Text style={[styles.accountText, { color: textColor }]}>Bank Name: {item.bankName}</Text>
-                      <Text style={[styles.accountText, { color: textColor }]}>Account Name: {item.accountName}</Text>
-                      <Text style={[styles.accountText, { color: textColor }]}>Account Number: {item.accountNumber}</Text>
-                    </View>
-                  </TouchableOpacity>
+                      <View style={styles.accountDetailsRow}>
+                        <Text style={[styles.accountLabel, { color: textColor }]}>Bank Name</Text>
+                        <Text style={[styles.accountText, { color: textColor }]}>{item.bankName}</Text>
+                      </View>
+                      <View style={styles.accountDetailsRow}>
+                        <Text style={[styles.accountLabel, { color: textColor }]}>Account Name</Text>
+                        <Text style={[styles.accountText, { color: textColor }]}>{item.accountName}</Text>
+                      </View>
+                      <View style={styles.accountDetailsRow}>
+                        <Text style={[styles.accountLabel, { color: textColor }]}>Account Number</Text>
+                        <Text style={[styles.accountText, { color: textColor }]}>{item.accountNumber}</Text>
+                      </View>
+                    </TouchableOpacity>
+                  </View>
                 )}
               />
             </View>
@@ -128,7 +144,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   closeButton: {
-    backgroundColor: '#F5F5F5',
     width: 30,
     height: 30,
     borderRadius: 15,
@@ -144,6 +159,8 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     padding: 12,
     justifyContent: 'space-between',
+    borderWidth: 1,
+    borderColor: '#ddd',
   },
   bankIcon: {
     width: 40,
@@ -168,16 +185,19 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
   },
-  accountItem: {
+  accountRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginBottom: 10,
+  },
+  accountItem: {
+    flex: 1,
     borderWidth: 1,
     borderRadius: 10,
     padding: 10,
-    marginBottom: 10,
   },
   accountSelected: {
-    backgroundColor: '#E6F4EA',
+    // backgroundColor: '#E6F4EA',
   },
   radioCircle: {
     width: 20,
@@ -193,15 +213,23 @@ const styles = StyleSheet.create({
     height: 10,
     borderRadius: 5,
   },
-  accountDetails: {
-    flex: 1,
-  },
   accountTitle: {
     fontSize: 16,
     fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  accountDetailsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginVertical: 2,
+  },
+  accountLabel: {
+    fontSize: 14,
+    fontWeight: '500',
   },
   accountText: {
     fontSize: 14,
+    fontWeight: 'bold',
   },
 });
 

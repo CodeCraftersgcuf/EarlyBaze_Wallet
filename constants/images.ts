@@ -48,6 +48,16 @@ const double_arrow_black = require("../assets/images/double_arrow_black.png");
 const cross_black = require("../assets/images/cross_black.png");
 const cross_white = require("../assets/images/cross_white.png");
 const face = require("../assets/images/face.png");
+const successTick = require("../assets/images/successTick.png");
+const save_white = require("../assets/images/save_white.png");
+const save_black = require("../assets/images/save_black.png");
+const share_white = require("../assets/images/share_white.png");
+const share_black = require("../assets/images/share_black.png");
+const down_arrow =  require("../assets/images/down_arrow.png");
+const down_arrow_black =  require("../assets/images/down_arrow_black.png");
+const copy_white = require("../assets/images/copy_white.png");
+const copy_black =  require("../assets/images/copy_black.png");
+
 const images = {
   indexService,
   slider_bg,
@@ -99,6 +109,15 @@ const images = {
   cross_black,
   cross_white,
   face,
+  successTick,
+  save_white,
+  save_black,
+  share_white,
+  share_black,
+  down_arrow,
+  down_arrow_black,
+  copy_black,
+  copy_white,
 };
 
 export default images;

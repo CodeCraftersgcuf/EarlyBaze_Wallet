@@ -11,6 +11,7 @@ import { useLocalSearchParams } from 'expo-router';
 import VerificationModal from '@/components/Send/VerificationModal';
 import { useState } from 'react';
 import TransactionFailedModal from '@/components/Send/TransactionFailedModal';
+import TransactionSuccessfulModal from '@/components/Send/TransactionSuccessfulModal';
 
 const TransactionSummary: React.FC = () => {
   const { type } = useLocalSearchParams();
@@ -71,7 +72,7 @@ const TransactionSummary: React.FC = () => {
       />
 
       {/* Show Transaction Failed Modal */}
-      <TransactionFailedModal
+      <TransactionSuccessfulModal
         visible={isFailedModalVisible}
         onClose={() => setFailedModalVisible(false)}
       />    </ScrollView>

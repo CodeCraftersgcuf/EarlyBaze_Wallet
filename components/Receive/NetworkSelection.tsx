@@ -40,8 +40,9 @@ const NetworkSelection: React.FC<NetworkSelectionProps> = ({ cardBackgroundColor
             <View style={styles.hintContainer}>
                 <Text style={[styles.networkHint, { color: textColor }]}>Make sure to choose the right network to avoid loss of funds</Text>
             </View>
-
-            <PrimaryButton title="Proceed" onPress={() => router.push('/SummaryReceive')} />
+            <View style={styles.proceedButton}> 
+                <PrimaryButton title="Proceed" onPress={() => router.push('/SummaryReceive')} />
+            </View>
 
             {/* Show Modal */}
             <NetworkSelectionModal
