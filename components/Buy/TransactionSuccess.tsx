@@ -70,14 +70,14 @@ const styles = StyleSheet.create({
   successBox: {
     width: '100%',
     borderRadius: 10,
-    padding: 20,
+    padding: 5,
     borderWidth: 1,
     alignItems: 'center',
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
-    paddingTop: 50, // Space for badge overlap
+    paddingTop: 40, // Space for badge overlap
   },
   successTitle: {
     fontSize: 20,
@@ -95,7 +95,6 @@ const styles = StyleSheet.create({
   },
   detailContainer: {
     width: '100%',
-    marginTop: 10,
   },
 });
 

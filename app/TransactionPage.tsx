@@ -7,10 +7,67 @@ import TransactionStep from '@/components/Buy/TransactionStep';
 import TransactionSuccess from '@/components/Buy/TransactionSuccess';
 import TransactionSummaryModal from '@/components/Buy/TransactionSummaryModal';
 import { useNavigation } from 'expo-router';
+
 const TransactionPage: React.FC = () => {
   const backgroundColor = useThemeColor({ light: '#EFFEF9', dark: '#000000' }, 'background');
   const [modalVisible, setModalVisible] = useState(false);
   const navigation = useNavigation();
+  const textColor = useThemeColor({ light: '#000000', dark: '#FFFFFF' }, 'text');
+
+  // Example Transactions (Replace this with API response later)
+  const transactions = [
+    {
+      title: 'Transaction Submitted',
+      description: 'Your transaction has been submitted successfully',
+      date: '27 Dec, 2024 - 05:22 PM',
+      isCompleted: true,
+      hasButton: true,
+    },
+    {
+      title: 'Transaction Processed',
+      description: 'Your transaction is being processed, your naira account will be credited soon.',
+      date: '27 Dec, 2024 - 05:22 PM',
+      isCompleted: true,
+      isProcessing: true,
+    },
+    {
+      title: 'Transaction Rejected',
+      description: 'Your transaction was rejected due to network congestion. Kindly try again.',
+      date: '27 Dec, 2024 - 05:22 PM',
+      isCompleted: true,
+      isProcessing: true,
+    },
+  ];
+
+  // Function to filter transactions
+  const filterTransactions = (transactions) => {
+    const hasSubmitted = transactions.some(tx => tx.title === 'Transaction Submitted');
+    const hasProcessing = transactions.some(tx => tx.title === 'Transaction Processed');
+    const hasSuccess = transactions.some(tx => tx.title === 'Transaction Success');
+    const hasRejected = transactions.some(tx => tx.title === 'Transaction Rejected');
+
+    // If only "Transaction Submitted" exists, show only it
+    if (hasSubmitted && !hasProcessing && !hasSuccess && !hasRejected) {
+      return transactions.filter(tx => tx.title === 'Transaction Submitted');
+    }
+
+    // If "Transaction Processed" exists, show both "Submitted" and "Processing"
+    if (hasProcessing && !hasSuccess && !hasRejected) {
+      return transactions.filter(tx => ['Transaction Submitted', 'Transaction Processed'].includes(tx.title));
+    }
+
+    // If "Transaction Success" exists (and not rejected), show only success
+    if (hasSuccess && !hasRejected) {
+      return transactions.filter(tx => tx.title === 'Transaction Success');
+    }
+
+    return transactions;
+  };
+
+
+
+  const filteredTransactions = filterTransactions(transactions);
+  const isTransactionFailed = filteredTransactions.some(tx => tx.title === 'Transaction Rejected');
 
   return (
     <ScrollView contentContainerStyle={[styles.container, { backgroundColor }]}>
@@ -21,24 +78,24 @@ const TransactionPage: React.FC = () => {
       <View style={styles.progressContainer}>
         <View style={styles.progressLine} />
 
-        <TransactionStep
-          title="Transaction Submitted"
-          description="Your transaction has been submitted successfully"
-          date="27 Dec, 2024 - 05:22 PM"
-          isCompleted
-          hasButton
-        />
+        {filteredTransactions.map((tx, index) => (
+          <TransactionStep
+            key={index}
+            title={tx.title}
+            description={tx.description}
+            date={tx.date}
+            isCompleted={tx.isCompleted}
+            isProcessing={tx.isProcessing}
+            hasButton={tx.hasButton}
+          />
+        ))}
 
-        <TransactionStep
-          title="Transaction Processed"
-          description="Your transaction is being processed, your naira account will be credited soon."
-          date="27 Dec, 2024 - 05:22 PM"
-          isCompleted
-          isProcessing
-        />
-
-        {/* Success Box */}
-        <TransactionSuccess />
+        {/* Show success box only if the transaction is not rejected */}
+        {!isTransactionFailed && (
+          <View style={{ marginTop: 20 }}>
+            <TransactionSuccess />
+          </View>
+        )}
       </View>
 
       {/* Buttons */}
@@ -46,10 +103,8 @@ const TransactionPage: React.FC = () => {
         <View style={styles.buttonWrapper}>
           <PrimaryButton title="Full Summary" onPress={() => setModalVisible(true)} />
         </View>
-        <TouchableOpacity style={styles.closeButton}
-        onPress={()=>{navigation.goBack()}}
-        >
-          <Text style={styles.closeButtonText}>Close</Text>
+        <TouchableOpacity style={styles.closeButton} onPress={() => navigation.goBack()}>
+          <Text style={[styles.closeButtonText, { color: textColor }]}>Close</Text>
         </TouchableOpacity>
       </View>
 
@@ -64,7 +119,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     paddingHorizontal: 3,
     paddingBottom: 20,
-    paddingTop: 20,
+    marginTop: 25,
   },
   progressContainer: {
     marginBottom: 20,
@@ -87,6 +142,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: 20,
     paddingHorizontal: 18,
+    position: 'absolute',
+    bottom: 0,
   },
   buttonWrapper: {
     flex: 1,
@@ -101,7 +158,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: 14,
     height: 60,
-    backgroundColor: 'white',
   },
   closeButtonText: {
     fontSize: 16,

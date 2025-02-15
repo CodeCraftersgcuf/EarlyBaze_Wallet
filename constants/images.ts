@@ -57,6 +57,9 @@ const down_arrow =  require("../assets/images/down_arrow.png");
 const down_arrow_black =  require("../assets/images/down_arrow_black.png");
 const copy_white = require("../assets/images/copy_white.png");
 const copy_black =  require("../assets/images/copy_black.png");
+const double_side_black = require("../assets/images/double_side_black.png");
+const double_side_white = require("../assets/images/double_side_white.png");
+const red_cross = require("../assets/images/red_cross.png");
 
 const images = {
   indexService,
@@ -118,6 +121,9 @@ const images = {
   down_arrow_black,
   copy_black,
   copy_white,
+  double_side_black,
+  double_side_white,
+  red_cross,
 };
 
 export default images;

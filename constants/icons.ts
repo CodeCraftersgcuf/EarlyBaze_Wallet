@@ -26,6 +26,7 @@ const cross = require('../assets/icons/cross.png');
 const share = require('../assets/icons/share.png');
 const save = require('../assets/icons/save.png');
 const upload_black = require('../assets/icons/upload_black.png');
+const cross_circle = require('../assets/icons/cross_circle.png');
 
 const icons = {
   bitCoin,
@@ -48,7 +49,8 @@ const icons = {
   cross,
   share,
   save,
-  upload_black
+  upload_black,
+  cross_circle,
 };
 
 export default icons;

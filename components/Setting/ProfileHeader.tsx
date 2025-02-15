@@ -80,7 +80,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ name, email, cryptoBalanc
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        paddingTop: 20,
+        marginTop: 25,
     },
     gradientBackground: {
         paddingBottom: 60,

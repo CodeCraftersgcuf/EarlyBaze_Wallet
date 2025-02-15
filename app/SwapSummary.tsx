@@ -28,7 +28,7 @@ const SwapSummary: React.FC = () => {
 
       {/* Proceed Button Fixed at Bottom */}
       <View style={styles.fixedButtonContainer}>
-        <PrimaryButton title="Proceed" onPress={() => router.push('/TransactionPage ')} />
+        <PrimaryButton title="Proceed" onPress={() => router.push('/TransactionPage')} />
       </View>
     </View>
   );
@@ -37,6 +37,7 @@ const SwapSummary: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1, 
+    marginTop: 25,
   },
   scrollContent: {
     paddingBottom: 100,

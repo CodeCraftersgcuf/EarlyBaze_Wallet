@@ -7,23 +7,35 @@ interface ExchangeRateProps {
 }
 
 const ExchangeRate: React.FC<ExchangeRateProps> = ({ rate }) => {
-  const highlightColor = useThemeColor({ light: '#046A38', dark: '#22A45D' }, 'highlight');
+  const backgroundColor = useThemeColor({ light: '#25AE7A', dark: '#25AE7A' }, 'background');
+  const labelColor = useThemeColor({ light: '#FFFFFF', dark: '#DDDDDD' }, 'label');
+  const rateColor = useThemeColor({ light: '#FFFFFF', dark: '#FFFFFF' }, 'text');
 
   return (
-    <View style={styles.exchangeRateBox}>
-      <Text style={[styles.exchangeRateText, { color: highlightColor }]}>{rate}</Text>
+    <View style={[styles.exchangeRateBox, { backgroundColor }]}>
+      <Text style={[styles.label, { color: labelColor }]}>Exchange Rate</Text>
+      <Text style={[styles.rateText, { color: rateColor }]}>{rate}</Text>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   exchangeRateBox: {
-    padding: 10,
-    alignItems: 'center',
-    marginBottom: 15,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 15,
+    borderTopLeftRadius: 0,
+    borderTopRightRadius: 0,
+    borderBottomLeftRadius: 15,
+    borderBottomRightRadius: 15,
+    marginBottom: 10,
   },
-  exchangeRateText: {
+  label: {
     fontSize: 14,
+    fontWeight: '400',
+  },
+  rateText: {
+    fontSize: 16,
     fontWeight: 'bold',
   },
 });

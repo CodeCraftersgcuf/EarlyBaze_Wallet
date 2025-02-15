@@ -27,16 +27,24 @@ const TransactionStep: React.FC<TransactionStepProps> = ({
   const backgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#1A1A1A' }, 'background');
   const textColor = useThemeColor({ light: '#000000', dark: '#FFFFFF' }, 'text');
   const borderColor = useThemeColor({ light: '#EAEAEA', dark: '#333333' }, 'border');
-  const buttonColor = useThemeColor({ light: '#22A45D', dark: '#157347' }, 'button');
-  const labelColor = useThemeColor({ light: '#808080', dark: '#A0A0A0' }, 'label');
+  const buttonColor = useThemeColor({ light: '#FFFFFF', dark: '#0D0D0D' }, 'button');
+  const labelColor = useThemeColor({ light: '#000000B2', dark: '#A0A0A0' }, 'label');
 
   return (
     <>
       <View style={styles.stepItem}>
         {/* Left Indicator (Checkmark or Number) */}
-        <View style={isCompleted ? styles.stepCircle : styles.stepCircleNumber}>
+        <View
+          style={[
+            styles.stepCircle,
+            title === 'Transaction Rejected' && styles.rejectedStepCircle,
+          ]}
+        >
           {isCompleted ? (
-            <Image source={icons.check_circle} style={styles.checkIcon} />
+            <Image
+              source={title === 'Transaction Rejected' ? icons.cross_circle : icons.check_circle}
+              style={styles.checkIcon}
+            />
           ) : (
             <Text style={styles.stepNumberText}>3</Text>
           )}
@@ -44,7 +52,14 @@ const TransactionStep: React.FC<TransactionStepProps> = ({
 
         {/* Transaction Box */}
         <View style={[styles.transactionBox, { backgroundColor, borderColor }]}>
-          <Text style={[styles.stepTitle, isProcessing && { color: '#E68A00' }, { color: textColor }]}>
+          <Text
+            style={[
+              styles.stepTitle,
+              title === 'Transaction Submitted' && [styles.boldTitle, { color: textColor }],
+              title === 'Transaction Processed' && styles.processedTitle,
+              title === 'Transaction Rejected' && styles.rejectedTitle,
+            ]}
+          >
             {title}
           </Text>
           <Text style={[styles.stepDescription, { color: labelColor }]}>{description}</Text>
@@ -78,10 +93,13 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     borderRadius: 15,
-    backgroundColor: '#22A45D',
+    backgroundColor: '#22A45D', // Default green
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 10,
+  },
+  rejectedStepCircle: {
+    backgroundColor: '#C51B1B', // Red for rejected transactions
   },
   stepCircleNumber: {
     width: 30,
@@ -113,26 +131,42 @@ const styles = StyleSheet.create({
   },
   stepTitle: {
     fontSize: 16,
+    fontWeight: 'normal', // Default
+  },
+  boldTitle: {
+    fontWeight: 'bold',
+  },
+  processedTitle: {
+    color: '#C56A1B',
+    fontWeight: 'bold',
+  },
+  rejectedTitle: {
+    color: '#C51B1B',
     fontWeight: 'bold',
   },
   stepDescription: {
     fontSize: 14,
+    fontWeight: 'medium',
     marginVertical: 5,
   },
   viewSummaryBtn: {
-    paddingVertical: 6,
-    paddingHorizontal: 12,
+    paddingHorizontal: 2,
     borderRadius: 5,
     alignSelf: 'flex-start',
     marginTop: 8,
   },
   viewSummaryText: {
     fontSize: 14,
-    color: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#25AE7A',
+    borderRadius: 30,
+    color: '#25AE7A',
+    padding: 10,
   },
   dateText: {
     fontSize: 12,
     marginTop: 5,
+    fontWeight: 'bold',
     alignSelf: 'flex-end',
   },
 });
