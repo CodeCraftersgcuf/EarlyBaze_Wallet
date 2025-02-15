@@ -7,12 +7,19 @@ import TransactionStep from '@/components/Buy/TransactionStep';
 import TransactionSuccess from '@/components/Buy/TransactionSuccess';
 import TransactionSummaryModal from '@/components/Buy/TransactionSummaryModal';
 import { useNavigation } from 'expo-router';
+import { useRoute } from '@react-navigation/native';
 
 const TransactionPage: React.FC = () => {
   const backgroundColor = useThemeColor({ light: '#EFFEF9', dark: '#000000' }, 'background');
   const [modalVisible, setModalVisible] = useState(false);
   const navigation = useNavigation();
   const textColor = useThemeColor({ light: '#000000', dark: '#FFFFFF' }, 'text');
+  const route = useRoute();
+
+  const params = route.params as { type: string };
+  const transactionType = params?.type;
+
+  console.log("Type from TransactionPage:", transactionType);
 
   // Example Transactions (Replace this with API response later)
   const transactions = [
@@ -64,8 +71,6 @@ const TransactionPage: React.FC = () => {
     return transactions;
   };
 
-
-
   const filteredTransactions = filterTransactions(transactions);
   const isTransactionFailed = filteredTransactions.some(tx => tx.title === 'Transaction Rejected');
 
@@ -93,19 +98,33 @@ const TransactionPage: React.FC = () => {
         {/* Show success box only if the transaction is not rejected */}
         {!isTransactionFailed && (
           <View style={{ marginTop: 20 }}>
-            <TransactionSuccess />
+            {/* If 'type' is 'withdraw', show 'Withdrawal' as the title */}
+            <TransactionSuccess
+              title={transactionType === 'withdraw' ? 'Withdrawal Successful' : 'Transaction Successful'}
+            />
           </View>
         )}
       </View>
 
       {/* Buttons */}
       <View style={styles.buttonContainer}>
-        <View style={styles.buttonWrapper}>
-          <PrimaryButton title="Full Summary" onPress={() => setModalVisible(true)} />
-        </View>
-        <TouchableOpacity style={styles.closeButton} onPress={() => navigation.goBack()}>
-          <Text style={[styles.closeButtonText, { color: textColor }]}>Close</Text>
-        </TouchableOpacity>
+        {/* Show only the Close button if the transaction is just submitted or processed */}
+        {filteredTransactions.length === 1 || (filteredTransactions.some(tx => tx.title === 'Transaction Processed') && !isTransactionFailed) ? (
+          <TouchableOpacity style={styles.closeButton} onPress={() => navigation.goBack()}>
+            <Text style={[styles.closeButtonText, { color: textColor }]}>Close</Text>
+          </TouchableOpacity>
+        ) : (
+          <>
+            <View style={styles.buttonWrapper}>
+              <PrimaryButton title="Full Summary" onPress={() => setModalVisible(true)} />
+            </View>
+            <TouchableOpacity style={styles.closeButton} onPress={() => navigation.goBack()}>
+              <Text style={[styles.closeButtonText, { color: textColor }]}>
+                {isTransactionFailed ? 'Support' : 'Close'}
+              </Text>
+            </TouchableOpacity>
+          </>
+        )}
       </View>
 
       {/* Modal */}

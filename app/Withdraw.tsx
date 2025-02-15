@@ -55,7 +55,7 @@ const Withdraw: React.FC = () => {
 
                             {/* Receiving Account Dropdown */}
                             <Text style={[styles.label, { color: textColor }]}>Receiving Account</Text>
-                            <TouchableOpacity style={[styles.dropdown, { backgroundColor: cardBackgroundColor }]}  onPress={() => setModalVisible(true)}>
+                            <TouchableOpacity style={[styles.dropdown, { backgroundColor: cardBackgroundColor }]} onPress={() => setModalVisible(true)}>
                                 <Text style={{ color: selectedAccount ? textColor : placeholderColor }}>
                                     {selectedAccount || 'Choose Receiving Account'}
                                 </Text>
@@ -77,18 +77,30 @@ const Withdraw: React.FC = () => {
 
             {/* Proceed Button Fixed at Bottom */}
             <View style={styles.fixedButtonContainer}>
-                <PrimaryButton title="Proceed" onPress={() =>router.push('/TransactionPage')} />
+                <PrimaryButton title="Proceed" onPress={() => router.push({
+                    pathname: '/TransactionPage',
+                    params: { type: 'withdraw' }
+                })} />
             </View>
-            <PaymentMethodModal title='Choose Account' visible={modalVisible} onClose={() => setModalVisible(false)} />
-
+            <PaymentMethodModal
+                title="Choose Account"
+                visible={modalVisible}
+                onClose={() => setModalVisible(false)}
+                onSelectPaymentMethod={(method) => {
+                    setSelectedAccount(method); // Update selected account
+                    setModalVisible(false); // Close modal after selection
+                }}
+            />
         </View>
-        
+
     );
 };
 
 const styles = StyleSheet.create({
     container: {
         flex: 1, // Ensures full height for absolute positioning
+        marginTop: 25,
+
     },
     scrollContent: {
         paddingBottom: 140, // Ensures space above fixed button

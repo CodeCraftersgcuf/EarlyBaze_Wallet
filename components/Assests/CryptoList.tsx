@@ -8,6 +8,7 @@ interface CryptoListProps {
     name: string;
     symbol: string;
     price: string;
+    usdPrice: string;
     change: string;
     marketCap: string;
     icon: any;

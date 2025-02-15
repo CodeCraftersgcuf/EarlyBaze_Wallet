@@ -25,15 +25,27 @@ const TransactionSummaryModal: React.FC<TransactionSummaryModalProps> = ({ visib
 
   const close = useThemeColor({ light: images.cross_white, dark: images.cross_black }, 'close');
 
-  const status = "Rejected"; // Change this to test different statuses
-  const statusColor = status === "Completed" ? "#25AE7A" : status === "Rejected" ? "#D32F2F" : textColor;
-  const showReason = status === "Rejected"; // Only show Reason if status is "Rejected"
+  // Sample JSON data for transaction
+  const transactionData = {
+    coin: "Bitcoin",
+    network: "Bitcoin",
+    amountBtc: "0.012BTC",
+    amountUsd: "$750",
+    amountPaid: "NGN10,450,445",
+    accountPaidTo: "Account 1",
+    transactionReference: "23JFJ46GKDR",
+    transactionDate: "24 Dec, 2024 - 07:22 AM",
+    status: "Rejected",
+    reason: "Network congestion timeout"
+  };
+
+  const statusColor = transactionData.status === "Completed" ? "#25AE7A" : transactionData.status === "Rejected" ? "#D32F2F" : textColor;
+  const showReason = transactionData.status === "Rejected"; // Only show Reason if status is "Rejected"
 
   return (
     <Modal visible={visible} transparent animationType="slide">
       <View style={styles.overlay}>
         <View style={[styles.modalContainer, { backgroundColor, borderColor }]}>
-
           {/* Header */}
           <View style={styles.header}>
             <Text style={[styles.title, { color: textTitleColor }]}>Summary</Text>
@@ -45,19 +57,19 @@ const TransactionSummaryModal: React.FC<TransactionSummaryModalProps> = ({ visib
 
           {/* Transaction Details */}
           <View style={styles.detailContainer}>
-            <TransactionDetailItem label="Coin" value="Bitcoin" />
-            <TransactionDetailItem label="Network" value="Bitcoin" />
-            <TransactionDetailItem label="Amount - BTC" value="0.012BTC" />
-            <TransactionDetailItem label="Amount - USD" value="$750" />
-            <TransactionDetailItem label="Amount Paid" value="NGN10,450,445" />
-            <TransactionDetailItem label="Account Paid to" value="Account 1" />
-            <TransactionDetailItem label="Transaction reference" value="23JFJ46GKDR" isCopyable />
-            <TransactionDetailItem label="Transaction Date" value="24 Dec, 2024 - 07:22 AM" />
-            <TransactionDetailItem label="Status" value={status} valueStyle={{ color: statusColor, fontWeight: 'bold' }} />
+            <TransactionDetailItem label="Coin" value={transactionData.coin} />
+            <TransactionDetailItem label="Network" value={transactionData.network} />
+            <TransactionDetailItem label="Amount - BTC" value={transactionData.amountBtc} />
+            <TransactionDetailItem label="Amount - USD" value={transactionData.amountUsd} />
+            <TransactionDetailItem label="Amount Paid" value={transactionData.amountPaid} />
+            <TransactionDetailItem label="Account Paid to" value={transactionData.accountPaidTo} />
+            <TransactionDetailItem label="Transaction reference" value={transactionData.transactionReference} isCopyable />
+            <TransactionDetailItem label="Transaction Date" value={transactionData.transactionDate} />
+            <TransactionDetailItem label="Status" value={transactionData.status} valueStyle={{ color: statusColor, fontWeight: 'bold' }} />
 
             {/* Conditionally render Reason */}
             {showReason && (
-              <TransactionDetailItem label="Reason" value="Network congestion timeout" />
+              <TransactionDetailItem label="Reason" value={transactionData.reason} />
             )}
           </View>
         </View>
@@ -94,10 +106,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 10,
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
   },
   closeButton: {
     padding: 5,

@@ -44,7 +44,8 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
-    marginTop: 25,
+    marginTop: 10 ,
+    paddingTop: 20,
   },
 });
 

@@ -22,14 +22,23 @@ const TransactionItem: React.FC<TransactionItemProps> = ({ type, amount, date, s
     pending: '#E0B711',
     failed: '#E51616',
   };
-
+  console.log("Inside ", type);
   const statusColor = statusColors[status.toLowerCase()] || '#888';
 
   // Get icon based on transaction type
   const iconSource = icons.share;
 
   return (
-    <TouchableOpacity style={[styles.itemContainer, { backgroundColor }]} onPress={() => router.push('/TransactionSummary')} >
+    <TouchableOpacity
+      style={[styles.itemContainer, { backgroundColor }]}
+      onPress={() => {
+        if (type === 'send' || type === 'receive') {
+          router.push('/TransactionSummary');
+        } else {
+          router.push('/TransactionPage');
+        }
+      }}
+    >
       <View style={styles.leftContainer}>
         {/* Transaction Type Icon */}
         <View style={[styles.iconWrapper, { backgroundColor: `${statusColor}30` }]}>

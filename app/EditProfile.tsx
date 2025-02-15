@@ -50,6 +50,10 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     marginTop: 20,
+    position: 'absolute',
+    bottom: 20,
+    width: '100%',
+    alignSelf: 'center',
   },
 });
 

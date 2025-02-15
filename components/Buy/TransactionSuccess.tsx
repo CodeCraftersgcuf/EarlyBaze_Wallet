@@ -4,7 +4,12 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 import icons from '@/constants/icons';
 import TransactionDetailItem from '@/components/Buy/TransactionDetailItem';
 
-const TransactionSuccess: React.FC = () => {
+// Define the props interface
+interface TransactionSuccessProps {
+  title: string;
+}
+
+const TransactionSuccess: React.FC<TransactionSuccessProps> = ({ title }) => {
   // Theme colors
   const backgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#1A1A1A' }, 'background');
   const textColor = useThemeColor({ light: '#000000', dark: '#FFFFFF' }, 'text');
@@ -22,7 +27,7 @@ const TransactionSuccess: React.FC = () => {
 
       {/* Transaction Box */}
       <View style={[styles.successBox, { backgroundColor, borderColor }]}>
-        <Text style={[styles.successTitle, { color: successTextColor }]}>Transaction Successful</Text>
+        <Text style={[styles.successTitle, { color: successTextColor }]}>{title}</Text>
         <Text style={[styles.successAmount, { color: textColor }]}>
           <Text style={styles.boldText}>0.0023 BTC</Text> has been credited to your crypto wallet
         </Text>

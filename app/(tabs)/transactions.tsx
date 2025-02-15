@@ -16,9 +16,13 @@ const Transactions: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>('All');
   const [filterModalVisible, setFilterModalVisible] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState<string>('All');
-
+  const textColor = useThemeColor({ light: '#000000', dark: '#FFFFFF' }, 'text');
+  const filterBackgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#1A1A1A' }, 'background');
   // Convert "Processing" to check for "Pending" transactions
   const filterKey = selectedFilter === 'Processing' ? 'Pending' : selectedFilter;
+
+  const bar= useThemeColor({ light: icons.bar, dark: icons.bar_black }, 'icon');
+  const arrow= useThemeColor({ light: icons.arrow, dark: icons.arrow_black }, 'icon');
 
   // Filter Transactions Based on Active Tab & Selected Filter
   const filteredTransactions = transactionsData.filter(tx => {
@@ -38,12 +42,12 @@ const Transactions: React.FC = () => {
         {/* Show Filter Button When NOT on "All" Tab */}
         {activeTab !== 'All' && (
           <TouchableOpacity
-            style={[styles.filterButton, { width: 60 + selectedFilter.length * 7 }]} // Dynamic Width Based on Text Length
+            style={[styles.filterButton, {backgroundColor: filterBackgroundColor}, { width: 60 + selectedFilter.length * 7 }]} // Dynamic Width Based on Text Length
             onPress={() => setFilterModalVisible(true)}
           >
-            <Image source={icons.bar} style={styles.filterIcon} />
-            <Text style={styles.filterText}>{selectedFilter}</Text>
-            <Image source={icons.arrow} style={styles.filterArrow} />
+            <Image source={bar} style={styles.filterIcon} />
+            <Text style={[styles.filterText, { color: textColor }]}>{selectedFilter}</Text>
+            <Image source={arrow} style={styles.filterArrow} />
           </TouchableOpacity>
         )}
 
@@ -78,7 +82,6 @@ const styles = StyleSheet.create({
     flex: 1,
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
-    marginTop: 10,
     padding: 10,
   },
   contentContainer: {
@@ -93,7 +96,6 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     borderWidth: 1,
     borderColor: '#B0B0B0',
-    backgroundColor: '#FFFFFF',
     height: 40,
     marginTop: 10,
   },

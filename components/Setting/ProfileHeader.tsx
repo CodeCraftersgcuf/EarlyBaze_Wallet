@@ -72,6 +72,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ name, email, cryptoBalanc
                         </View>
                     </View>
                 </View>
+                
             </View>
         </>
     );

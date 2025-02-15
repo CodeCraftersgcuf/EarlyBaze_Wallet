@@ -1,10 +1,10 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 interface SettingOptionProps {
   title: string;
-  iconName: keyof typeof Ionicons.glyphMap;
+  iconName: any;
   onPress: () => void;
   iconColor?: string;
   textColor?: string;
@@ -22,7 +22,7 @@ const SettingOption: React.FC<SettingOptionProps> = ({
   return (
     <TouchableOpacity style={styles.settingRow} onPress={onPress}>
       <View style={styles.iconLabel}>
-        <Ionicons name={iconName} size={20} color={iconColor} />
+        <Image source={iconName} />
         <Text style={[styles.label, { color: textColor }]}>{title}</Text>
       </View>
       {rightContent && <View>{rightContent}</View>}

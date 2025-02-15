@@ -3,8 +3,8 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import SettingOption from './SettingOption';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter, router } from 'expo-router';
-
+import { useRouter } from 'expo-router';
+import { icons } from '@/constants';
 interface OtherSettingsProps {
   isDarkMode: boolean;
   onToggleTheme: (theme: 'Light' | 'Dark') => void;
@@ -19,10 +19,29 @@ const OtherSettings: React.FC<OtherSettingsProps> = ({ isDarkMode, onToggleTheme
   const [selectedTheme, setSelectedTheme] = useState<'Light' | 'Dark'>(isDarkMode ? 'Dark' : 'Light');
   const [dropdownVisible, setDropdownVisible] = useState(false);
 
+
+  const theme = useThemeColor({ light: icons.theme_white, dark: icons.theme_black }, 'background');
+  const term = useThemeColor({ light: icons.term_white, dark: icons.term_black }, 'background');
+  const notification = useThemeColor({ light: icons.notification_white, dark: icons.notification_black }, 'background');
+  const faq = useThemeColor({ light: icons.faq_white, dark: icons.faq_black }, 'background');
+
+
   const handleThemeChange = (theme: 'Light' | 'Dark') => {
     setSelectedTheme(theme);
     setDropdownVisible(false);
     onToggleTheme(theme);
+  };
+
+  // Conditional icon rendering based on the theme
+  const getIconForSetting = (iconName: string) => {
+    const lightIcons = {
+      'moon-outline': 'sunny-outline', // Change moon icon to sun for light mode
+      'document-text-outline': 'document-text-sharp', // Use sharp icons in light mode
+      'notifications-outline': 'notifications-circle-outline',
+      'help-circle-outline': 'help-circle-sharp',
+    };
+
+    return selectedTheme === 'Light' ? lightIcons[iconName] : iconName;
   };
 
   return (
@@ -33,7 +52,7 @@ const OtherSettings: React.FC<OtherSettingsProps> = ({ isDarkMode, onToggleTheme
       <TouchableOpacity style={styles.themeSelector} onPress={() => setDropdownVisible(!dropdownVisible)}>
         <SettingOption
           title="Theme"
-          iconName="moon-outline"
+          iconName={theme} // Default icon (changes based on the theme)
           onPress={() => {}}
           rightContent={
             <View style={styles.dropdownToggle}>
@@ -58,9 +77,24 @@ const OtherSettings: React.FC<OtherSettingsProps> = ({ isDarkMode, onToggleTheme
       )}
 
       {/* Other Setting Options */}
-      <SettingOption title="Terms of Use" iconName="document-text-outline" onPress={() => { }} textColor={textColor} />
-      <SettingOption title="Notifications" iconName="notifications-outline" onPress={() => { router.push('/Notification') }} textColor={textColor} />
-      <SettingOption title="FAQ" iconName="help-circle-outline" onPress={() => { }} textColor={textColor} />
+      <SettingOption
+        title="Terms of Use"
+        iconName={term}
+        onPress={() => {}}
+        textColor={textColor}
+      />
+      <SettingOption
+        title="Notifications"
+        iconName={notification}
+        onPress={() => {}}
+        textColor={textColor}
+      />
+      <SettingOption
+        title="FAQ"
+        iconName={faq}
+        onPress={() => {}}
+        textColor={textColor}
+      />
 
       {/* Logout Button */}
       <SettingOption
@@ -68,7 +102,7 @@ const OtherSettings: React.FC<OtherSettingsProps> = ({ isDarkMode, onToggleTheme
         iconName="log-out-outline"
         iconColor="red"
         textColor="red"
-        onPress={() => { }}
+        onPress={() => {}}
       />
 
       {/* Close Account Button */}

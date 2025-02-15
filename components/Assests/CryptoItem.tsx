@@ -6,12 +6,13 @@ interface CryptoItemProps {
   name: string;
   symbol: string;
   price: string;
+  usdPrice: string;
   change: string;
   marketCap: string;
   icon: ImageSourcePropType | string;
 }
 
-const CryptoItem: React.FC<CryptoItemProps> = ({ name, symbol, price, change, marketCap, icon }) => {
+const CryptoItem: React.FC<CryptoItemProps> = ({ name, symbol, price, usdPrice, change, marketCap, icon }) => {
   const backgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#1A1A1A' }, 'background');
   const textColor = useThemeColor({ light: '#000000', dark: '#FFFFFF' }, 'text');
   const marketCapColor = useThemeColor({ light: '#888888', dark: '#CCCCCC' }, 'marketCap');
@@ -41,7 +42,10 @@ const CryptoItem: React.FC<CryptoItemProps> = ({ name, symbol, price, change, ma
         <View style={[styles.changeBadge, { backgroundColor: changeColor }]}>
           <Text style={styles.changeText}>{change}</Text>
         </View>
-        <Text style={[styles.price, { color: textColor }]}>{price}</Text>
+        <View style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Text style={[styles.price, { color: textColor }]}>{price}</Text>
+          <Text style={[styles.usdPrice, { color: textColor }]}>{usdPrice}</Text>
+        </View>
       </View>
     </View>
   );
@@ -104,11 +108,15 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginLeft: 8, // Ensures space between change badge and price
   },
+  usdPrice: {
+    fontSize: 12,
+  },
   changeBadge: {
     height: 15,
     paddingVertical: 2,
     paddingHorizontal: 8,
     borderRadius: 10,
+    flexDirection: 'column',
   },
   changeText: {
     fontSize: 9,
