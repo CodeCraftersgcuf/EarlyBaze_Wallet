@@ -4,7 +4,7 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 import { Ionicons } from '@expo/vector-icons';
 import PrimaryButton from '@/components/Buy/PrimaryButton';
 import PrioritySelector from './PrioritySelector';
-import SubjectSelectionModal from './SubjectSelectionModal';  // Import the new component
+import SubjectSelectionModal from './SubjectSelectionModal'; // Import the new component
 
 const NewTicketForm: React.FC = () => {
   const cardBackgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#1A1A1A' }, 'card');
@@ -19,9 +19,12 @@ const NewTicketForm: React.FC = () => {
 
   return (
     <View style={[styles.container, { backgroundColor: cardBackgroundColor }]}>
+
+      {/* Title */}
       <Text style={[styles.title, { color: titleColor }]}>New Ticket</Text>
 
-      {/* Subject Input (Dropdown Trigger) */}
+      {/* Subject Label */}
+      <Text style={[styles.label, { color: textColor }]}>Subject</Text>
       <TouchableOpacity style={[styles.dropdownContainer, { borderColor }]} onPress={() => setModalVisible(true)}>
         <Text style={[styles.subjectText, { color: selectedSubject ? textColor : placeholderColor }]}>
           {selectedSubject || 'Enter subject'}
@@ -29,15 +32,17 @@ const NewTicketForm: React.FC = () => {
         <Ionicons name="chevron-down" size={20} color={textColor} />
       </TouchableOpacity>
 
-      {/* Message Input */}
+      {/* Message Label */}
+      <Text style={[styles.label, { color: textColor }]}>Message</Text>
       <TextInput
-        style={[styles.textarea, { color: textColor }]}
+        style={[styles.textarea, { color: textColor, borderColor }]}
         placeholder="Type your message"
         placeholderTextColor={placeholderColor}
         multiline
       />
 
-      {/* Priority Selector */}
+      {/* Priority Label */}
+      <Text style={[styles.label, { color: textColor }]}>Priority</Text>
       <PrioritySelector onSelect={setPriority} />
 
       {/* Submit Button */}
@@ -67,6 +72,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 10,
     alignSelf: 'center',
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    marginBottom: 6,
   },
   dropdownContainer: {
     borderWidth: 1,

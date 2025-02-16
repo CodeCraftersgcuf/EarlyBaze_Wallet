@@ -29,12 +29,14 @@ const Referral: React.FC = () => {
           <TouchableOpacity style={styles.withdrawButton}>
             <Text style={styles.withdrawText}>Withdraw</Text>
           </TouchableOpacity>
-
+          <Text style={[styles.title,]}>Referral</Text>
           {/* Referral Stats */}
-          <ReferralStats earnings="25,000" referrals={20} />
+          <View style={{ marginHorizontal: 10 }}>
+            <ReferralStats earnings="25,000" referrals={20} />
 
-          {/* Referral Code */}
-          <ReferralCodeBox code={referralCode} onCopy={() => Clipboard.setString(referralCode)} onShare={() => console.log('Share referral')} />
+            {/* Referral Code */}
+            <ReferralCodeBox code={referralCode} onCopy={() => Clipboard.setString(referralCode)} onShare={() => console.log('Share referral')} />
+          </View>
         </View>
       </LinearGradient>
 
@@ -60,12 +62,11 @@ const styles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,
     paddingBottom: 20,
-    paddingTop: 30,
+    marginTop: 30,
   },
   gradientBackground: {
-    paddingHorizontal: 16,
+    paddingHorizontal: 6,
     paddingBottom: 20,
-    paddingTop: 20,
   },
   withdrawButton: {
     backgroundColor: '#FFFFFF',
@@ -74,6 +75,16 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
     position: 'absolute',
     top: 25,
+    width: 100,
+    alignItems: 'center',
+    right: 10,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    marginBottom: 20,
+    marginLeft: 20,
   },
   withdrawText: {
     color: '#222222',

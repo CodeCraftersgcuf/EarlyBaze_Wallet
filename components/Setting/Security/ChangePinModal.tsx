@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, Modal, StyleSheet, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, Modal, StyleSheet, TextInput, TouchableOpacity, Alert, Image } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { Ionicons } from '@expo/vector-icons';
-
+import { images } from '@/constants';
 interface ChangePinModalProps {
   visible: boolean;
   onClose: () => void;
@@ -20,6 +20,7 @@ const ChangePinModal: React.FC<ChangePinModalProps> = ({ visible, onClose }) => 
   const [confirmPin, setConfirmPin] = useState<string[]>(['', '', '', '']);
 
   const inputRefs = useRef<Array<TextInput | null>>([]);
+  const close = useThemeColor({ light: images.cross_white, dark: images.cross_black }, 'close');
 
   // Reset the modal state when it is closed
   useEffect(() => {
@@ -41,7 +42,7 @@ const ChangePinModal: React.FC<ChangePinModalProps> = ({ visible, onClose }) => 
     else newPinArray = [...confirmPin];
 
     newPinArray[index] = text;
-    
+
     if (step === 1) setPin(newPinArray);
     else if (step === 2) setNewPin(newPinArray);
     else setConfirmPin(newPinArray);
@@ -83,10 +84,11 @@ const ChangePinModal: React.FC<ChangePinModalProps> = ({ visible, onClose }) => 
           {/* Header with Close Button */}
           <View style={styles.header}>
             <Text style={[styles.title, { color: buttonColor }]}>Pin Setup</Text>
-            <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-              <Ionicons name="close" size={22} color={textColor} />
+            <TouchableOpacity onPress={onClose} style={[styles.closeButton, { backgroundColor: backgroundColor }]}>
+              <Image source={close} style={styles.closeIcon} />
             </TouchableOpacity>
           </View>
+          <View style={styles.horizontalLine} />
 
           {/* Step Text */}
           <Text style={styles.subTitle}>
@@ -118,9 +120,11 @@ const ChangePinModal: React.FC<ChangePinModalProps> = ({ visible, onClose }) => 
           </View>
 
           {/* Proceed Button */}
-          <TouchableOpacity style={[styles.button, { backgroundColor: buttonColor }]} onPress={handleProceed}>
-            <Text style={styles.buttonText}>Proceed</Text>
-          </TouchableOpacity>
+          <View style={{ width: '100%', paddingHorizontal: 20 }}>
+            <TouchableOpacity style={[styles.button, { backgroundColor: buttonColor }]} onPress={handleProceed}>
+              <Text style={styles.buttonText}>Proceed</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     </Modal>
@@ -137,7 +141,7 @@ const styles = StyleSheet.create({
   modalContainer: {
     width: '93%',
     borderRadius: 20,
-    padding: 20,
+
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
@@ -145,12 +149,19 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 6, // For Android shadow
   },
+  horizontalLine: {
+    width: '100%',
+    height: 0.5,
+    backgroundColor: '#0F714D',
+  },
   header: {
     flexDirection: 'row',
     width: '100%',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingBottom: 15,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
     borderBottomWidth: 1,
   },
   title: {
@@ -158,12 +169,13 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   closeButton: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+    padding: 5,
+    borderRadius: 25,
+    borderWidth: 0.5,
+  },
+  closeIcon: {
+    width: 20,
+    height: 20,
   },
   subTitle: {
     fontSize: 32,
@@ -186,16 +198,19 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginHorizontal: 8,
   },
+
   button: {
     width: '100%',
     paddingVertical: 15,
     alignItems: 'center',
     borderRadius: 15,
+
   },
   buttonText: {
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
+
   },
 });
 

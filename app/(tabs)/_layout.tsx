@@ -1,82 +1,114 @@
 import { Tabs } from 'expo-router';
 import React from 'react';
-import { Platform, Image, View, StyleSheet, Text } from 'react-native';
+import { Platform, Image, View, StyleSheet } from 'react-native';
 
 import { HapticTab } from '@/components/HapticTab';
-import TabBarBackground from '@/components/ui/TabBarBackground';
-import { Colors } from '@/constants/Colors';
+import { useThemeColor } from '@/hooks/useThemeColor';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import icons from '@/constants/icons'; // Import the fixed icons
+import icons from '@/constants/icons'; // Import icons
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  const backgroundColor = useThemeColor({ light: '#F6FBFF', dark: '#202020' }, 'background');
+  const activeColor = useThemeColor({ light: '#25AE7A', dark: '#25AE7A' }, 'primary'); // Green for active tab
+  const inactiveColor = useThemeColor({ light: '#E5FFF5', dark: '#303030' }, 'secondary'); // Light green for inactive tab
+  const tabIconColor = useThemeColor({ light: '#5A5A5A', dark: '#C7C7C7' }, 'text');
+  const tabTextColor = useThemeColor({ light: '#000000', dark: '#FFFFFF' }, 'text'); // Dark text color for white theme, light for dark theme
 
   return (
     <Tabs
       screenOptions={({ route }) => ({
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
         tabBarButton: HapticTab,
-        tabBarBackground: () => <View style={styles.tabBarBackground} />, // Custom background
-        tabBarStyle: Platform.select({
-          ios: {
-            position: 'absolute',
-            backgroundColor: 'transparent', // Ensures transparency
-            borderTopWidth: 0,
-            elevation: 0,
-            height: 67, // Exact height from design
-          },
-          default: {
-            backgroundColor: 'white',
-            height: 67, // Consistent height for Android
-          },
-        }),
-        tabBarIcon: ({ color, size, focused }) => {
-          let iconSource, label;
+        tabBarStyle: {
+          position: 'absolute',
+          backgroundColor: 'transparent',
+          borderTopWidth: 0,
+          elevation: 0,
+          height: 80, // Height adjusted for the rounded effect
+        },
+        tabBarBackground: () => (
+          <View style={[styles.tabBarBackground, { backgroundColor }]} />
+        ),
+        tabBarIcon: ({ size, focused }) => {
+          let iconSource;
 
-          // Assign icons and labels based on route name
           if (route.name === 'index') {
             iconSource = icons.home;
-            label = 'Home';
           } else if (route.name === 'assets') {
             iconSource = icons.assests;
-            label = 'Assets';
           } else if (route.name === 'transactions') {
             iconSource = icons.tnxs;
-            label = 'Tnxs';
           } else if (route.name === 'settings') {
             iconSource = icons.settings;
-            label = 'Settings';
           } else if (route.name === 'bills') {
             iconSource = icons.bills;
-            label = 'Bills';
           }
 
           return (
             <View
               style={[
                 styles.iconContainer,
-                focused ? styles.activeTab : styles.inactiveTab,
+                { backgroundColor: focused ? activeColor : inactiveColor },
               ]}
             >
               <Image
                 source={iconSource}
                 style={[
                   styles.icon,
-                  { tintColor: focused ? 'white' : color, width: size, height: size },
+                  { tintColor: focused ? '#FFFFFF' : tabIconColor, width: size, height: size },
                 ]}
               />
-
             </View>
           );
         },
       })}
     >
-      <Tabs.Screen name="index" options={{ title: 'Home' }} />
-      <Tabs.Screen name="assets" options={{ title: 'Assets' }} />
-      <Tabs.Screen name="transactions" options={{ title: 'Tnxs' }} />
-      <Tabs.Screen name="settings" options={{ title: 'Settings' }} />
-      <Tabs.Screen name="bills" options={{ title: 'Bills' }} />
+      <Tabs.Screen
+        name="index"
+        options={{
+          title: 'Home',
+          tabBarLabelStyle: {
+            color: colorScheme === 'light' ? '#000000' : '#FFFFFF', // Adjust text color for both light and dark themes
+          },
+        }}
+      />
+      <Tabs.Screen
+        name="assets"
+        options={{
+          title: 'Assets',
+          tabBarLabelStyle: {
+            color: colorScheme === 'light' ? '#000000' : '#FFFFFF', // Adjust text color for both light and dark themes
+          },
+        }}
+      />
+      <Tabs.Screen
+        name="transactions"
+        options={{
+          title: 'Tnxs',
+          tabBarLabelStyle: {
+            color: colorScheme === 'light' ? '#000000' : '#FFFFFF', // Adjust text color for both light and dark themes
+          },
+        }}
+      />
+      <Tabs.Screen
+        name="settings"
+        options={{
+          title: 'Settings',
+          tabBarLabelStyle: {
+            color: colorScheme === 'light' ? '#000000' : '#FFFFFF', // Adjust text color for both light and dark themes
+          },
+        }}
+      />
+      <Tabs.Screen
+        name="bills"
+        options={{
+          title: 'Bills',
+          tabBarLabelStyle: {
+            color: colorScheme === 'light' ? '#000000' : '#FFFFFF', // Adjust text color for both light and dark themes
+          },
+        }}
+      />
     </Tabs>
   );
 }
@@ -84,47 +116,33 @@ export default function TabLayout() {
 const styles = StyleSheet.create({
   tabBarBackground: {
     position: 'absolute',
-    bottom: 0,
-    width: 391, // Exact width from design
-    height: 67, // Exact height from design
-    backgroundColor: '#F6FBFF', // Soft white background
-    borderRadius: 100, // Rounded border
-    borderColor: '#DCDCDC',
-    borderWidth: 0.5,
-    shadowColor: 'rgba(179, 179, 179, 0.25)',
-    shadowOffset: { width: 5, height: 5 },
-    shadowOpacity: 0.5,
-    shadowRadius: 12,
-    elevation: 5,
+    bottom: 15,
+    width: '90%', // Responsive width
+    height: 75,
+    borderRadius: 50,
     alignSelf: 'center',
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 15,
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    shadowColor: 'rgba(179, 179, 179, 0.25)',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 6,
   },
   iconContainer: {
-    width: 62,
-    height: 62,
-    borderRadius: 31,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 5,
   },
-  activeTab: {
-    backgroundColor: '#25AE7A', // Green active color
-    elevation: 5,
-  },
-  inactiveTab: {
-    backgroundColor: '#E5FFF5', // Light green circle for inactive tabs
-  },
   icon: {
-    width: 24, // Icon size based on design
+    width: 24,
     height: 24,
     resizeMode: 'contain',
   },
-  tabLabel: {
-    fontSize: 8, // Exact font size from design
-    fontFamily: 'Chivo',
-    lineHeight: 10,
-    marginTop: 4, // Adjust label position
-  },
 });
+
+export default TabLayout;

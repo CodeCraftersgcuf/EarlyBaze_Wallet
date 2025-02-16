@@ -1,8 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { Ionicons } from '@expo/vector-icons';
-
+import { icons } from '@/constants';
 interface AccountCardProps {
     accountName: string;
     bankName: string;
@@ -24,7 +24,7 @@ const AccountCard: React.FC<AccountCardProps> = ({
 }) => {
     const cardBackgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#1A1A1A' }, 'card');
     const textColor = useThemeColor({ light: '#222222', dark: '#FFFFFF' }, 'text');
-
+    const labelTextColor = useThemeColor({ light: '#777777', dark: '#AAAAAA' }, 'text');
     return (
         <View style={[styles.cardContainer, { backgroundColor: cardBackgroundColor }]}>
             {/* Header Section */}
@@ -32,23 +32,25 @@ const AccountCard: React.FC<AccountCardProps> = ({
                 <View style={styles.tab}>
                     <Text style={styles.accountTitle}>{title}</Text>
                 </View>
-                {isDefault && <Text style={styles.defaultTag}>Default</Text>}
+                {isDefault && <View style={styles.tabDefault}>
+                    <Text style={styles.defaultTag}>Default</Text>
+                </View>}
             </View>
 
             {/* Account Details */}
             <View style={styles.details}>
                 <View style={styles.row}>
-                    <Text style={[styles.label, { color: textColor }]}>Bank Name</Text>
+                    <Text style={[styles.label, { color: labelTextColor }]}>Bank Name</Text>
                     <Text style={[styles.value, { color: textColor }]}>{bankName}</Text>
                 </View>
 
                 <View style={styles.row}>
-                    <Text style={[styles.label, { color: textColor }]}>Account Name</Text>
+                    <Text style={[styles.label, { color: labelTextColor }]}>Account Name</Text>
                     <Text style={[styles.value, { color: textColor }]}>{accountName}</Text>
                 </View>
 
                 <View style={styles.row}>
-                    <Text style={[styles.label, { color: textColor }]}>Account Number</Text>
+                    <Text style={[styles.label, { color: labelTextColor }]}>Account Number</Text>
                     <Text style={[styles.value, { color: textColor }]}>{accountNumber}</Text>
                 </View>
             </View>
@@ -56,7 +58,7 @@ const AccountCard: React.FC<AccountCardProps> = ({
             {/* Action Buttons */}
             <View style={styles.actions}>
                 <TouchableOpacity style={styles.iconButton} onPress={onEdit}>
-                    <Ionicons name="create-outline" size={20} color="#25AE7A" />
+                    <Image source={icons.edit}/>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.iconButton} onPress={onDelete}>
                     <Ionicons name="trash-outline" size={20} color="red" />
@@ -82,7 +84,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
     },
     tab: {
-        width:110,
+        width: 110,
         backgroundColor: '#17A167',
         paddingHorizontal: 15,
         paddingVertical: 5,
@@ -91,24 +93,32 @@ const styles = StyleSheet.create({
         borderBottomLeftRadius: 0,  // Add this line if you want rounded corners on the bottom as well
         borderBottomRightRadius: 0, // Add this line if you want rounded corners on the bottom as well
     },
-  accountTitle: {
+    accountTitle: {
         fontSize: 16,
         fontWeight: 'bold',
         color: '#FFFFFF',
     },
+    tabDefault: {
+        backgroundColor: '#C8C8C84D',
+        alignSelf: 'center',
+        width: 70,
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        borderRadius: 10,
+        borderTopRightRadius: 90,
+        borderBottomLeftRadius: 0,  // Add this line if you want rounded corners on the bottom as well
+        borderBottomRightRadius: 0, // Add this line if you want rounded corners on the bottom as well
+    },
+
     defaultTag: {
         fontSize: 12,
         fontWeight: '600',
         color: '#17A167',
-        backgroundColor: '#EFFEF9',
-        paddingHorizontal: 10,
-        paddingVertical: 4,
-        borderRadius: 10,
-        marginLeft: 5,
     },
     details: {
         marginTop: 10,
-        paddingHorizontal: 2,
+        borderBottomColor: '#E5E5E5',
+        borderBottomWidth: 1,
     },
     row: {
         flexDirection: 'row',

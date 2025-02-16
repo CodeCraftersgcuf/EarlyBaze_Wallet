@@ -70,6 +70,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     marginTop: 15,
     flex: 1, // Ensures the container takes up all available space
+    paddingBottom: 80,
   },
   tabsContainer: {
     flexDirection: 'row',

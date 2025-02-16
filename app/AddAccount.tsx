@@ -1,17 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import PrimaryButton from '@/components/Buy/PrimaryButton';
 import Header from '@/components/Header';
 import AccountInputField from '@/components/Setting/Account/AccountInputField';
 import AccountCheckbox from '@/components/Setting/Account/AccountCheckbox';
+import { useLocalSearchParams } from 'expo-router';
 
 const AddAccount: React.FC = () => {
     const backgroundColor = useThemeColor({ light: '#EFFEF9', dark: '#000000' }, 'background');
+    
+    const params = useLocalSearchParams();
+    
     const [bankName, setBankName] = useState('');
     const [accountName, setAccountName] = useState('');
     const [accountNumber, setAccountNumber] = useState('');
     const [isDefault, setIsDefault] = useState(false);
+
+    useEffect(() => {
+        if (params.bankName) setBankName(params.bankName as string);
+        if (params.accountName) setAccountName(params.accountName as string);
+        if (params.accountNumber) setAccountNumber(params.accountNumber as string);
+        if (params.isDefault) setIsDefault(params.isDefault === 'true');
+    }, [params]);
 
     const handleSave = () => {
         console.log({
@@ -36,6 +47,7 @@ const AddAccount: React.FC = () => {
                 {/* Checkbox */}
                 <AccountCheckbox label="Set as default" checked={isDefault} onToggle={() => setIsDefault(!isDefault)} />
             </View>
+
             {/* Save Button */}
             <View style={styles.buttonContainer}>
                 <PrimaryButton title="Save" onPress={handleSave} />

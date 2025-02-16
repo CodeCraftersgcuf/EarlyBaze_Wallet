@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import SettingOption from './SettingOption';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { useRouter, router } from 'expo-router';
 import { icons } from '@/constants';
 interface OtherSettingsProps {
   isDarkMode: boolean;
@@ -53,7 +53,7 @@ const OtherSettings: React.FC<OtherSettingsProps> = ({ isDarkMode, onToggleTheme
         <SettingOption
           title="Theme"
           iconName={theme} // Default icon (changes based on the theme)
-          onPress={() => {}}
+          onPress={() => { }}
           rightContent={
             <View style={styles.dropdownToggle}>
               <Text style={{ color: textColor }}>{selectedTheme}</Text>
@@ -80,19 +80,19 @@ const OtherSettings: React.FC<OtherSettingsProps> = ({ isDarkMode, onToggleTheme
       <SettingOption
         title="Terms of Use"
         iconName={term}
-        onPress={() => {}}
+        onPress={() => { }}
         textColor={textColor}
       />
       <SettingOption
         title="Notifications"
         iconName={notification}
-        onPress={() => {}}
+        onPress={() => router.push('/Notification')}
         textColor={textColor}
       />
       <SettingOption
         title="FAQ"
         iconName={faq}
-        onPress={() => {}}
+        onPress={() => { }}
         textColor={textColor}
       />
 
@@ -102,7 +102,7 @@ const OtherSettings: React.FC<OtherSettingsProps> = ({ isDarkMode, onToggleTheme
         iconName="log-out-outline"
         iconColor="red"
         textColor="red"
-        onPress={() => {}}
+        onPress={() => { }}
       />
 
       {/* Close Account Button */}
@@ -117,6 +117,8 @@ const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 22,
     paddingVertical: 20,
+    paddingBottom: 100,
+
   },
   sectionTitle: {
     fontSize: 12,

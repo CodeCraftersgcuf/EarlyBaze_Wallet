@@ -27,8 +27,8 @@ const ReferralStats: React.FC<ReferralStatsProps> = ({ earnings, referrals }) =>
         </View>
       </View>
       <Text style={styles.description}>
-          For every person you refer and completes their KYC, you earn a certain commission from their trades.
-        </Text>
+        For every person you refer and completes their KYC, you earn a certain commission from their trades.
+      </Text>
     </View>
   );
 };
@@ -52,6 +52,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     marginBottom: 16,
     fontWeight: '500',
+    marginLeft: 10,
   },
   earningsRow: {
     flexDirection: 'row',
@@ -67,6 +68,8 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     color: '#FFFFFF',
+    marginLeft: 10,
+
   },
   description: {
     fontSize: 12,

@@ -11,9 +11,10 @@ const priorities = ['Low', 'Medium', 'High', 'Critical'];
 const PrioritySelector: React.FC<PrioritySelectorProps> = ({ onSelect }) => {
   const [selectedPriority, setSelectedPriority] = useState('Low');
   const textColor = useThemeColor({ light: '#222222', dark: '#FFFFFF' }, 'text');
+  const borderColorLine = useThemeColor({ light: '#D4D4D4', dark: '#0F714D' }, 'border');
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { borderColor: borderColorLine }]}>
       {priorities.map((priority) => (
         <TouchableOpacity
           key={priority}
@@ -36,6 +37,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginTop: 10,
+    borderWidth: 0.51,
+    borderRadius: 14,
+    paddingHorizontal: 13,
+    paddingVertical: 9,
   },
   option: {
     flexDirection: 'row',

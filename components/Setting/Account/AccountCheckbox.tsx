@@ -28,6 +28,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 20,
+    borderWidth: 1,
+    borderColor: '#25AE7A',
+    borderRadius: 20,
+    padding: 10,
   },
   checkbox: {
     width: 20,

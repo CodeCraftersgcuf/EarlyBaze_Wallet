@@ -38,6 +38,7 @@ const notification_black = require('../assets/icons/notification_black.png');
 const faq_white = require('../assets/icons/faq_white.png');
 const faq_black = require('../assets/icons/faq_black.png');
 
+const edit = require('../assets/icons/edit.png');
 
 const icons = {
   bitCoin,
@@ -72,6 +73,7 @@ const icons = {
   notification_black,
   faq_white,
   faq_black,
+  edit,
 };
 
 export default icons;
