@@ -26,7 +26,6 @@ const Swap: React.FC = () => {
       <Header />
       <BuyHead buttonText="Swap Crypto" />
 
-      {/* ✅ Using new SwapTabs component */}
       <SwapTabs selectedTab={selectedTab} setSelectedTab={setSelectedTab} />
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -44,6 +43,7 @@ const Swap: React.FC = () => {
             <Image source={doublearrow} style={styles.swapIcon} />
           </TouchableOpacity>
           <SwapAssetSection title="You Receive" asset="Naira" assetImage={bitCoin} amount="54,000,000" />
+
         </View>
         <View style={styles.exchangeRate}>
           <ExchangeRate rate="$1 = 1,750 NGN" />

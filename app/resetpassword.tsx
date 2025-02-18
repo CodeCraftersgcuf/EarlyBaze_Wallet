@@ -16,6 +16,8 @@ import React, { useEffect, useState } from "react";
 import Input from "@/utils/CustomInput";
 import Button from "@/utils/Button";
 import { useRouter, useLocalSearchParams } from "expo-router";
+import useLoadFonts from "@/hooks/useLoadFonts";
+
 const ResetPassword = () => {
   const { dark } = useTheme();
   const { timer } = useLocalSearchParams();
@@ -32,7 +34,7 @@ const ResetPassword = () => {
   }, [remainingTime]);
 
   const { back } = useRouter();
-
+  const fontsLoaded = useLoadFonts(); // Load custom fonts
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
@@ -62,7 +64,7 @@ const ResetPassword = () => {
             ]}
           >
             <View style={styles.loginContainer}>
-              <Text style={styles.loginText}>Reset Password</Text>
+              <Text style={[styles.loginText, { fontFamily: fontsLoaded ? 'Caprasimo-Regular' : undefined }]}>Reset Password</Text>
             </View>
 
             <Text

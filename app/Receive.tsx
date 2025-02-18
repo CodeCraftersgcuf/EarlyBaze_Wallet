@@ -6,11 +6,13 @@ import Header from '@/components/Header';
 import AddressTabs from '../components/Receive/AddressTabs';
 import QRCodeCard from '../components/Receive/QRCodeCard';
 import NetworkSelection from '../components/Receive/NetworkSelection';
+import useLoadFonts from '@/hooks/useLoadFonts'; // Import font loader
 
 const Receive: React.FC = () => {
     const backgroundColor = useThemeColor({ light: '#22A45D', dark: '#000000' }, 'background');
     const cardBackgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#1A1A1A' }, 'card');
     const qrBackgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#FFFFFF' }, 'card');
+    const fontsLoaded = useLoadFonts(); // Load custom fonts
 
     const textColor = useThemeColor({ light: '#222222', dark: '#FFFFFF' }, 'text');
     const navigation = useNavigation();
@@ -24,7 +26,7 @@ const Receive: React.FC = () => {
             <View style={styles.assetNameContainer}>
                 <Header />
 
-                <Text style={styles.assetName}>Receive {assetName}</Text>
+                <Text style={[styles.assetName, { fontFamily: fontsLoaded ? 'Caprasimo-Regular' : undefined }]}>Receive {assetName}</Text>
             </View>
 
             {/* Address Tabs */}

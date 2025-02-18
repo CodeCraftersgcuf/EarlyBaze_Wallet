@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import useLoadFonts from '@/hooks/useLoadFonts'; // Import font loader
 
 interface BuyHeadProps {
   buttonText: string; // Required Buy button text
@@ -8,11 +9,13 @@ interface BuyHeadProps {
 }
 
 const BuyHead: React.FC<BuyHeadProps> = ({ buttonText, exchangeRate, topLabel }) => {
+  const fontsLoaded = useLoadFonts(); // Load custom fonts
+
   return (
     <View style={styles.container}>
       {/* Buy Button */}
       <TouchableOpacity style={styles.buyButton}>
-        <Text style={styles.buyText}>{buttonText}</Text>
+        <Text style={[styles.buyText, {fontFamily: fontsLoaded ? 'Caprasimo-Regular' : undefined }]}>{buttonText}</Text>
 
         {/* Exchange Rate Label - Show only if passed via props */}
         {exchangeRate && (

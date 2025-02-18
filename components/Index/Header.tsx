@@ -6,12 +6,16 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useThemeColor } from '@/hooks/useThemeColor'; // Assuming you have this hook for theming
 import { images } from '@/constants';
 import { useRouter, router } from 'expo-router';
+import useLoadFonts from '@/hooks/useLoadFonts';
+
 export type HeaderProps = {
   username: string;
   greeting: string;
 };
 
 export function Header({ username, greeting }: HeaderProps) {
+  const fontsLoaded = useLoadFonts(); // Load custom fonts
+
   const backgroundColor = useThemeColor(
     { light: '#FFFFFF', dark: '#0D0D0D' }, // Light mode and dark mode colors
     'background'
@@ -29,7 +33,7 @@ export function Header({ username, greeting }: HeaderProps) {
 
   const scan = useThemeColor({
     light: images.scan,
-    dark : images.scan_black
+    dark: images.scan_black
   }, 'scan');
 
   // Function to handle icon press
@@ -42,7 +46,7 @@ export function Header({ username, greeting }: HeaderProps) {
     <SafeAreaView>
       <ThemedView style={styles.headerContainer}>
         <View style={{ padding: 8 }}>
-          <ThemedText style={[styles.title, { color: titleColor }]} type="title">{`Hi, ${username}`}</ThemedText>
+          <ThemedText style={[styles.title, { color: titleColor, fontFamily: fontsLoaded ? 'Caprasimo-Regular' : undefined }]} type="title">{`Hi, ${username}`}</ThemedText>
           <ThemedText type="subtitle">{greeting} <Image source={images.hand} style={{ width: 30, height: 30 }} /></ThemedText>
         </View>
         <View style={styles.iconsContainer}>

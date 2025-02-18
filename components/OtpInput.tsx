@@ -9,6 +9,7 @@ interface OtpInputProps {
 }
 
 const OtpInput: React.FC<OtpInputProps> = ({ length, onComplete }) => {
+    
     const textColor = useThemeColor({ light: '#000', dark: '#fff' }, 'text');
     const borderColor = useThemeColor({ light: '#E0E0E0', dark: '#333' }, 'border');
     const backgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#1A1A1A' }, 'background');

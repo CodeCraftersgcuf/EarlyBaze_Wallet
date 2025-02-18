@@ -16,11 +16,14 @@ import React, { useEffect, useState } from "react";
 import Input from "@/utils/CustomInput";
 import Button from "@/utils/Button";
 import { useRouter } from "expo-router";
+import useLoadFonts from "@/hooks/useLoadFonts";
+
 const ForgetPassword = () => {
   const { dark } = useTheme();
   const [timer, setTimer] = useState(60);
   const [isTimerActive, setIsTimerActive] = useState(false);
   const { back, push } = useRouter();
+  const fontsLoaded = useLoadFonts(); // Load custom fonts
 
   useEffect(() => {
     let intervel: any;
@@ -63,7 +66,7 @@ const ForgetPassword = () => {
             ]}
           >
             <View style={styles.loginContainer}>
-              <Text style={styles.loginText}>Forget Password</Text>
+              <Text style={[styles.loginText, { fontFamily: fontsLoaded ? 'Caprasimo-Regular' : undefined }]}>Forget Password</Text>
             </View>
 
             <Text
@@ -75,7 +78,7 @@ const ForgetPassword = () => {
               <View>
                 <Formik
                   initialValues={{ email: "", inputPin: "" }}
-                  onSubmit={() => {push(`/resetpassword?timer=${timer}`)}}
+                  onSubmit={() => { push(`/resetpassword?timer=${timer}`) }}
                   validationSchema={validationForgetPasswordSchema}
                 >
                   {({
@@ -141,7 +144,7 @@ const ForgetPassword = () => {
                       </View>
                       <Text style={{ paddingBottom: 10 }}>
                         {isTimerActive && timer > 0 && (
-                          <Text style={{ fontWeight: "bold", textAlign: 'center', color: dark ? COLORS.white : COLORS.black }}>OTP can be resent in 
+                          <Text style={{ fontWeight: "bold", textAlign: 'center', color: dark ? COLORS.white : COLORS.black }}>OTP can be resent in
                             <Text style={{ color: COLORS.primary }}>{` 00 : ${timer} Sec`}</Text>
                           </Text>
                         )}

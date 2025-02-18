@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
+import useLoadFonts from '@/hooks/useLoadFonts'; // Import font loader
 
 interface SettingsOptionProps {
   title: string;
@@ -9,6 +10,8 @@ interface SettingsOptionProps {
 }
 
 const SettingsOption: React.FC<SettingsOptionProps> = ({ title, image, onPress }) => {
+  const fontsLoaded = useLoadFonts(); // Load custom fonts
+
   // Theme colors for light & dark mode
   const backgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#1E1E1E' }, 'background');
   const textColor = useThemeColor({ light: '#004D40', dark: '#FFFFFF' }, 'text');
@@ -20,7 +23,7 @@ const SettingsOption: React.FC<SettingsOptionProps> = ({ title, image, onPress }
       <View style={[styles.iconContainer, { backgroundColor: iconContainerColor }]}>
         <Image source={image} style={styles.icon} />
       </View>
-      <Text style={[styles.title, { color: textColor }]}>{title}</Text>
+      <Text style={[styles.title, { color: textColor, fontFamily: fontsLoaded ? 'Caprasimo-Regular' : undefined }]}>{title}</Text>
     </TouchableOpacity>
   );
 };

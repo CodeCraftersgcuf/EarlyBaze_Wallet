@@ -4,6 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { images } from '@/constants'; // Ensure this contains valid image paths or requires
 import { ThemedText } from './ThemedText';
 import { useThemeColor } from '@/hooks/useThemeColor';
+import useLoadFonts from '@/hooks/useLoadFonts'; // Import font loader
 
 interface HeaderProps {
   title?: string;
@@ -14,6 +15,7 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ title, onBackPress, onFilterPress }) => {
   // Using useThemeColor to dynamically pick the background color
   const backgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#0D0D0D' }, 'background');
+  const fontsLoaded = useLoadFonts(); // Load custom fonts
 
   // Now using useThemeColor to decide which back icon to show based on the theme
   const backIcon = useThemeColor({
@@ -36,7 +38,7 @@ const Header: React.FC<HeaderProps> = ({ title, onBackPress, onFilterPress }) =>
       </TouchableOpacity>
 
       {/* Show Title if passed */}
-      {title && <ThemedText style={styles.headerTitle}>{title}</ThemedText>}
+      {title && <ThemedText style={[styles.headerTitle, { fontFamily: fontsLoaded ? 'Caprasimo-Regular' : undefined }]}>{title}</ThemedText>}
 
       {/* Show Filter Button only if onFilterPress exists */}
       {title && onFilterPress && (

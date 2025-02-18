@@ -12,11 +12,15 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 import { images } from '@/constants';
 import { useNavigation } from '@react-navigation/native';
 import Header from '@/components/Header';
+import useLoadFonts from '@/hooks/useLoadFonts'; // Import font loader
+
 const SummaryReceive: React.FC = () => {
     const backgroundColor = useThemeColor({ light: '#25AE7A', dark: '#000000' }, 'background');
     const cardBackgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#FFFFFF' }, 'card');
     const textColor = useThemeColor({ light: '#222222', dark: '#222222' }, 'text');
     const navigation = useNavigation();
+    const fontsLoaded = useLoadFonts(); // Load custom fonts
+
 
     return (
         <ScrollView contentContainerStyle={[styles.container, { backgroundColor }]}>
@@ -26,7 +30,7 @@ const SummaryReceive: React.FC = () => {
 
             {/* Summary Card */}
             <View style={[styles.card, { backgroundColor: cardBackgroundColor }]}>
-                <Text style={[styles.title, { color: textColor }]}>EarlyBaze</Text>
+                <Text style={[styles.title, { color: textColor, fontFamily: fontsLoaded ? 'Caprasimo-Regular' : undefined }]}>EarlyBaze</Text>
 
                 {/* QR Code */}
                 <Image source={images.qrcode} style={styles.qrCode} />

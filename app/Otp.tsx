@@ -6,12 +6,13 @@ import PrimaryButton from '@/components/Buy/PrimaryButton';
 import OtpInput from '@/components/OtpInput';
 import PinInput from '@/components/PinInput';
 import { useRouter } from 'expo-router';
-
+import useLoadFonts from '@/hooks/useLoadFonts';
 const Otp: React.FC = () => {
     const backgroundColor = useThemeColor({ light: '#EFFEF9', dark: '#000000' }, 'background');
     const textColor = useThemeColor({ light: '#000', dark: '#fff' }, 'text');
     const buttonColor = useThemeColor({ light: '#22A45D', dark: '#2E7D32' }, 'button');
     const titleColor = useThemeColor({ light: '#0C5E3F', dark: '#25AE7A' }, 'title');
+    const fontsLoaded = useLoadFonts(); // Load custom fonts
 
     const [step, setStep] = useState(1);
     const [otp, setOtp] = useState('');
@@ -48,7 +49,7 @@ const Otp: React.FC = () => {
             <Header title={headerTitle} />
 
             <View style={{ paddingHorizontal: 20 }}>
-                <Text style={[styles.title, { color: titleColor }]}>
+                <Text style={[styles.title, { color: titleColor, fontFamily: fontsLoaded ? 'Caprasimo-Regular' : undefined }]}>
                     {step === 1 ? 'Input OTP' : step === 2 ? 'Enter Pin' : 'Re-enter Pin'}
                 </Text>
 

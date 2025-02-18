@@ -11,7 +11,7 @@ import {
 import { COLORS, SIZES } from '@/constants';
 import { useTheme } from '@/contexts/themeContext';
 import { Image } from 'expo-image';
-import FONTS from '@/constants/fonts';
+// import FONTS from '@/constants/fonts';
 import Icons from '@/constants/icons';
 
 type InputType = string | number | boolean;
@@ -90,7 +90,7 @@ const Input: FC<InputProps> = (props) => {
             styles.input,
             {
               color: dark ? COLORS.white : COLORS.black,
-              fontWeight: props.fontWeight || FONTS.Regular,
+              fontWeight: props.fontWeight || props.fontWeight,
               paddingLeft: props.icon ? 40 : 15,
               paddingRight: props.sendCode ? 90 : 40, // Adjust padding for button
               borderColor: props.errorText

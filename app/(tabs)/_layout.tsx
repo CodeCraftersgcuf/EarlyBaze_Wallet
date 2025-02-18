@@ -6,14 +6,16 @@ import { HapticTab } from '@/components/HapticTab';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import icons from '@/constants/icons'; // Import icons
+import useLoadFonts from '@/hooks/useLoadFonts'; // Import your font loader
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  const fontsLoaded = useLoadFonts();
+
   const backgroundColor = useThemeColor({ light: '#F6FBFF', dark: '#202020' }, 'background');
   const activeColor = useThemeColor({ light: '#25AE7A', dark: '#25AE7A' }, 'primary'); // Green for active tab
   const inactiveColor = useThemeColor({ light: '#E5FFF5', dark: '#303030' }, 'secondary'); // Light green for inactive tab
   const tabIconColor = useThemeColor({ light: '#5A5A5A', dark: '#C7C7C7' }, 'text');
-  const tabTextColor = useThemeColor({ light: '#000000', dark: '#FFFFFF' }, 'text'); // Dark text color for white theme, light for dark theme
 
   return (
     <Tabs
@@ -30,6 +32,10 @@ export default function TabLayout() {
         tabBarBackground: () => (
           <View style={[styles.tabBarBackground, { backgroundColor }]} />
         ),
+        tabBarActiveTintColor: colorScheme === 'light' ? '#FFFFFF' : '#FFFFFF', // Selected tab text color
+        tabBarInactiveTintColor: colorScheme === 'light' ? '#000000' : '#FFFFFF', // Unselected tab text color
+        tabBarPressOpacity: 1, // Prevents opacity change on press
+        tabBarPressColor: 'transparent', // Disables ripple effect on Android
         tabBarIcon: ({ size, focused }) => {
           let iconSource;
 
@@ -64,51 +70,11 @@ export default function TabLayout() {
         },
       })}
     >
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Home',
-          tabBarLabelStyle: {
-            color: colorScheme === 'light' ? '#000000' : '#FFFFFF', // Adjust text color for both light and dark themes
-          },
-        }}
-      />
-      <Tabs.Screen
-        name="assets"
-        options={{
-          title: 'Assets',
-          tabBarLabelStyle: {
-            color: colorScheme === 'light' ? '#000000' : '#FFFFFF', // Adjust text color for both light and dark themes
-          },
-        }}
-      />
-      <Tabs.Screen
-        name="transactions"
-        options={{
-          title: 'Tnxs',
-          tabBarLabelStyle: {
-            color: colorScheme === 'light' ? '#000000' : '#FFFFFF', // Adjust text color for both light and dark themes
-          },
-        }}
-      />
-      <Tabs.Screen
-        name="settings"
-        options={{
-          title: 'Settings',
-          tabBarLabelStyle: {
-            color: colorScheme === 'light' ? '#000000' : '#FFFFFF', // Adjust text color for both light and dark themes
-          },
-        }}
-      />
-      <Tabs.Screen
-        name="bills"
-        options={{
-          title: 'Bills',
-          tabBarLabelStyle: {
-            color: colorScheme === 'light' ? '#000000' : '#FFFFFF', // Adjust text color for both light and dark themes
-          },
-        }}
-      />
+      <Tabs.Screen name="index" options={{ title: 'Home' }} />
+      <Tabs.Screen name="assets" options={{ title: 'Assets' }} />
+      <Tabs.Screen name="transactions" options={{ title: 'Tnxs' }} />
+      <Tabs.Screen name="settings" options={{ title: 'Settings' }} />
+      <Tabs.Screen name="bills" options={{ title: 'Bills' }} />
     </Tabs>
   );
 }
@@ -116,9 +82,9 @@ export default function TabLayout() {
 const styles = StyleSheet.create({
   tabBarBackground: {
     position: 'absolute',
-    bottom: 15,
-    width: '90%', // Responsive width
-    height: 75,
+    bottom: 30,
+    width: '94.5%', // Responsive width
+    height: 60,
     borderRadius: 50,
     alignSelf: 'center',
     flexDirection: 'row',
@@ -129,14 +95,15 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 10,
     elevation: 6,
+    borderWidth: 0.3,
+    paddingBottom : 10,
   },
   iconContainer: {
-    width: 60,
-    height: 60,
+    width: 55,
+    height: 55,
     borderRadius: 30,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 5,
   },
   icon: {
     width: 24,

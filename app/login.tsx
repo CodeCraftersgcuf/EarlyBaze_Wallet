@@ -16,10 +16,12 @@ import React from "react";
 import Input from "@/utils/CustomInput";
 import Button from "@/utils/Button";
 import { router, useRouter } from "expo-router";
+import useLoadFonts from "@/hooks/useLoadFonts";
 
 const Login = () => {
   const { dark } = useTheme();
   const { push } = useRouter();
+  const fontsLoaded = useLoadFonts(); // Load custom fonts
 
   return (
     <SafeAreaView style={styles.container}>
@@ -42,7 +44,7 @@ const Login = () => {
             ]}
           >
             <View style={styles.loginContainer}>
-              <Text style={styles.loginText}>Login</Text>
+              <Text style={[styles.loginText, { fontFamily: fontsLoaded ? 'Caprasimo-Regular' : undefined }]}>Login</Text>
             </View>
 
             <Text

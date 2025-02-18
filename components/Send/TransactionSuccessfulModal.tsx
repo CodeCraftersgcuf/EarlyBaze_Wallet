@@ -4,16 +4,19 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 import { Ionicons } from '@expo/vector-icons';
 import { images } from '@/constants';
 // Success Icon Component
+
 const SuccessIcon: React.FC = () => (
+
   <View style={styles.successIconContainer}>
     <View style={styles.successIcon}>
-      <Ionicons name="checkmark" size={50} color="white" />
+      <Image source={images.successTick} style={{ width: 75, height: 75 }} />
     </View>
   </View>
 );
 
 // Transaction Message Component
 const TransactionMessage: React.FC = () => (
+
   <View style={styles.textContainer}>
     <Text style={styles.successText}>Transaction Successful</Text>
     <Text style={styles.description}>
@@ -25,25 +28,31 @@ const TransactionMessage: React.FC = () => (
 
 // Button Component
 const TransactionButton: React.FC<{ onPress: () => void }> = ({ onPress }) => (
+
   <TouchableOpacity style={styles.button} onPress={onPress}>
     <Text style={styles.buttonText}>View Transaction</Text>
   </TouchableOpacity>
 );
 
 const TransactionSuccessfulModal: React.FC<{ visible: boolean; onClose: () => void }> = ({ visible, onClose }) => {
-  const backgroundColor = useThemeColor({ light: '#22A45D', dark: '#000000' }, 'background');
+  const close = useThemeColor({ light: images.cross_white, dark: images.cross_white }, 'close');
+  const backgroundColorClose = useThemeColor({ light: '#FFFFFF', dark: '#FFFFFF' }, 'background');
+
+  const backgroundColor = useThemeColor({ light: '#22A45D', dark: '#22A45D' }, 'background');
 
   return (
     <Modal visible={visible} transparent animationType="slide">
       <View style={[styles.modalContainer, { backgroundColor }]}>
         <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-          <Image source={images.successTick}/>
+          <TouchableOpacity onPress={onClose} style={[styles.closeButton, { backgroundColor: backgroundColorClose }]}>
+            <Image source={close} style={styles.closeIcon} />
+          </TouchableOpacity>
         </TouchableOpacity>
 
         <SuccessIcon />
         <TransactionMessage />
         <View style={styles.buttonContainer}>
-        <TransactionButton onPress={() => console.log('View Transaction')} />
+          <TransactionButton onPress={() => console.log('View Transaction')} />
         </View>
       </View>
     </Modal>
@@ -59,12 +68,19 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     position: 'absolute',
-    top: 30,
-    right: 20,
+    top: 10,
+    right: 15,
     zIndex: 10,
+    padding: 10,
+    borderRadius: 20,
   },
   successIconContainer: {
     marginBottom: 20,
+  },
+
+  closeIcon: {
+    width: 20,
+    height: 20,
   },
   successIcon: {
     backgroundColor: '#138A36',
@@ -116,12 +132,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#22A45D',
   },
-    buttonContainer: {
-        position: 'absolute',
-        bottom: 20,
-        width: '100%',
-        alignItems: 'center',
-    },
+  buttonContainer: {
+    position: 'absolute',
+    bottom: 20,
+    width: '100%',
+    alignItems: 'center',
+  },
 });
 
 export default TransactionSuccessfulModal;

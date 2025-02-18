@@ -4,7 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { images } from '@/constants';
 import Header from '../Header';
-
+import useLoadFonts from '@/hooks/useLoadFonts';
 interface ProfileHeaderProps {
     name: string;
     email: string;
@@ -16,6 +16,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ name, email, cryptoBalanc
     const cardBackgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#1A1A1A' }, 'card');
     const textColor = useThemeColor({ light: '#222222', dark: '#FFFFFF' }, 'text');
     const amountColor = useThemeColor({ light: '#0C5E3F', dark: '#0C5E3F' }, 'textTitle');
+    const fontsLoaded = useLoadFonts(); // Load custom fonts
 
     return (
         <>
@@ -36,7 +37,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ name, email, cryptoBalanc
                             </LinearGradient>
                         </View>
 
-                        <Text style={styles.name}>{name}</Text>
+                        <Text style={[styles.name, {fontFamily: fontsLoaded ? 'Caprasimo-Regular' : undefined }]}>{name}</Text>
                         <Text style={styles.email}>{email}</Text>
 
                         {/* ID Verified Badge */}
@@ -72,7 +73,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ name, email, cryptoBalanc
                         </View>
                     </View>
                 </View>
-                
+
             </View>
         </>
     );
