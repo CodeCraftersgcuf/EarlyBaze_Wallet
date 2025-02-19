@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Modal, View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 // import { BarCodeScanner } from 'expo-barcode-scanner';
 import * as ImagePicker from 'expo-image-picker';
-
+import { useCameraPermissions } from 'expo-camera';
 interface QrModalProps {
     isVisible: boolean;
     onClose: () => void;
