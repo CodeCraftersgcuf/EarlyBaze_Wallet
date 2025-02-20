@@ -60,6 +60,7 @@ const copy_black =  require("../assets/images/copy_black.png");
 const double_side_black = require("../assets/images/double_side_black.png");
 const double_side_white = require("../assets/images/double_side_white.png");
 const red_cross = require("../assets/images/red_cross.png");
+const gallery = require("../assets/images/gallery.png");
 
 const images = {
   indexService,
@@ -124,6 +125,7 @@ const images = {
   double_side_black,
   double_side_white,
   red_cross,
+  gallery,
 };
 
 export default images;

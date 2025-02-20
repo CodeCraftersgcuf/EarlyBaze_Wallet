@@ -1,12 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, View, Image, TouchableOpacity } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useThemeColor } from '@/hooks/useThemeColor'; // Assuming you have this hook for theming
+import { useThemeColor } from '@/hooks/useThemeColor'; 
 import { images } from '@/constants';
 import { useRouter, router } from 'expo-router';
 import useLoadFonts from '@/hooks/useLoadFonts';
+import QrModal from '../Send/QrModal';
 
 export type HeaderProps = {
   username: string;
@@ -14,17 +15,19 @@ export type HeaderProps = {
 };
 
 export function Header({ username, greeting }: HeaderProps) {
-  const fontsLoaded = useLoadFonts(); // Load custom fonts
+  const fontsLoaded = useLoadFonts(); 
+  const router = useRouter();
+  const [isScannerOpen, setIsScannerOpen] = useState(false); // State to control modal visibility
 
   const backgroundColor = useThemeColor(
-    { light: '#FFFFFF', dark: '#0D0D0D' }, // Light mode and dark mode colors
+    { light: '#FFFFFF', dark: '#0D0D0D' }, 
     'background'
   );
 
   const titleColor = useThemeColor(
-    { light: '#0B3558', dark: '#25AE7A' }, // Light mode and dark mode colors
+    { light: '#0B3558', dark: '#25AE7A' }, 
     'text'
-  )
+  );
 
   const notification = useThemeColor({
     light: images.notification,
@@ -46,16 +49,25 @@ export function Header({ username, greeting }: HeaderProps) {
     <SafeAreaView>
       <ThemedView style={styles.headerContainer}>
         <View style={{ padding: 8 }}>
-          <ThemedText style={[styles.title, { color: titleColor, fontFamily: fontsLoaded ? 'Caprasimo-Regular' : undefined }]} type="title">{`Hi, ${username}`}</ThemedText>
-          <ThemedText type="subtitle">{greeting} <Image source={images.hand} style={{ width: 30, height: 30 }} /></ThemedText>
+          <ThemedText 
+            style={[styles.title, { color: titleColor, fontFamily: fontsLoaded ? 'Caprasimo-Regular' : undefined }]} 
+            type="title"
+          >
+            {`Hi, ${username}`}
+          </ThemedText>
+          <ThemedText type="subtitle">
+            {greeting} 
+            <Image source={images.hand} style={{ width: 30, height: 30 }} />
+          </ThemedText>
         </View>
         <View style={styles.iconsContainer}>
-          {/* Replace FontAwesome icons with images and make them clickable */}
+          {/* Scan Icon - Opens QR Modal */}
           <View style={[styles.iconContainer, { backgroundColor }]}>
-            <TouchableOpacity onPress={() => handleIconPress('Scan')}>
+            <TouchableOpacity onPress={() => setIsScannerOpen(true)}>
               <Image source={scan} style={styles.icon} />
             </TouchableOpacity>
           </View>
+          {/* Notification Icon */}
           <View style={[styles.iconContainer, { backgroundColor }]}>
             <TouchableOpacity onPress={() => handleIconPress('Notification')}>
               <Image source={notification} style={styles.icon} />
@@ -63,13 +75,15 @@ export function Header({ username, greeting }: HeaderProps) {
           </View>
         </View>
       </ThemedView>
+
+      {/* QR Scanner Modal */}
+      <QrModal isVisible={isScannerOpen} onClose={() => setIsScannerOpen(false)} />
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   title: {
-    // color: '#0B3558',
     fontSize: 20,
   },
   headerContainer: {
@@ -78,7 +92,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    backgroundColor: 'backgroundColor', // Adjust based on your theme
+    backgroundColor: 'backgroundColor',
   },
   iconContainer: {
     padding: 8,
@@ -89,8 +103,9 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   icon: {
-    width: 22,  // Adjust icon size based on the image size
-    height: 22, // Adjust icon size based on the image size
+    width: 22,
+    height: 22,
     borderRadius: 16,
   },
 });
+

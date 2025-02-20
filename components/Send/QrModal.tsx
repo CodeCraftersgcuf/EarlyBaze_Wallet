@@ -1,35 +1,74 @@
-import React, { useState, useEffect } from 'react';
-import { Modal, View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
-// import { BarCodeScanner } from 'expo-barcode-scanner';
-import * as ImagePicker from 'expo-image-picker';
-import { useCameraPermissions } from 'expo-camera';
+import React, { useEffect, useRef, useState } from "react";
+import {
+    Modal,
+    View,
+    Text,
+    TouchableOpacity,
+    StyleSheet,
+    AppState,
+    Linking,
+    Dimensions,
+    Image,
+    BackHandler, // Import for handling the back button
+} from "react-native";
+import { Camera, CameraView } from "expo-camera";
+import * as ImagePicker from "expo-image-picker";
+import { useCameraPermissions } from "expo-camera";
+import Overlay from "./Overlay";
+import { images } from "@/constants";
+
+const { width, height } = Dimensions.get("window");
+
 interface QrModalProps {
     isVisible: boolean;
     onClose: () => void;
 }
 
 const QrModal: React.FC<QrModalProps> = ({ isVisible, onClose }) => {
-    const [hasPermission, setHasPermission] = useState<boolean | null>(null);
-    const [scanned, setScanned] = useState(false);
-    const [selectedImage, setSelectedImage] = useState<string | null>(null);
+    const [permission, requestPermission] = useCameraPermissions();
+    const qrLock = useRef(false);
+    const appState = useRef(AppState.currentState);
 
-    // useEffect(() => {
-    //     (async () => {
-    //         const { status } = await BarCodeScanner.requestPermissionsAsync();
-    //         setHasPermission(status === 'granted');
-    //     })();
-    // }, []);
-
-    // Debugging - Log Camera Permission Status
     useEffect(() => {
-        if (hasPermission !== null) {
-            console.log('Barcode Scanner permission:', hasPermission ? 'granted' : 'denied');
-        }
-    }, [hasPermission]);
+        const subscription = AppState.addEventListener("change", (nextAppState) => {
+            if (appState.current.match(/inactive|background/) && nextAppState === "active") {
+                qrLock.current = false;
+            }
+            appState.current = nextAppState;
+        });
 
-    const handleBarCodeScanned = ({ type, data }: { type: string; data: string }) => {
-        setScanned(true);
-        alert(`QR Code scanned: ${data}`);
+        return () => {
+            subscription.remove();
+        };
+    }, []);
+
+    useEffect(() => {
+        const backAction = () => {
+            if (isVisible) {
+                onClose();
+                return true; // Prevents default behavior (app exit)
+            }
+            return false;
+        };
+
+        const backHandler = BackHandler.addEventListener(
+            "hardwareBackPress",
+            backAction
+        );
+
+        return () => backHandler.remove(); // Cleanup on unmount
+    }, [isVisible]);
+
+    const isPermissionGranted = Boolean(permission?.granted);
+
+    const handleBarCodeScanned = ({ data }: { data: string }) => {
+        if (data && !qrLock.current) {
+            qrLock.current = true;
+            setTimeout(() => {
+                onClose(); // Auto-close after scanning
+                Linking.openURL(data);
+            }, 1000);
+        }
     };
 
     const pickImage = async () => {
@@ -40,97 +79,89 @@ const QrModal: React.FC<QrModalProps> = ({ isVisible, onClose }) => {
         });
 
         if (!result.canceled) {
-            setSelectedImage(result.assets[0].uri);
+            onClose(); // Auto-close modal when an image is selected
         }
     };
-
-    // // Handle case when permissions are null or denied
-    // if (hasPermission === null) {
-    //     return <Text>Requesting camera permission...</Text>;
-    // }
-    // if (hasPermission === false) {
-    //     return <Text>No access to camera</Text>;
-    // }
 
     return (
         <Modal visible={isVisible} animationType="slide" transparent>
             <View style={styles.scannerContainer}>
                 <Text style={styles.scannerText}>Scan the QR Code or Choose an Image</Text>
-{/* 
-                {selectedImage ? (
-                    <Image source={{ uri: selectedImage }} style={styles.qrScanner} />
-                ) : (
-                    // <BarCodeScanner
-                    //     style={styles.qrScanner}
-                    //     onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-                    // />
-                )} */}
 
-                {scanned && (
-                    <TouchableOpacity onPress={() => setScanned(false)} style={styles.scanAgainButton}>
-                        <Text style={styles.scanAgainText}>Scan Again</Text>
+                {/* Camera View */}
+                {permission === null ? (
+                    <Text style={styles.permissionText}>Requesting camera permission...</Text>
+                ) : !isPermissionGranted ? (
+                    <TouchableOpacity onPress={requestPermission} style={styles.permissionButton}>
+                        <Text style={styles.permissionText}>Grant Camera Permission</Text>
                     </TouchableOpacity>
+                ) : (
+                    <View style={styles.cameraWrapper}>
+                        <CameraView
+                            style={styles.qrScanner}
+                            facing="back"
+                            onBarcodeScanned={handleBarCodeScanned}
+                        />
+                        <Overlay />
+                    </View>
                 )}
 
+                {/* Choose Image Button */}
                 <TouchableOpacity onPress={pickImage} style={styles.chooseImageButton}>
+                    <Image source={images.gallery} style={styles.chooseImageIcon} />
                     <Text style={styles.chooseImageText}>Choose Image</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity onPress={onClose} style={styles.closeScannerButton}>
-                    <Text style={styles.closeScannerText}>Close Scanner</Text>
                 </TouchableOpacity>
             </View>
         </Modal>
     );
 };
 
+export default QrModal;
+
 const styles = StyleSheet.create({
     scannerContainer: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "#2E2E2E", // Matches the UI color from the image
     },
     scannerText: {
-        color: '#FFFFFF',
+        color: "#FFFFFF",
         fontSize: 16,
-        marginBottom: 10,
+        marginBottom: 20,
     },
-    closeScannerButton: {
-        backgroundColor: '#FFFFFF',
-        padding: 10,
+    permissionButton: {
+        backgroundColor: "#007AFF",
+        padding: 12,
         borderRadius: 8,
         marginTop: 20,
     },
-    closeScannerText: {
+    permissionText: {
         fontSize: 14,
-        color: '#000',
+        color: "#FFFFFF",
+    },
+    cameraWrapper: {
+        width: width * 0.70,
+        height: height * 0.35 ,
+        borderRadius: 10,
+        overflow: "hidden",
     },
     qrScanner: {
-        width: 250,
-        height: 250,
+        width: width * 0.8,
+        height: height * 0.5,
         borderRadius: 10,
     },
     chooseImageButton: {
-        backgroundColor: '#007AFF',
-        padding: 10,
-        borderRadius: 8,
+        alignItems: "center",
         marginTop: 20,
+    },
+    chooseImageIcon: {
+        width: 30,
+        height: 30,
+        marginBottom: 5,
     },
     chooseImageText: {
         fontSize: 14,
-        color: '#FFFFFF',
-    },
-    scanAgainButton: {
-        backgroundColor: '#FF9500',
-        padding: 10,
-        borderRadius: 8,
-        marginTop: 20,
-    },
-    scanAgainText: {
-        fontSize: 14,
-        color: '#FFFFFF',
+        color: "#FFFFFF",
     },
 });
-
-export default QrModal;
