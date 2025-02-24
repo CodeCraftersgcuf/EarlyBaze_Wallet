@@ -4,20 +4,20 @@ import { BarChart } from 'react-native-chart-kit';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import transactionsData from '@/constants/transactionsData.json';
 
-const screenWidth = Dimensions.get('window').width * 0.8;
+const screenWidth = Dimensions.get('window').width * 0.9;
 
 const TransactionsGraph: React.FC = () => {
-  const backgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#1A1A1A' }, 'background');
-  const borderColor = useThemeColor({ light: '#22A45D', dark: '#157347' }, 'border');
-  const textColor = useThemeColor({ light: '#000000', dark: '#FFFFFF' }, 'text');
+  const backgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#1A1A1A' }, 'background') || '#FFFFFF';
+  const borderColor = useThemeColor({ light: '#22A45D', dark: '#157347' }, 'border') || '#22A45D';
+  const textColor = useThemeColor({ light: '#000000', dark: '#FFFFFF' }, 'text') || '#000000';
 
   // Group transactions by type and count occurrences
   const transactionCounts = {
-    send: transactionsData.filter(tx => tx.type === 'send').length,
-    receive: transactionsData.filter(tx => tx.type === 'receive').length,
-    buy: transactionsData.filter(tx => tx.type === 'buy').length,
-    swap: transactionsData.filter(tx => tx.type === 'swap').length,
-    withdraw: transactionsData.filter(tx => tx.type === 'withdraw').length,
+    send: transactionsData.filter(tx => tx.type === 'send').length || 0,
+    receive: transactionsData.filter(tx => tx.type === 'receive').length || 0,
+    buy: transactionsData.filter(tx => tx.type === 'buy').length || 0,
+    swap: transactionsData.filter(tx => tx.type === 'swap').length || 0,
+    withdraw: transactionsData.filter(tx => tx.type === 'withdraw').length || 0,
   };
 
   // Chart Data
@@ -33,13 +33,6 @@ const TransactionsGraph: React.FC = () => {
           transactionCounts.swap,
           transactionCounts.buy,
         ],
-        colors: [
-          () => '#22A45D', // Green - Send Transactions
-          () => '#5D3FD3', // Purple - Buy Transactions
-          () => '#000000', // Black - Withdrawals
-          () => '#800000', // Dark Red - Swap Transactions
-          () => '#8A2BE2', // Blue - Receive Transactions
-        ],
       },
     ],
   };
@@ -50,18 +43,17 @@ const TransactionsGraph: React.FC = () => {
         data={data}
         width={screenWidth}
         height={220}
+        yAxisLabel=""
+        yAxisSuffix=""
+        fromZero
         chartConfig={{
           backgroundGradientFrom: backgroundColor,
           backgroundGradientTo: backgroundColor,
-          color: () => '#000000',
+          color: () => textColor,
+          barPercentage: 0.6,
           decimalPlaces: 0,
         }}
-        withCustomBarColorFromData
-        flatColor
-        fromZero
-        showBarTops={false}
-        withInnerLines={false}
-        withVerticalLines={false}
+        style={styles.chart}
       />
 
       {/* Graph Legend */}
@@ -96,12 +88,13 @@ export default TransactionsGraph;
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    
-    // padding: 16,
     borderRadius: 10,
     marginVertical: 16,
     borderWidth: 1,
-
+    padding: 12,
+  },
+  chart: {
+    borderRadius: 10,
   },
   legendContainer: {
     marginTop: 10,

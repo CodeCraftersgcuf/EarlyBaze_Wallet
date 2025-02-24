@@ -53,7 +53,7 @@ const Transactions: React.FC = () => {
 
         <ScrollView contentContainerStyle={styles.contentContainer}>
           {/* Show Graph ONLY when "All" Tab is Active */}
-          {activeTab === 'All' ? <TransactionsGraph /> : null}
+          {/* {activeTab === 'All' ? <TransactionsGraph /> : null} */}
 
           {/* Transaction List */}
           <TransactionList transactions={filteredTransactions} />

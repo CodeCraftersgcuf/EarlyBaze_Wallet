@@ -73,6 +73,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginVertical: 0,
   },
+  iconImage: {
+    width: 20,
+    height: 20,
+  },
   backgroundImage: {
     width: '90%',
     height: 100,

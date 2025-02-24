@@ -7,7 +7,7 @@ import ReferralStats from '@/components/Setting/Referral/ReferralStats';
 import ReferralCodeBox from '@/components/Setting/Referral/ReferralCodeBox';
 import ReferralListItem from '@/components/Setting/Referral/ReferralListItem';
 import { images } from '@/constants';
-
+import { useRouter, router } from 'expo-router';
 // Example referrals data (set to empty array to test empty state)
 const referralsData = [
   { name: 'Adewale', amount: '2,500', date: '29 Dec, 2024', imageUrl: 'https://randomuser.me/api/portraits/men/1.jpg' },
@@ -26,7 +26,7 @@ const Referral: React.FC = () => {
       <LinearGradient colors={['#25AE7A', '#0E5A98']} style={styles.gradientBackground}>
         <View>
           <Header />
-          <TouchableOpacity style={styles.withdrawButton}>
+          <TouchableOpacity style={styles.withdrawButton} onPress={() => router.push('/Withdraw')}>
             <Text style={styles.withdrawText}>Withdraw</Text>
           </TouchableOpacity>
           <Text style={[styles.title,]}>Referral</Text>

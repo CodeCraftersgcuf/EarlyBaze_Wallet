@@ -1,3 +1,4 @@
+// components/Receive/NetworkSelectionModal.tsx
 import React from 'react';
 import {
     View,
@@ -8,9 +9,9 @@ import {
     Modal,
     FlatList
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { images } from '@/constants';
+
 // Define network type
 interface NetworkOption {
     id: string;
@@ -34,7 +35,6 @@ const NetworkSelectionModal: React.FC<NetworkSelectionModalProps> = ({
     selectedNetwork,
     networks
 }) => {
-    // ✅ FIX: Move useThemeColor() calls to the top level of the component
     const backgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#000000' }, 'background');
     const textColor = useThemeColor({ light: '#004d00', dark: '#F6FBFF' }, 'text');
     const borderColor = useThemeColor({ light: '#DCDCDC', dark: '#1F1F1F' }, 'border');
@@ -49,15 +49,14 @@ const NetworkSelectionModal: React.FC<NetworkSelectionModalProps> = ({
                     {/* Modal Header */}
                     <View style={styles.header}>
                         <Text style={[styles.title, { color: titleTextColor }]}>Select Network</Text>
-                        <TouchableOpacity onPress={onClose} style={[styles.closeButton, { backgroundColor: backgroundColor }]}>
+                        <TouchableOpacity onPress={onClose} style={[styles.closeButton, { backgroundColor }]}>
                             <Image source={close} style={styles.closeIcon} />
                         </TouchableOpacity>
                     </View>
                     <View style={styles.horizontalLine} />
 
                     {/* Network Options */}
-                    <View style={styles.modalHeader}>                  
-                         <FlatList
+                    <FlatList
                         data={networks}
                         keyExtractor={(item) => item.id}
                         numColumns={3}
@@ -69,7 +68,7 @@ const NetworkSelectionModal: React.FC<NetworkSelectionModalProps> = ({
                                     selectedNetwork.id === item.id && styles.selectedNetwork,
                                     { backgroundColor: itemBackgroundColor }
                                 ]}
-                                onPress={() => onSelectNetwork(item)}
+                                onPress={() => onSelectNetwork(item)} // Update network on tap
                             >
                                 <View style={[styles.networkIconContainer, { backgroundColor: item.color }]}>
                                     <Image source={item.icon} style={styles.networkIcon} />
@@ -80,8 +79,6 @@ const NetworkSelectionModal: React.FC<NetworkSelectionModalProps> = ({
                             </TouchableOpacity>
                         )}
                     />
-                    </View>
-
                 </View>
             </View>
         </Modal>
@@ -101,7 +98,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         width: '100%',
         paddingHorizontal: 20,
-
     },
     title: {
         fontSize: 17,
@@ -129,19 +125,8 @@ const styles = StyleSheet.create({
         width: 20,
         height: 20,
     },
-    modalHeader: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        // alignItems: 'center',
-        paddingHorizontal: 10,
-        marginBottom: 15,
-    },
-    modalTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-    },
     networkList: {
-        // alignItems: 'center',
+        justifyContent: 'center',
     },
     networkItem: {
         width: '29%',
@@ -149,11 +134,9 @@ const styles = StyleSheet.create({
         margin: 8,
         paddingVertical: 15,
         borderRadius: 15,
-
     },
     selectedNetwork: {
         borderWidth: 2,
-
         borderColor: '#004d00',
     },
     networkIconContainer: {
@@ -163,7 +146,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         marginBottom: 5,
-
     },
     networkIcon: {
         width: 30,

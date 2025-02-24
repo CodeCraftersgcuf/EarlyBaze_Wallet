@@ -40,14 +40,14 @@ const TransactionSummary: React.FC = () => {
       {/* Transaction Card */}
       <View style={[styles.card, { backgroundColor: cardBackgroundColor }]}>
         <Text style={styles.amountText}>0.0023 BTC</Text>
+        <TransactionDetailItem label="Recipient Address" value={String("1oefkfdnosk23jkdksndw...")} isCopyable />
+        <TransactionDetailItem label="Network" value={String("Bitcoin")} icon={icons.bitCoin} />
+        <TransactionDetailItem label="Amount in BTC" value={String(0.0023)} />
+        <TransactionDetailItem label="Amount in USD" value={String("$3,546")} />
+        <TransactionDetailItem label="Network fee" value={String("0.000023 BTC")} />
+        <TransactionDetailItem label="Transaction Hash" value={String("234eefkjdkfndk...")} isCopyable />
+        <TransactionDetailItem label="Transaction Date" value={String("24 Dec, 2024 - 07:22 AM")} />
 
-        <TransactionDetailItem label="Recipient Address" value="1oefkfdnosk23jkdksndw..." isCopyable />
-        <TransactionDetailItem label="Network" value="Bitcoin" icon={icons.bitCoin} />
-        <TransactionDetailItem label="Amount in BTC" value="0.0023" />
-        <TransactionDetailItem label="Amount in USD" value="$3,546" />
-        <TransactionDetailItem label="Network fee" value="0.000023 BTC" />
-        <TransactionDetailItem label="Transaction Hash" value="234eefkjdkfndk..." isCopyable />
-        <TransactionDetailItem label="Transaction Date" value="24 Dec, 2024 - 07:22 AM" />
       </View>
 
       {/* Action Button */}

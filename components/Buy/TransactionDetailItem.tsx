@@ -1,14 +1,15 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, Clipboard } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import * as Clipboard from 'expo-clipboard'; // ✅ Correct Clipboard import
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { images } from '@/constants';
 
 interface TransactionDetailItemProps {
   label: string;
-  value: string | number; // Ensure value is either string or number
+  value: string | number;
   isCopyable?: boolean;
-  icon?: any; // Icon is now optional
-  valueStyle?: object; // Optional valueStyle prop
+  icon?: any;
+  valueStyle?: object;
 }
 
 const TransactionDetailItem: React.FC<TransactionDetailItemProps> = ({ label, value, isCopyable, icon, valueStyle }) => {
@@ -25,14 +26,18 @@ const TransactionDetailItem: React.FC<TransactionDetailItemProps> = ({ label, va
     <View style={styles.paymentRow}>
       <Text style={[styles.label, { color: labelColor }]}>{label}</Text>
       <View style={styles.row}>
+        {/* Ensure Copy Button is wrapped inside TouchableOpacity */}
         {isCopyable && (
           <TouchableOpacity onPress={handleCopy}>
             <Image source={copy} style={styles.icon} />
           </TouchableOpacity>
         )}
-        {/* Wrap value in <Text> to avoid warning */}
+        
+        {/* Ensure value is wrapped in a <Text> element */}
         <Text style={[styles.value, { color: textColor }, valueStyle]}>{String(value)}</Text>
-        {icon && <Image source={icon} style={styles.icon} />} {/* Render icon only if provided */}
+
+        {/* Ensure Icon is placed correctly */}
+        {icon && <Image source={icon} style={styles.icon} />}
       </View>
     </View>
   );
@@ -42,6 +47,7 @@ const styles = StyleSheet.create({
   paymentRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center', // ✅ Ensure proper alignment
     paddingVertical: 10,
     paddingHorizontal: 15,
     borderBottomColor: '#ddd',
@@ -53,7 +59,7 @@ const styles = StyleSheet.create({
   value: {
     fontSize: 13,
     fontWeight: '500',
-    marginLeft: 5, // Added spacing for better layout
+    marginLeft: 5,
   },
   row: {
     flexDirection: 'row',
@@ -62,7 +68,7 @@ const styles = StyleSheet.create({
   icon: {
     width: 18,
     height: 18,
-    marginLeft: 5, // Ensure proper spacing for the optional icon
+    marginLeft: 5,
   },
 });
 
