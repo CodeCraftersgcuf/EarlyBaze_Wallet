@@ -1,16 +1,17 @@
-import { apiCall } from '../customApiCall';
-import { API_ENDPOINTS } from '@/apiConfig';
-import { InputValues as SignUpProps } from '@/app/signup';
-import { InputValues as LoginProps } from '@/app/login';
+import { apiCall } from "../customApiCall";
+import { API_ENDPOINTS } from "@/apiConfig";
+import { InputValues as SignUpProps } from "@/app/register";
+import { InputValues as LoginProps } from "@/app/login";
 
 export const signUpUser = async (data: SignUpProps): Promise<any> => {
-  return await apiCall(API_ENDPOINTS.AUTH.Register, 'POST', data);
+  return await apiCall(API_ENDPOINTS.AUTH.Register, "POST", data);
 };
 
 export const loginUser = async (
   data: LoginProps
 ): Promise<IUserLoginResponse> => {
-  return await apiCall(API_ENDPOINTS.AUTH.Login, 'POST', data);
+  console.log("🔹 Sending Login Request:", data); // ✅ Log request before sending
+  return await apiCall(API_ENDPOINTS.AUTH.Login, "POST", data);
 };
 
 export const verifyEmailOTP = async ({
@@ -20,18 +21,18 @@ export const verifyEmailOTP = async ({
   data: { otp: string };
   token: string;
 }) => {
-  return await apiCall(API_ENDPOINTS.AUTH.VerfiyEmailOtp, 'POST', data, token);
+  return await apiCall(API_ENDPOINTS.AUTH.VerfiyEmailOtp, "POST", data, token);
 };
 
 export const verifyPasswordOTP = async (data: {
   otp: string;
   userId: string;
 }) => {
-  return await apiCall(API_ENDPOINTS.AUTH.VerifyPasswordOtp, 'POST', data);
+  return await apiCall(API_ENDPOINTS.AUTH.VerifyPasswordOtp, "POST", data);
 };
 
 export const forgotPassword = async (data: { email: string }) => {
-  return await apiCall(API_ENDPOINTS.AUTH.ForgotPassword, 'POST', data);
+  return await apiCall(API_ENDPOINTS.AUTH.ForgotPassword, "POST", data);
 };
 
 export const resetPassword = async (data: {
@@ -39,7 +40,7 @@ export const resetPassword = async (data: {
   confirmPassword: string;
   userId: string;
 }) => {
-  return await apiCall(API_ENDPOINTS.AUTH.ResetPassword, 'POST', data);
+  return await apiCall(API_ENDPOINTS.AUTH.ResetPassword, "POST", data);
 };
 
 export const resendOtp = async ({
@@ -49,7 +50,7 @@ export const resendOtp = async ({
   data: { email: string };
   token: string;
 }) => {
-  return await apiCall(API_ENDPOINTS.AUTH.ResendOtp, 'POST', data, token);
+  return await apiCall(API_ENDPOINTS.AUTH.ResendOtp, "POST", data, token);
 };
 
 export const generateBvnLink = async ({
@@ -61,7 +62,7 @@ export const generateBvnLink = async ({
 }) => {
   return await apiCall(
     API_ENDPOINTS.ACCOUNT_MANAGEMENT.RequestBvnConsent,
-    'POST',
+    "POST",
     data,
     token
   );
@@ -74,7 +75,7 @@ export const verifyUser = async ({
   data: { password: string };
   token: string;
 }): Promise<any> => {
-  return await apiCall(API_ENDPOINTS.AUTH.VerifyUser, 'POST', data, token);
+  return await apiCall(API_ENDPOINTS.AUTH.VerifyUser, "POST", data, token);
 };
 
 export interface IUserProfile {

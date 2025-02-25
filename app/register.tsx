@@ -19,10 +19,40 @@ import { useState } from "react";
 import Button from "@/utils/Button";
 import { useRouter } from "expo-router";
 
+
+//Related to the Integration of the Register Page
+import { signUpUser } from '@/utils/mutations/authMutations'
+import { useMutation } from '@tanstack/react-query';
+
+
+export interface InputValues {
+  name: string;
+  email: string;
+  phone: string;
+  password: string;
+  invite_code: string;
+  picture?: string; // ✅ Add optional picture field
+}
+
 const Register = () => {
   const { dark } = useTheme();
   const { push } = useRouter();
   const [selectedImage, setSelectedImage] = useState(null);
+
+
+  // Mutation for Register
+  const { isPending: isPendingRegister, mutate: mutateRegister } = useMutation({
+    mutationFn: (data: InputValues) => signUpUser(data),
+    onSuccess: (data) => {
+      console.log("✅ Register Successful:", data);
+      push("/Otp"); // ✅ Navigate to OTP screen after successful registration
+    },
+    onError: (error) => {
+      console.error("❌ Register Failed:", error);
+      alert(error.message || "Register failed, please try again.");
+    },
+  });
+
 
   const pickImage = async () => {
     let result = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -43,7 +73,7 @@ const Register = () => {
     }
   };
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} >
       <View>
         <View style={styles.imageContainer}>
           <Image
@@ -87,13 +117,15 @@ const Register = () => {
               >
                 <Formik
                   initialValues={{
-                    username: "",
+                    name: "",
                     email: "",
-                    phoneNumber: "",
+                    phone: "",
                     password: "",
-                    referralCode: "",
+                    invite_code: "",
                   }}
-                  onSubmit={(values) => console.log(values)}
+                  onSubmit={(values) => {
+                    mutateRegister({ ...values, picture: selectedImage || "" }); // ✅ Pass picture if available
+                  }}
                   validationSchema={validationRegistrationSchema}
                 >
                   {({
@@ -115,19 +147,19 @@ const Register = () => {
                           Username
                         </Text>
                         <Input
-                          value={values.username}
-                          onChangeText={handleChange("username")}
-                          onBlur={handleBlur("username")}
+                          value={values.name}
+                          onChangeText={handleChange("name")}
+                          onBlur={handleBlur("name")}
                           label="Input Username"
                           keyboardType="default"
                           showCheckbox={false}
                           errorText={
-                            touched.username && errors.username
-                              ? errors.username
+                            touched.name && errors.name
+                              ? errors.name
                               : ""
                           }
-                          prefilledValue={values.username}
-                          id="username"
+                          prefilledValue={values.name}
+                          id="name"
                         />
                       </View>
                       <View>
@@ -163,19 +195,19 @@ const Register = () => {
                           Phone Number
                         </Text>
                         <Input
-                          value={values.phoneNumber}
-                          onChangeText={handleChange("phoneNumber")}
-                          onBlur={handleBlur("phoneNumber")}
+                          value={values.phone}
+                          onChangeText={handleChange("phone")}
+                          onBlur={handleBlur("phone")}
                           keyboardType="phone-pad"
                           label="Input Phone Number"
                           showCheckbox={false}
                           errorText={
-                            touched.phoneNumber && errors.phoneNumber
-                              ? errors.phoneNumber
+                            touched.phone && errors.phone
+                              ? errors.phone
                               : ""
                           }
-                          prefilledValue={values.phoneNumber}
-                          id="phoneNumber"
+                          prefilledValue={values.phone}
+                          id="phone"
                         />
                       </View>
                       <View>
@@ -213,28 +245,29 @@ const Register = () => {
                           Referral Code
                         </Text>
                         <Input
-                          value={values.referralCode}
-                          onChangeText={handleChange("referralCode")}
-                          onBlur={handleBlur("referralCode")}
+                          value={values.invite_code}
+                          onChangeText={handleChange("invite_code")}
+                          onBlur={handleBlur("invite_code")}
                           label="Input Referral Code"
                           keyboardType="default"
                           showCheckbox={false}
                           errorText={
-                            touched.referralCode && errors.referralCode
-                              ? errors.referralCode
+                            touched.invite_code && errors.invite_code
+                              ? errors.invite_code
                               : ""
                           }
-                          prefilledValue={values.referralCode}
+                          prefilledValue={values.invite_code}
                           id="referralCode"
                         />
                       </View>
                       <View>
                         <Button
-                          title="Register"
-                          // onPress={() => handleSubmit()}
-                          onPress={() => push("/Otp")} // 
+                          title={isPendingRegister ? "Registering..." : "Register"} // ✅ Show "Registering..." when pending
+                          onPress={() => handleSubmit()}
+                          disabled={isPendingRegister} // ✅ Disable button while registering
                         />
                       </View>
+
                       <View style={styles.bottomBoxText}>
                         <Text
                           style={{
@@ -264,7 +297,7 @@ const Register = () => {
           </View>
         </View>
       </View>
-    </SafeAreaView>
+    </SafeAreaView >
   );
 };
 

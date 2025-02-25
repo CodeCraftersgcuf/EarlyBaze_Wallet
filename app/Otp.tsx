@@ -7,6 +7,9 @@ import OtpInput from '@/components/OtpInput';
 import PinInput from '@/components/PinInput';
 import { useRouter } from 'expo-router';
 import useLoadFonts from '@/hooks/useLoadFonts';
+
+
+
 const Otp: React.FC = () => {
     const backgroundColor = useThemeColor({ light: '#EFFEF9', dark: '#000000' }, 'background');
     const textColor = useThemeColor({ light: '#000', dark: '#fff' }, 'text');

@@ -17,11 +17,38 @@ import Input from "@/utils/CustomInput";
 import Button from "@/utils/Button";
 import { router, useRouter } from "expo-router";
 import useLoadFonts from "@/hooks/useLoadFonts";
+import { loginUser } from "@/utils/mutations/authMutations";
+
+//Related to the Integration of the Login Page
+import { useMutation } from '@tanstack/react-query';
+
+export interface InputValues {
+  email: string;
+  password: string;
+}
 
 const Login = () => {
   const { dark } = useTheme();
   const { push } = useRouter();
   const fontsLoaded = useLoadFonts(); // Load custom fonts
+
+  // Mutation for Login
+  const { isPending: isPendingLogin, mutate: mutateLogin } = useMutation({
+    mutationFn: (data: InputValues) => loginUser(data),
+    onSuccess: async (data) => {
+      try {
+        console.log("✅ Login Successful:", data);
+        push("/(tabs)");
+      } catch (error) {
+        console.error("❌ Error saving data:", error);
+      }
+    },
+    onError: (error) => {
+      console.error("❌ Login Failed:", error);
+      alert(error.message || "Login failed, please try again.");
+    }
+  });
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -56,8 +83,8 @@ const Login = () => {
               <View>
                 <Formik
                   initialValues={{ email: "", password: "" }}
-                  onSubmit={(values: any) => console.log(values)}
                   validationSchema={validationSignInSchema}
+                  onSubmit={(values) => mutateLogin(values)} // ✅ Calls mutateLogin on form submit
                 >
                   {({
                     handleChange,
@@ -83,9 +110,7 @@ const Login = () => {
                           onBlur={handleBlur("email")}
                           label="Input email address"
                           keyboardType="email-address"
-                          errorText={
-                            touched.email && errors.email ? errors.email : ""
-                          }
+                          errorText={touched.email && errors.email ? errors.email : ""}
                           showCheckbox={false}
                           prefilledValue={values.email}
                           id="email"
@@ -120,11 +145,16 @@ const Login = () => {
                             bottom: 12,
                           }}
                         >
-                          Forget Password ?{" "}
+                          Forget Password ?
                         </Text>
                       </TouchableOpacity>
                       <View>
-                        <Button title="Login" onPress={() => router.push('/(tabs)')} />
+                        {/* ✅ Login Button now triggers handleSubmit which calls mutateLogin */}
+                        <Button
+                          title={isPendingLogin ? "Logging in..." : "Login"}
+                          onPress={handleSubmit}
+                          disabled={isPendingLogin}
+                        />
                       </View>
                       <View style={styles.bottomBoxText}>
                         <Text
@@ -141,8 +171,7 @@ const Login = () => {
                                 fontWeight: "bold",
                               }}
                             >
-                              {" "}
-                              Sign Up
+                              {" "} Sign Up
                             </Text>
                           </TouchableOpacity>
                         </Text>
@@ -182,7 +211,7 @@ const styles = StyleSheet.create({
     ],
     width: Dimensions.get("window").width * 0.36,
     height: Dimensions.get("window").width * 0.36,
-    borderRadius: Dimensions.get("window").width * 0.18, // Circular border
+    borderRadius: Dimensions.get("window").width * 0.18,
     borderWidth: 2,
     borderColor: COLORS.greyscale300,
     justifyContent: "center",

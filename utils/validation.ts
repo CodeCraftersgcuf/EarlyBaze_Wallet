@@ -24,13 +24,13 @@ export const validationResetPasswordSchema = yup.object().shape({
 });
 
 export const validationRegistrationSchema = yup.object().shape({
-    username: yup.string().required("Username is required"),
+    name: yup.string().required("Username is required"),
     email: yup.string().required("Email is required")
     .matches(
       /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
       "Please enter a valid email address"
     ),
-    phoneNumber: yup.string().required("Phone number is required"),
+    phone: yup.string().required("Phone number is required"),
     password: yup.string().required("Password is required"),
-    referralCode: yup.string().required("Referral code is required"),
+    invite_code: yup.string().required("Referral code is required"),
 })
