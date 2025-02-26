@@ -15,8 +15,15 @@ import { Formik } from "formik";
 import React, { useEffect, useState } from "react";
 import Input from "@/utils/CustomInput";
 import Button from "@/utils/Button";
-import { useRouter } from "expo-router";
+import { useRouter, router } from "expo-router";
 import useLoadFonts from "@/hooks/useLoadFonts";
+
+
+//Code of the Integration 
+import { forgotPassword, verifyPasswordOTP } from '@/utils/mutations/authMutations'
+import { useMutation } from '@tanstack/react-query';
+
+
 
 const ForgetPassword = () => {
   const { dark } = useTheme();
@@ -36,6 +43,31 @@ const ForgetPassword = () => {
     }
     return () => clearTimeout(intervel);
   }, [timer, isTimerActive]);
+
+  // ✅ Forgot Password Mutation
+  const { mutate: forgotPass, isPending: isForgettingPass } = useMutation({
+    mutationFn: async (data: { email: string }) => await forgotPassword(data),
+    onSuccess: (data) => {
+      console.log("✅ Forgot Password:", data);
+    },
+    onError: (error) => {
+      console.log("❌ Forgot Password Error:", error);
+    },
+  });
+
+  // ✅ Verify Password OTP Mutation
+  const { mutate: verifyPassOtp, isPending: isVerifyingPassOtp } = useMutation({
+    mutationFn: async (data: { otp: string; email: string }) => await verifyPasswordOTP(data),
+    onSuccess: (data, variables) => {
+      console.log("✅ Verify Password OTP:", data);
+      console.log("The Email we are passing", variables.email);
+      push({ pathname: "/resetpassword", params: { email: variables.email } });
+
+    },
+    onError: (error) => {
+      console.log("❌ Verify Password OTP Error:", error);
+    },
+  });
 
   return (
     <SafeAreaView style={styles.container}>
@@ -106,6 +138,11 @@ const ForgetPassword = () => {
                           label="Input email address"
                           sendCode
                           onSendCodePress={() => {
+                            if (!values.email) {
+                              alert("Please enter your email first.");
+                              return;
+                            }
+                            forgotPass({ email: values.email }); // ✅ Trigger Forgot Password API
                             setTimer(60);
                             setIsTimerActive(true);
                           }}
@@ -142,17 +179,28 @@ const ForgetPassword = () => {
                           id="inputPin"
                         />
                       </View>
-                      <Text style={{ paddingBottom: 10 }}>
+                      <Text style={{ marginBottom: 0 }}>
                         {isTimerActive && timer > 0 && (
                           <Text style={{ fontWeight: "bold", textAlign: 'center', color: dark ? COLORS.white : COLORS.black }}>OTP can be resent in
                             <Text style={{ color: COLORS.primary }}>{` 00 : ${timer} Sec`}</Text>
                           </Text>
                         )}
                       </Text>
-                      <View>
+                      <View style={{ marginBottom: 20 }}>
                         <Button
                           title="Proceed"
-                          onPress={() => handleSubmit()}
+                          onPress={() => {
+                            if (!values.email || !values.inputPin) {
+                              alert("Please enter both email and OTP.");
+                              return;
+                            }
+                            verifyPassOtp({ otp: values.inputPin, email: values.email }, {
+                              onSuccess: () => {
+                                console.log("✅ OTP Verified, Navigating to Reset Password");
+                                push(`/resetpassword?timer=${timer}`); // ✅ Navigate only if OTP is correct
+                              }
+                            });
+                          }}
                         />
                       </View>
                     </View>
@@ -187,7 +235,7 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     width: "100%",
-    height: Dimensions.get("window").height - 20,
+    height: Dimensions.get("window").height - 0,
     position: "relative",
   },
   image: {
@@ -228,6 +276,7 @@ const styles = StyleSheet.create({
     width: "100%",
     paddingHorizontal: 20,
     paddingBottom: 20,
+    height: "100%",
   },
   inputLabel: {
     fontSize: 16,

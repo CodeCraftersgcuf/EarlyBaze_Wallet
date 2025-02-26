@@ -8,7 +8,7 @@ const API_ENDPOINTS = {
     VerfiyEmailOtp: API_DOMAIN + "/auth/otp-verification",
     ResendOtp: API_DOMAIN + "/auth/resend-otp",
     ForgotPassword: API_DOMAIN + "/auth/forget-password",
-    VerifyPasswordOtp: API_DOMAIN + "/auth/reset-password-otp-verification",
+    VerifyPasswordOtp: API_DOMAIN + "/auth/verify-forget-password-otp",
     ResetPassword: API_DOMAIN + "/auth/reset-password",
     CheckBvnStatus: API_DOMAIN + "/check-user-status",
     CheckBvnVerified: API_DOMAIN + "/check-bvn-status",

@@ -22,13 +22,6 @@ export const resendOtp = async ({ data }: { data: { email: string } }) => {
   return await apiCall(API_ENDPOINTS.AUTH.ResendOtp, "POST", data);
 };
 
-export const verifyPasswordOTP = async (data: {
-  otp: string;
-  userId: string;
-}) => {
-  return await apiCall(API_ENDPOINTS.AUTH.VerifyPasswordOtp, "POST", data);
-};
-
 export const setPin = async (data: { email: string; pin: string }) => {
   return await apiCall(API_ENDPOINTS.USER.SetPin, "POST", data);
 };
@@ -40,11 +33,17 @@ export const verifyPin = async (data: { email: string; pin: string }) => {
 export const forgotPassword = async (data: { email: string }) => {
   return await apiCall(API_ENDPOINTS.AUTH.ForgotPassword, "POST", data);
 };
+export const verifyPasswordOTP = async (data: {
+  otp: string;
+  email: string;
+}) => {
+  console.log("🔹 Sending Login Request:", data);
+  return await apiCall(API_ENDPOINTS.AUTH.VerifyPasswordOtp, "POST", data);
+};
 
 export const resetPassword = async (data: {
-  newPassword: string;
-  confirmPassword: string;
-  userId: string;
+  email: string;
+  password: string;
 }) => {
   return await apiCall(API_ENDPOINTS.AUTH.ResetPassword, "POST", data);
 };

@@ -15,25 +15,37 @@ import { Formik } from "formik";
 import React, { useEffect, useState } from "react";
 import Input from "@/utils/CustomInput";
 import Button from "@/utils/Button";
-import { useRouter, useLocalSearchParams } from "expo-router";
+import { useRouter, router, useLocalSearchParams } from "expo-router";
 import useLoadFonts from "@/hooks/useLoadFonts";
+
+//Code for the Integration of the Reset Password Screen
+import { resetPassword } from '@/utils/mutations/authMutations'
+import { useMutation } from '@tanstack/react-query'
+
 
 const ResetPassword = () => {
   const { dark } = useTheme();
-  const { timer } = useLocalSearchParams();
+  const {  email } = useLocalSearchParams();
   const [remainingTime, setRemainingTime] = useState(Number(timer) || 60);
-  useEffect(() => {
-    if (remainingTime === 0) {
-      return;
-    }
-    const interval = setTimeout(() => {
-      setRemainingTime((prev) => prev - 1);
-    }, 1000);
+  const { back, push } = useRouter();
 
-    return () => clearTimeout(interval);
-  }, [remainingTime]);
+  c
+  console.log("📩 Received email:", email); // Debugging
 
-  const { back } = useRouter();
+
+  // ✅ Reset Password Mutation
+  const { mutate: resetPass, isPending: isResettingPass } = useMutation({
+    mutationFn: async (data: { email: string; password: string }) =>
+      await resetPassword(data),
+    onSuccess: (data) => {
+      console.log("✅ Reset Password:", data);
+      push("/login");
+    },
+    onError: (error) => {
+      console.log("❌ Reset Password Error:", error);
+    },
+  });
+
   const fontsLoaded = useLoadFonts(); // Load custom fonts
   return (
     <SafeAreaView style={styles.container}>
@@ -136,24 +148,27 @@ const ResetPassword = () => {
                           id="confirmPassword"
                         />
                       </View>
-                      <Text style={{ paddingBottom: 8 }}>
-                        <Text
-                          style={{
-                            fontWeight: "bold",
-                            textAlign: "center",
-                            color: dark ? COLORS.white : COLORS.black,
-                          }}
-                        >
-                          OTP can be resent in
-                          <Text
-                            style={{ color: COLORS.primary }}
-                          >{` 00 : ${remainingTime > 9 ? remainingTime : `0${remainingTime}`} Sec`}</Text>
-                        </Text>
-                      </Text>
-                      <View style={{ paddingVertical: 10 }}>
+
+                      <View style={{ paddingVertical: 10, marginBottom: 10 }}>
                         <Button
                           title="Proceed"
-                          onPress={() => handleSubmit()}
+                          onPress={() => {
+                            if (!values.password || !values.confirmPassword) {
+                              alert("Please fill in both password fields.");
+                              return;
+                            }
+                            if (values.password !== values.confirmPassword) {
+                              alert("Passwords do not match.");
+                              return;
+                            }
+                            if (!email) {
+                              alert("Error: No email found, please restart the process.");
+                              return;
+                            }
+
+                            resetPass({ email, password: values.password });
+                          }}
+
                         />
                       </View>
                     </View>
@@ -188,7 +203,7 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     width: "100%",
-    height: Dimensions.get("window").height - 20,
+    height: Dimensions.get("window").height - 0,
     position: "relative",
   },
   image: {
@@ -221,7 +236,6 @@ const styles = StyleSheet.create({
     width: "100%",
     justifyContent: "center",
     paddingVertical: 20,
-    alignItems: "center",
     zIndex: 10,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
@@ -229,6 +243,8 @@ const styles = StyleSheet.create({
   formContainer: {
     width: "100%",
     paddingHorizontal: 20,
+    paddingBottom: 20,
+    height: "100%",
   },
   inputLabel: {
     fontSize: 16,

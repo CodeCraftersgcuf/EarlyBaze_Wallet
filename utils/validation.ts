@@ -12,7 +12,7 @@ export const validationSignInSchema = yup.object().shape({
 
 export const validationForgetPasswordSchema = yup.object().shape({
   email: yup.string().required("Email is required"),
-  inputPin: yup.string().required("Pin is required").max(4).min(4),
+  inputPin: yup.string().required("Pin is required").max(6).min(6),
 });
 
 export const validationResetPasswordSchema = yup.object().shape({
