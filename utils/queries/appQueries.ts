@@ -9,6 +9,40 @@ export const getAssests = async ({
   return await apiCall(API_ENDPOINTS.USER.GetAssests, "GET", undefined, token);
 };
 
+export const getUserDetails = async ({
+  token,
+}: {
+  token: string;
+}): Promise<UserDetailsResponse> => {
+  return await apiCall(
+    API_ENDPOINTS.USER.GetUserDetails,
+    "GET",
+    undefined,
+    token
+  );
+};
+
+export const getBanksAccounts = async ({
+  token,
+}: {
+  token: string;
+}): Promise<GetBankDetail> => {
+  return await apiCall(
+    API_ENDPOINTS.USER.GetBankDetail,
+    "GET",
+    undefined,
+    token
+  );
+};
+
+export const getUserBalance = async ({
+  token,
+}: {
+  token: string;
+}): Promise<UserBalanceResponse> => {
+  return await apiCall(API_ENDPOINTS.USER.GetBalance, "GET", undefined, token);
+};
+
 export const getBillerCategories = async ({
   token,
 }: {
@@ -130,6 +164,7 @@ export const getSlide = async (): Promise<SlideResponse> => {
     undefined
   );
 };
+
 interface SlideResponse {
   status: "success" | "error";
   data: Slide[];
@@ -154,6 +189,64 @@ interface WalletCurrency {
   price: number;
   symbol: string | null;
   naira_price: number;
+}
+
+interface UserDetails {
+  id: number;
+  name: string;
+  email: string;
+  email_verified_at: string | null;
+  created_at: string;
+  updated_at: string;
+  user_code: string;
+  invite_code: string | null;
+  otp: string | null;
+  otp_verified: number;
+  is_active: number;
+  pin: string;
+  phone: string;
+  profile_picture: string | null;
+}
+
+interface UserDetailsResponse {
+  status: string;
+  data: UserDetails;
+  message: string;
+}
+interface BankDetail {
+  account_name: string;
+  account_number: string;
+  bank_name: string;
+  created_at: string;
+  id: number;
+  is_default: number;
+  updated_at: string;
+  user_id: number;
+}
+
+interface GetBankDetail {
+  status: string;
+  data: BankDetail[]; // Array of bank details
+  message: string;
+}
+
+interface UserBalance {
+  id: number;
+  crypto_balance: number;
+  naira_balance: number;
+  user_id: number;
+  account_number: string;
+  total_deposits: number;
+  total_withdrawals: number;
+  total_referral_earnings: number;
+  created_at: string;
+  updated_at: string;
+}
+
+interface UserBalanceResponse {
+  status: string;
+  data: UserBalance;
+  message: string;
 }
 
 interface Slide {

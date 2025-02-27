@@ -10,7 +10,7 @@ import useLoadFonts from '@/hooks/useLoadFonts';
 import QrModal from '../Send/QrModal';
 
 export type HeaderProps = {
-  username: string;
+  username: string | undefined;
   greeting: string;
 };
 

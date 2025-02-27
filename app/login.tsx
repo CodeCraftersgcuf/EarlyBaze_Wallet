@@ -214,7 +214,7 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     width: "100%",
-    height: Dimensions.get("window").height - 20,
+    height: Dimensions.get("window").height - 0,
     position: "relative",
   },
   image: {

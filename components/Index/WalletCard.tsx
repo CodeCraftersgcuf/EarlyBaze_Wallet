@@ -1,10 +1,17 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, ImageBackground } from 'react-native';
-import WalletItem from './WalletItem';
-import Icon from 'react-native-vector-icons/Ionicons';
-import { useRouter, router } from 'expo-router';
-import { images } from '@/constants';
-import { LinearGradient } from 'expo-linear-gradient';
+import React, { useState, useEffect } from "react";
+import { StyleSheet, Text, TouchableOpacity, View, ImageBackground } from "react-native";
+import WalletItem from "./WalletItem";
+import { Ionicons } from "@expo/vector-icons";
+import { useRouter, router } from "expo-router";
+import { images } from "@/constants";
+import { LinearGradient } from "expo-linear-gradient";
+import { getFromStorage } from "@/utils/storage";
+
+
+import { getUserBalance } from "@/utils/queries/appQueries";
+import { useQuery } from "@tanstack/react-query";
+
+
 // Importing background image
 const card_back = images.card_back;
 const card_back2 = images.card_back2;
@@ -15,8 +22,38 @@ type WalletCardProps = {
 };
 
 const WalletCard: React.FC<WalletCardProps> = ({ isCrypto, onToggle }) => {
-  const walletTitle = isCrypto ? 'Crypto Wallet' : 'Naira Wallet';
-  const walletBalance = isCrypto ? '$25,000' : '₦25,000,000';
+
+  const [isBalanceVisible, setIsBalanceVisible] = useState(true);
+  const [cryptoAssets, setCryptoAssets] = useState<any[]>([]); // ✅ Store fetched assets
+  const [token, setToken] = useState<string | null>(null); // State to hold the token
+
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const assets = await getFromStorage("assets");
+      const fetchedToken = await getFromStorage("authToken");
+      setToken(fetchedToken);
+      if (assets) {
+        setCryptoAssets(assets);
+      }
+    };
+    fetchUserData();
+  }, []);
+
+  const { data: userBalance, error: userError, isLoading: userLoading } = useQuery({
+    queryKey: ["userBalance"],
+    queryFn: () => getUserBalance({ token }),
+    enabled: !!token, // Only run the query when the token is available
+  });
+
+  console.log("🔹 User Balance:", userBalance);
+
+
+  const walletTitle = isCrypto ? "Crypto Wallet" : "Naira Wallet";
+  const walletBalance = isCrypto
+    ? `$${userBalance?.data?.crypto_balance || 0}`
+    : `₦${userBalance?.data?.naira_balance || 0}`;
+
   const switchText = isCrypto ? (
     <>
       Switch to <Text style={styles.glowText}>Naira</Text> Wallet
@@ -27,28 +64,39 @@ const WalletCard: React.FC<WalletCardProps> = ({ isCrypto, onToggle }) => {
     </>
   );
 
-  // State to toggle balance visibility
-  const [isBalanceVisible, setIsBalanceVisible] = useState(true);
+
+
 
   const toggleBalanceVisibility = () => {
     setIsBalanceVisible(!isBalanceVisible);
   };
 
+
+
   return (
     <>
       {/* Switch Button with Glowing Effect */}
       <View style={styles.cusButton}>
-        <TouchableOpacity onPress={onToggle} style={[styles.switchButton, isCrypto ? styles.cryptoSwitchButton : styles.nairaSwitchButton]}>
+        <TouchableOpacity
+          onPress={onToggle}
+          style={[styles.switchButton, isCrypto ? styles.cryptoSwitchButton : styles.nairaSwitchButton]}
+        >
           <Text style={styles.switchText}>{switchText}</Text>
         </TouchableOpacity>
       </View>
 
       {/* Wallet Card with Image Background */}
-      <ImageBackground source={isCrypto ? card_back : card_back2} style={styles.card} imageStyle={styles.cardImage}>
+      <ImageBackground
+        source={isCrypto ? card_back : card_back2}
+        style={styles.card}
+        imageStyle={styles.cardImage}
+      >
         <LinearGradient
-          colors={isCrypto
-            ? ['rgba(11, 86, 12, 0.75)', 'rgba(6, 48, 82, 0.75)'] // For Crypto Wallet
-            : ['rgba(83, 5, 74, 0.75)', 'rgba(6, 48, 82, 0.75)']} // For Naira Wallet
+          colors={
+            isCrypto
+              ? ["rgba(11, 86, 12, 0.75)", "rgba(6, 48, 82, 0.75)"]
+              : ["rgba(83, 5, 74, 0.75)", "rgba(6, 48, 82, 0.75)"]
+          }
           style={styles.cardOverlay}
         />
 
@@ -68,30 +116,41 @@ const WalletCard: React.FC<WalletCardProps> = ({ isCrypto, onToggle }) => {
           {/* Card Balance with Eye Icon */}
           <View style={styles.balanceContainer}>
             <Text style={styles.cardBalance}>
-              {isBalanceVisible ? walletBalance : '*****'}
-            </Text>
-            <TouchableOpacity onPress={toggleBalanceVisibility}>
-              <Icon
-                name={isBalanceVisible ? 'eye-off' : 'eye'}
-                size={24}
-                color="#FFF"
-                style={styles.eyeIcon}
-              />
+              {isBalanceVisible
+                ? userLoading
+                  ? "Loading..." // ✅ Show loading while fetching data
+                  : walletBalance
+                : "*****"}
+            </Text>            <TouchableOpacity onPress={toggleBalanceVisibility}>
+              <Ionicons name={isBalanceVisible ? "eye-off" : "eye"} size={24} color="#FFF" style={styles.eyeIcon} />
             </TouchableOpacity>
           </View>
         </View>
-        {/* Wallet Items or Content */}
+
+        {/* Wallet Items (Dynamic) */}
         {isCrypto ? (
           <View style={styles.cryptoInfoContainer}>
-            <WalletItem label="BTC" value="0.003" icon="bitcoin" />
-            <WalletItem label="USDT" value="15,234" icon="dollar" />
-            <WalletItem label="ETH" value="0.234" icon="ethereum" />
+            {cryptoAssets.slice(0, 3).map((asset) => ( // ✅ Show only first 3 assets
+              <WalletItem
+                key={asset.id}
+                label={asset.currency}
+                value={asset.available_balance}
+                icon={
+                  asset.walletCurrency.symbol
+                    ? `https://earlybaze.hmstech.xyz/storage/${asset.walletCurrency.symbol}`
+                    : "default_crypto_icon"
+                }
+              />
+            ))}
           </View>
         ) : null}
+
       </ImageBackground>
     </>
   );
 };
+
+
 
 export default WalletCard;
 

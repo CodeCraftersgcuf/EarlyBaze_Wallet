@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Modal,
   View,
@@ -12,6 +12,10 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 import icons from '@/constants/icons';
 import { images } from '@/constants';
 
+import { useQuery } from '@tanstack/react-query';
+import { getFromStorage } from '@/utils/storage';
+import { getBanksAccounts } from '@/utils/queries/appQueries';
+
 interface PaymentMethodModalProps {
   title: string;
   visible: boolean;
@@ -22,6 +26,7 @@ interface PaymentMethodModalProps {
 const PaymentMethodModal: React.FC<PaymentMethodModalProps> = ({ title, visible, onClose, onSelectPaymentMethod }) => {
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
   const [selectedAccount, setSelectedAccount] = useState<number | null>(null);
+  const [token, setToken] = useState<string | null>(null); // State to hold the token
 
   const backgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#000000' }, 'background');
   const textColor = useThemeColor({ light: '#000000', dark: '#FFFFFF' }, 'text');
@@ -32,10 +37,28 @@ const PaymentMethodModal: React.FC<PaymentMethodModalProps> = ({ title, visible,
   const arrow = useThemeColor({ light: images.down_arrow, dark: images.down_arrow_black }, 'arrow');
   const closeButtonColor = useThemeColor({ light: '#F5F5F5', dark: '#161616' }, 'button');
 
-  const accounts = [
-    { id: 1, bankName: 'Access Bank', accountName: 'Early Baze', accountNumber: '123456789' },
-    { id: 2, bankName: 'Access Bank', accountName: 'Early Baze', accountNumber: '123456789' },
-  ];
+
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const fetchedToken = await getFromStorage("authToken");
+      setToken(fetchedToken);
+      console.log("🔹 Retrieved Token: Payment Modal", fetchedToken);
+    };
+
+    fetchUserData();
+  }, []);
+
+  const { data: bankAccounts, error: bankError, isLoading: bankLoading } = useQuery(
+    {
+      queryKey: ["bankAccounts"],
+      queryFn: () => getBanksAccounts({ token }),
+      enabled: !!token, // Only run the query when the token is available
+    }
+  );
+
+  console.log("🔹 Bank Accounts:", bankAccounts);
+  const accounts = bankAccounts?.data || []; // ✅ Use API response, default to empty array if undefined
 
   return (
     <Modal transparent visible={visible} animationType="slide">
@@ -85,23 +108,23 @@ const PaymentMethodModal: React.FC<PaymentMethodModalProps> = ({ title, visible,
                       ]}
                       onPress={() => {
                         setSelectedAccount(item.id);
-                        onSelectPaymentMethod(item.accountName); // Pass selected account to parent
+                        onSelectPaymentMethod(item.account_name); // Pass selected account to parent
                         onClose(); // Close modal after selection
                       }}
                     >
                       <Text style={[styles.accountTitle, { color: textColor }]}>Account {item.id}</Text>
                       <View style={styles.accountDetailsRow}>
                         <Text style={[styles.accountLabel, { color: textColor }]}>Bank Name</Text>
-                        <Text style={[styles.accountText, { color: textColor }]}>{item.bankName}</Text>
+                        <Text style={[styles.accountText, { color: textColor }]}>{String(item.bank_name || "N/A")}</Text> // ✅ Fix
                       </View>
                       <View style={styles.accountDetailsRow}>
                         <Text style={[styles.accountLabel, { color: textColor }]}>Account Name</Text>
-                        <Text style={[styles.accountText, { color: textColor }]}>{item.accountName}</Text>
-                      </View>
+                        <Text style={[styles.accountText, { color: textColor }]}>{String(item.account_name || "N/A")}</Text>
+                        </View>
                       <View style={styles.accountDetailsRow}>
                         <Text style={[styles.accountLabel, { color: textColor }]}>Account Number</Text>
-                        <Text style={[styles.accountText, { color: textColor }]}>{item.accountNumber}</Text>
-                      </View>
+                        <Text style={[styles.accountText, { color: textColor }]}>{String(item.account_number || "N/A")}</Text>
+                        </View>
                     </TouchableOpacity>
                   </View>
                 )}
