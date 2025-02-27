@@ -19,6 +19,8 @@ import { router, useRouter } from "expo-router";
 import useLoadFonts from "@/hooks/useLoadFonts";
 import { loginUser } from "@/utils/mutations/authMutations";
 
+import { saveToStorage } from "@/utils/storage";
+
 //Related to the Integration of the Login Page
 import { useMutation } from '@tanstack/react-query';
 
@@ -32,12 +34,29 @@ const Login = () => {
   const { push } = useRouter();
   const fontsLoaded = useLoadFonts(); // Load custom fonts
 
-  // Mutation for Login
+
+  // ✅ Mutation for Login
   const { isPending: isPendingLogin, mutate: mutateLogin } = useMutation({
     mutationFn: (data: InputValues) => loginUser(data),
-    onSuccess: async (data) => {
+    onSuccess: async (response) => {
       try {
-        console.log("✅ Login Successful:", data);
+        console.log("✅ Login Successful:", response);
+
+        // Extract necessary data
+        const { token, user, assets } = response.data;
+
+        // ✅ Store token securely
+        await saveToStorage("authToken", token);
+
+        // ✅ Store user data securely
+        await saveToStorage("user", user);
+
+        // ✅ Store assets securely
+        await saveToStorage("assets", assets);
+
+        console.log("🔹 Token, User, and Assets saved successfully!");
+
+        // Navigate to main screen
         push("/(tabs)");
       } catch (error) {
         console.error("❌ Error saving data:", error);
@@ -48,6 +67,7 @@ const Login = () => {
       alert(error.message || "Login failed, please try again.");
     }
   });
+
 
 
   return (

@@ -51,7 +51,9 @@ const SwapAssetSection: React.FC<SwapAssetSectionProps> = ({
             <Text style={[styles.assetSubText, { color: labelColor }]}>Asset</Text>
             <Text style={[styles.assetText, { color: textColor }]}>{asset}</Text>
           </View>
-          <Image source={arrow} style={styles.arrowIcon} />
+          
+          {title ==='You Send' &&<Image source={arrow} style={styles.arrowIcon} />}
+
         </TouchableOpacity>
 
         {/* Amount Display */}

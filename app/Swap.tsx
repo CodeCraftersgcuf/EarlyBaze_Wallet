@@ -44,7 +44,7 @@ const Swap: React.FC = () => {
     <View style={[styles.container, { backgroundColor }]}>
       <Header />
       <BuyHead buttonText="Swap Crypto" />
-      <SwapTabs selectedTab={selectedTab} setSelectedTab={setSelectedTab} />
+      {/* <SwapTabs selectedTab={selectedTab} setSelectedTab={setSelectedTab} /> */}
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={[styles.swapContainer, { backgroundColor: containerBackgroundColor }]}>
@@ -98,7 +98,7 @@ const Swap: React.FC = () => {
 
 const styles = StyleSheet.create({
   container: { flex: 1, marginTop: 25, paddingTop: 10 },
-  scrollContent: { paddingBottom: 100 },
+  scrollContent: { paddingBottom: 0 },
   swapContainer: { paddingHorizontal: 16, marginHorizontal: 18, borderRadius: 20 },
   fixedButtonContainer: { position: 'absolute', bottom: 20, left: 18, right: 18, width: '90%' },
   swapButton: {

@@ -1,5 +1,13 @@
-import { API_ENDPOINTS } from '@/apiConfig';
-import { apiCall } from '../customApiCall';
+import { API_ENDPOINTS } from "@/apiConfig";
+import { apiCall } from "../customApiCall";
+
+export const getAssests = async ({
+  token,
+}: {
+  token: string;
+}): Promise<AssetsResponse> => {
+  return await apiCall(API_ENDPOINTS.USER.GetAssests, "GET", undefined, token);
+};
 
 export const getBillerCategories = async ({
   token,
@@ -8,7 +16,7 @@ export const getBillerCategories = async ({
 }): Promise<IBillerCategoriesResponse> => {
   return await apiCall(
     API_ENDPOINTS.BILL_MANAGEMENT.GetBillerCategories,
-    'GET',
+    "GET",
     undefined,
     token
   );
@@ -20,13 +28,11 @@ export const getBillerProviders = async (
 ): Promise<IBillerProvidersResponse> => {
   return await apiCall(
     `${API_ENDPOINTS.BILL_MANAGEMENT.GetBillerProviders}/${categoryId}`,
-    'GET',
+    "GET",
     undefined,
     token
   );
 };
-
-
 
 export const getBillerItems = async ({
   categoryId,
@@ -39,7 +45,7 @@ export const getBillerItems = async ({
 }): Promise<IBillerItemsListData> => {
   return await apiCall(
     `${API_ENDPOINTS.BILL_MANAGEMENT.GetBillerItems}/${categoryId}/${providerId}`,
-    'GET',
+    "GET",
     undefined,
     token
   );
@@ -54,7 +60,7 @@ export const getBillerItemDetails = async ({
 }): Promise<IBillerItemDetailsData> => {
   return await apiCall(
     `${API_ENDPOINTS.BILL_MANAGEMENT.GetBillerItemDetails}/${itemId}`,
-    'GET',
+    "GET",
     undefined,
     token
   );
@@ -69,7 +75,7 @@ export const getTrsansactionDetails = async ({
 }): Promise<TransactionResponse> => {
   return await apiCall(
     `${API_ENDPOINTS.BILL_MANAGEMENT.TransactionDetails}/${id}`,
-    'GET',
+    "GET",
     undefined,
     token
   );
@@ -78,7 +84,7 @@ export const getTrsansactionDetails = async ({
 export const getBanks = async (token: string): Promise<IBanksResponse> => {
   return await apiCall(
     API_ENDPOINTS.MONEY_TRANSFER.GetBanks,
-    'GET',
+    "GET",
     undefined,
     token
   );
@@ -93,43 +99,64 @@ export const getTransactionStatus = async ({
 }) => {
   return await apiCall(
     API_ENDPOINTS.MONEY_TRANSFER.GetTransactionStatus,
-    'GET',
+    "GET",
     transactionId,
     token
   );
 };
 
 export const getSocialMediaLinks = async (): Promise<SocialMediaResponse> => {
-  console.log("social media api  called")
+  console.log("social media api  called");
   return await apiCall(
     API_ENDPOINTS.ACCOUNT_MANAGEMENT.GetSocialMediaLinks,
-    'GET',
-    undefined,
+    "GET",
+    undefined
   );
 };
 
 export const getFaqs = async (): Promise<FaqRespone> => {
-  console.log("Faq a[o ca;;ed")
+  console.log("Faq a[o ca;;ed");
   return await apiCall(
     API_ENDPOINTS.ACCOUNT_MANAGEMENT.GetFaqs,
-    'GET',
-    undefined,
+    "GET",
+    undefined
   );
 };
 export const getSlide = async (): Promise<SlideResponse> => {
-  console.log("Slides called")
+  console.log("Slides called");
   return await apiCall(
     API_ENDPOINTS.ACCOUNT_MANAGEMENT.GetSlides,
-    'GET',
-    undefined,
+    "GET",
+    undefined
   );
 };
-interface SlideResponse{
-  status: 'success' | 'error';
-  data: Slide[]
+interface SlideResponse {
+  status: "success" | "error";
+  data: Slide[];
+}
+interface AssetsResponse {
+  status: string;
+  data: Asset[];
 }
 
-interface Slide{
+interface Asset {
+  id: number;
+  currency: string;
+  blockchain: string;
+  currency_id: number;
+  available_balance: string;
+  account_balance: string;
+  wallet_currency: WalletCurrency;
+}
+
+interface WalletCurrency {
+  id: number;
+  price: number;
+  symbol: string | null;
+  naira_price: number;
+}
+
+interface Slide {
   id: number;
   image: string;
 }
@@ -149,7 +176,7 @@ export interface IBillerCategory {
 }
 
 interface IBillerProvidersResponse {
-  status: 'success' | 'error';
+  status: "success" | "error";
   data: IProviderData[];
 }
 
@@ -161,7 +188,7 @@ export interface IProviderData {
   providerTitle: string;
   selectTitle: string;
   logo: string;
-  status?:boolean
+  status?: boolean;
 }
 export interface IBillerItemsList {
   category: {
@@ -225,20 +252,19 @@ interface SocialMediaResponse {
   status: string;
   data: SocialMediaLinks[];
 }
-interface SocialMediaLinks{
+interface SocialMediaLinks {
   title?: string;
   link?: string;
   icon?: string;
 }
-interface FaqRespone{
+interface FaqRespone {
   status: string;
   data: Faq[];
 }
-interface Faq{
+interface Faq {
   id: number;
   question: string;
   answer: string;
-
 }
 
 export interface IBankDetails {
@@ -247,11 +273,11 @@ export interface IBankDetails {
   code: string;
   logo: string | null;
 }
-export interface TransactionResponse{
+export interface TransactionResponse {
   status: string;
-  data: TransactionDetails[]
+  data: TransactionDetails[];
 }
-export interface TransactionDetails{
+export interface TransactionDetails {
   id: number;
   amount?: string;
   transactionDate?: string;

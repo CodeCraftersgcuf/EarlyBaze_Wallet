@@ -18,7 +18,7 @@ const API_ENDPOINTS = {
     SetPin: API_DOMAIN + "/user/set-pin",
     VerifyPin: API_DOMAIN + "/user/verify-pin",
     GetBalance: API_DOMAIN + "/user/balance",
-    GetAssests: API_DOMAIN + "/api/user/assets",
+    GetAssests: API_DOMAIN + "/user/assets",
     GetBankDetail: API_DOMAIN + "/get-bank-account",
   },
   ACCOUNT_MANAGEMENT: {
