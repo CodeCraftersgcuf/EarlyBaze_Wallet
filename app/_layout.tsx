@@ -9,6 +9,7 @@ import { ThemeProvider } from "@/contexts/themeContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import ScreenStacks from '../components/screenstacks';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { UserBalanceProvider } from '../contexts/UserBalanceContext';
 
 // Prevent splash screen auto-hide before loading
 SplashScreen.preventAutoHideAsync();
@@ -34,10 +35,12 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider>
-      <QueryClientProvider client={queryClient}>
-        <ScreenStacks />
-      </QueryClientProvider>
-      <StatusBar style="auto" />
+      <UserBalanceProvider>
+        <QueryClientProvider client={queryClient}>
+          <ScreenStacks />
+        </QueryClientProvider>
+        <StatusBar style="auto" />
+      </UserBalanceProvider>
     </ThemeProvider>
   );
 }

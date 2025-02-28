@@ -10,7 +10,7 @@ import { getFromStorage } from "@/utils/storage";
 
 import { getUserBalance } from "@/utils/queries/appQueries";
 import { useQuery } from "@tanstack/react-query";
-
+import { useUserBalanceContext } from "../../contexts/UserBalanceContext";
 
 // Importing background image
 const card_back = images.card_back;
@@ -22,6 +22,7 @@ type WalletCardProps = {
 };
 
 const WalletCard: React.FC<WalletCardProps> = ({ isCrypto, onToggle }) => {
+  const { refetchBalance, setRefetchBalance } = useUserBalanceContext(); // Get context values
 
   const [isBalanceVisible, setIsBalanceVisible] = useState(true);
   const [cryptoAssets, setCryptoAssets] = useState<any[]>([]); // ✅ Store fetched assets
@@ -40,11 +41,18 @@ const WalletCard: React.FC<WalletCardProps> = ({ isCrypto, onToggle }) => {
     fetchUserData();
   }, []);
 
-  const { data: userBalance, error: userError, isLoading: userLoading } = useQuery({
-    queryKey: ["userBalance"],
-    queryFn: () => getUserBalance({ token }),
+  // Fetch user balance using `useQuery`
+  const { data: userBalance, error: userError, isLoading: userLoading, refetch } = useQuery({
+    queryKey: ['userBalance'],
+    queryFn: () => getUserBalance({ token }), // Replace with actual API function
     enabled: !!token, // Only run the query when the token is available
   });
+
+  useEffect(() => {
+    if (refetch) {
+      setRefetchBalance(() => refetch); // Set the refetch function in context
+    }
+  }, [refetch, setRefetchBalance]);
 
   console.log("🔹 User Balance:", userBalance);
 

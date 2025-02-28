@@ -20,12 +20,13 @@ interface PaymentMethodModalProps {
   title: string;
   visible: boolean;
   onClose: () => void;
-  onSelectPaymentMethod: (method: string) => void; // Callback to pass selected method
+  onSelectPaymentMethod: (method: { id: number; account_name: string }) => void; // Updated type
 }
+
 
 const PaymentMethodModal: React.FC<PaymentMethodModalProps> = ({ title, visible, onClose, onSelectPaymentMethod }) => {
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
-  const [selectedAccount, setSelectedAccount] = useState<number | null>(null);
+  const [selectedAccount, setSelectedAccount] = useState<{ id: number; account_name: string } | null>(null);
   const [token, setToken] = useState<string | null>(null); // State to hold the token
 
   const backgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#000000' }, 'background');
@@ -108,7 +109,7 @@ const PaymentMethodModal: React.FC<PaymentMethodModalProps> = ({ title, visible,
                       ]}
                       onPress={() => {
                         setSelectedAccount(item.id);
-                        onSelectPaymentMethod(item.account_name); // Pass selected account to parent
+                        onSelectPaymentMethod({ id: item.id, account_name: item.account_name }); // Pass both id and account_name to parent
                         onClose(); // Close modal after selection
                       }}
                     >
@@ -120,11 +121,11 @@ const PaymentMethodModal: React.FC<PaymentMethodModalProps> = ({ title, visible,
                       <View style={styles.accountDetailsRow}>
                         <Text style={[styles.accountLabel, { color: textColor }]}>Account Name</Text>
                         <Text style={[styles.accountText, { color: textColor }]}>{String(item.account_name || "N/A")}</Text>
-                        </View>
+                      </View>
                       <View style={styles.accountDetailsRow}>
                         <Text style={[styles.accountLabel, { color: textColor }]}>Account Number</Text>
                         <Text style={[styles.accountText, { color: textColor }]}>{String(item.account_number || "N/A")}</Text>
-                        </View>
+                      </View>
                     </TouchableOpacity>
                   </View>
                 )}

@@ -1,6 +1,22 @@
-import axios from 'axios';
-import { API_ENDPOINTS } from '../../apiConfig';
-import { apiCall } from '../customApiCall';
+import axios from "axios";
+import { API_ENDPOINTS } from "../../apiConfig";
+import { apiCall } from "../customApiCall";
+
+export const createWithdrawal = async ({
+  data,
+  token,
+}: {
+  data: IWithdrawalRequest;
+  token: string;
+}): Promise<IWithdrawalResponse> => {
+  console.log("🔹 Withdrawal Requestssssss:", data);
+  return await apiCall(
+    API_ENDPOINTS.BILL_MANAGEMENT.CreateWithdrawal,
+    "POST",
+    data,
+    token
+  );
+};
 
 export const getReceipientDetails = async ({
   data,
@@ -11,7 +27,7 @@ export const getReceipientDetails = async ({
 }): Promise<IRecepeintDetailsResponse> => {
   return await apiCall(
     API_ENDPOINTS.MONEY_TRANSFER.GetRecepientDetails,
-    'POST',
+    "POST",
     data,
     token
   );
@@ -26,7 +42,7 @@ export const transferMoney = async ({
 }): Promise<ITransferResponse> => {
   return await apiCall(
     API_ENDPOINTS.MONEY_TRANSFER.Trasnsfer,
-    'POST',
+    "POST",
     data,
     token
   );
@@ -36,6 +52,29 @@ interface IRecepeintDetailsRequest {
   accountNo: string;
   bank: string;
   transfer_type: string;
+}
+
+interface IWithdrawalRequest {
+  amount: string;
+  fee: string;
+  bank_account_id: string;
+}
+
+interface IWithdrawalResponse {
+  status: string;
+  data: {
+    amount: string;
+    fee: string;
+    bank_account_id: string;
+    user_id: number;
+    status: string;
+    reference: string;
+    total: number;
+    updated_at: string;
+    created_at: string;
+    id: number;
+  };
+  message: string;
 }
 
 export interface IRecepeintDetails {
@@ -71,7 +110,7 @@ export interface ITransferRequest {
   toBank: string; // Beneficiary's bank code, its 9999
   amount: string; // Amount to transfer
   remark: string; // Transaction remark
-  transferType: 'intra' | 'inter'; // Specify transfer type (intra or inter)
+  transferType: "intra" | "inter"; // Specify transfer type (intra or inter)
 }
 
 interface ITransferResponse {

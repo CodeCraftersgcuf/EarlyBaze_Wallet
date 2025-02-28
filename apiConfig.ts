@@ -45,6 +45,7 @@ const API_ENDPOINTS = {
     GetSlides: API_DOMAIN + "/slides",
   },
   BILL_MANAGEMENT: {
+    CreateWithdrawal: API_DOMAIN + "/withdraw/create",
     GetBillerCategories: API_DOMAIN + "/biller-categories-fetch",
     GetBillerProviders: API_DOMAIN + "/get-provider",
     GetBillerItems: API_DOMAIN + "/biller-items-fetch",

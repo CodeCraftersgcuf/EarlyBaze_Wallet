@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     View,
     Text,
@@ -14,7 +14,18 @@ import BuyHead from '@/components/BuyHead';
 import PaymentMethodModal from '@/components/Buy/PaymentMethodModal';
 import { useRouter, router } from 'expo-router';
 
+
+//Code related to the integration: 
+import { createWithdrawal } from '@/utils/mutations/paymentMutations';
+import { useMutation } from '@tanstack/react-query';
+import { getFromStorage } from '@/utils/storage';
+import { useUserBalanceContext } from '../contexts/UserBalanceContext'
+
+
+
 const Withdraw: React.FC = () => {
+    const { refetchBalance } = useUserBalanceContext(); // Get context values
+
     // Theme Colors
     const backgroundColor = useThemeColor({ light: '#EFFEF9', dark: '#000000' }, 'background');
     const cardBackgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#1A1A1A' }, 'card');
@@ -23,9 +34,39 @@ const Withdraw: React.FC = () => {
     const borderColor = useThemeColor({ light: '#22A45D', dark: '#157347' }, 'border');
     const noteBackgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#000000' }, 'noteBackground');
     const [modalVisible, setModalVisible] = useState(false);
+    const [token, setToken] = useState<string | null>(null); // State to hold the token
 
     const [amount, setAmount] = useState('');
-    const [selectedAccount, setSelectedAccount] = useState('');
+    const [selectedAccount, setSelectedAccount] = useState<{ id: string; account_name: string } | null>(null);
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            const fetchedToken = await getFromStorage("authToken");
+            setToken(fetchedToken);
+            console.log("🔹 Retrieved Token: Payment Modal", fetchedToken);
+        };
+
+        fetchUserData();
+    }, []);
+
+    // ✅ Mutation for Withdrawal
+    const { isPending: isPendingWithdrawal, mutate: mutateWithdrawal } = useMutation({
+        mutationFn: (data: { amount: string, fee: string, bank_account_id: string }) => createWithdrawal({ data, token }),
+        onSuccess: async (response) => {
+            try {
+                console.log("✅ Withdrawal Successful:", response);
+                refetchBalance(); // Refetch balance after withdrawal
+                // Navigate to transaction page
+                router.push({
+                    pathname: '/TransactionPage',
+                    params: { type: 'withdraw' }
+                });
+            } catch (error) {
+                console.error("❌ Error creating withdrawal:", error);
+            }
+        }
+    });
+
 
     return (
         <View style={[styles.container, { backgroundColor }]}>
@@ -57,7 +98,7 @@ const Withdraw: React.FC = () => {
                             <Text style={[styles.label, { color: textColor }]}>Receiving Account</Text>
                             <TouchableOpacity style={[styles.dropdown, { backgroundColor: cardBackgroundColor }]} onPress={() => setModalVisible(true)}>
                                 <Text style={{ color: selectedAccount ? textColor : placeholderColor }}>
-                                    {selectedAccount || 'Choose Receiving Account'}
+                                    {selectedAccount?.account_name || 'Choose Receiving Account'}
                                 </Text>
                             </TouchableOpacity>
                         </View>
@@ -77,20 +118,35 @@ const Withdraw: React.FC = () => {
 
             {/* Proceed Button Fixed at Bottom */}
             <View style={styles.fixedButtonContainer}>
-                <PrimaryButton title="Proceed" onPress={() => router.push({
-                    pathname: '/TransactionPage',
-                    params: { type: 'withdraw' }
-                })} />
+                <PrimaryButton
+                    title={isPendingWithdrawal ? "Processing..." : "Proceed"}
+                    disabled={isPendingWithdrawal}
+                    onPress={() => {
+                        if (!amount || !selectedAccount) {
+                            console.log("❌ Please enter amount and select an account.");
+                            return;
+                        }
+
+                        mutateWithdrawal({
+                            amount,
+                            fee: "0", // Adjust fee as needed
+                            bank_account_id: selectedAccount?.id.toString() || "" // Convert `id` to string if it's a number
+                        });
+                    }}
+                />
+
             </View>
             <PaymentMethodModal
                 title="Choose Account"
                 visible={modalVisible}
                 onClose={() => setModalVisible(false)}
                 onSelectPaymentMethod={(method) => {
-                    setSelectedAccount(method); // Update selected account
-                    setModalVisible(false); // Close modal after selection
+                    const { id, account_name } = method; // Destructure the passed object
+                    setSelectedAccount({ id, account_name }); // Set both id and account_name
+                    setModalVisible(false);
                 }}
             />
+
         </View>
 
     );
