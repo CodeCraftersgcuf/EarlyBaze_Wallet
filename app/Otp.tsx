@@ -61,7 +61,7 @@ const Otp: React.FC = () => {
         onSuccess: (data) => {
             console.log("✅ Pin Verified Successfully:", data);
             Alert.alert("Success", "PIN verified successfully!");
-            router.push('/(tabs)'); // Navigate to main screen
+            router.push('/login'); // Navigate to main screen
         },
         onError: (error) => {
             console.log("❌ Verify Pin Error:", error);

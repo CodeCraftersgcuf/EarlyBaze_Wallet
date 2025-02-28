@@ -1,8 +1,33 @@
-import axios from 'axios';
-import { API_ENDPOINTS } from '@/apiConfig';
-import { IClientCreation } from '@/app/fillyourprofile';
-import { ICooperateClient } from '@/app/createcoroporateaccount';
-import { apiCall } from '../customApiCall';
+import { API_ENDPOINTS } from "@/apiConfig";
+// import { IClientCreation } from '@/app/fillyourprofile';
+// import { ICooperateClient } from '@/app/createcoroporateaccount';
+import { apiCall } from "../customApiCall";
+
+export const changePassword = async ({
+  data,
+  token,
+}: {
+  data: { oldPassword: string; newPassword: string }; // Frontend field names
+  token: string;
+}) => {
+  console.log("🔹 Original Change Password Data:", data);
+
+  // Map the frontend data to the backend expected format
+  const mappedData = {
+    old_password: data.oldPassword, // Map oldPassword to old_password
+    new_password: data.newPassword, // Map newPassword to new_password
+  };
+
+  console.log("🔹 Mapped Change Password Data:", mappedData);
+
+  // Make the API call with the mapped data
+  return await apiCall(
+    API_ENDPOINTS.USER.ChangePassword,
+    "POST",
+    mappedData,
+    token
+  );
+};
 
 export const createIndividualAccount = async ({
   data,
@@ -13,7 +38,7 @@ export const createIndividualAccount = async ({
 }) => {
   return await apiCall(
     API_ENDPOINTS.ACCOUNT_MANAGEMENT.CreateIndividualAccount,
-    'POST',
+    "POST",
     data,
     token
   );
@@ -28,7 +53,7 @@ export const createCooperateAccount = async ({
 }) => {
   return await apiCall(
     API_ENDPOINTS.ACCOUNT_MANAGEMENT.CreateCoorporateAccount,
-    'POST',
+    "POST",
     data,
     token
   );
@@ -43,7 +68,7 @@ export const updatePassword = async ({
 }) => {
   return await apiCall(
     API_ENDPOINTS.ACCOUNT_MANAGEMENT.UpdatePassword,
-    'POST',
+    "POST",
     data,
     token
   );
@@ -58,7 +83,7 @@ export const updateProfile = async ({
 }): Promise<IUpdateProfileResponse> => {
   return await apiCall(
     API_ENDPOINTS.ACCOUNT_MANAGEMENT.UpdateProfile,
-    'POST',
+    "POST",
     data,
     token
   );
@@ -74,7 +99,7 @@ export const validateCustomer = async ({
 }): Promise<any> => {
   return await apiCall(
     API_ENDPOINTS.BILL_MANAGEMENT.ValidateCustomer,
-    'POST',
+    "POST",
     data,
     token
   );
@@ -89,7 +114,7 @@ export const payBillFn = async ({
 }): Promise<any> => {
   return await apiCall(
     API_ENDPOINTS.BILL_MANAGEMENT.PayBills,
-    'POST',
+    "POST",
     data,
     token
   );

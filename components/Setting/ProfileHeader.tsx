@@ -6,17 +6,20 @@ import { images } from '@/constants';
 import Header from '../Header';
 import useLoadFonts from '@/hooks/useLoadFonts';
 interface ProfileHeaderProps {
-    name: string;
-    email: string;
-    cryptoBalance: string;
-    nairaBalance: string;
+    name: string | undefined;
+    email: string | undefined;
+    cryptoBalance: number | undefined;
+    nairaBalance: number | undefined;
+    profileImage?: string | undefined;
 }
 
-const ProfileHeader: React.FC<ProfileHeaderProps> = ({ name, email, cryptoBalance, nairaBalance }) => {
+const ProfileHeader: React.FC<ProfileHeaderProps> = ({ name, email, cryptoBalance, nairaBalance, profileImage }) => {
     const cardBackgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#1A1A1A' }, 'card');
     const textColor = useThemeColor({ light: '#222222', dark: '#FFFFFF' }, 'text');
     const amountColor = useThemeColor({ light: '#0C5E3F', dark: '#0C5E3F' }, 'textTitle');
     const fontsLoaded = useLoadFonts(); // Load custom fonts
+    const wallet_icon = useThemeColor({ light: images.wallet, dark: images.wallet_black }, 'textTitle');
+
 
     return (
         <>
@@ -33,11 +36,15 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ name, email, cryptoBalanc
                                 colors={['#55EBB2', '#3B80B8']} // Avatar gradient colors
                                 style={styles.avatarGradient}
                             >
-                                <Image source={images.profile} style={styles.avatar} />
+                                {profileImage ? (
+                                    <Image source={{ uri: profileImage }} style={styles.avatar} />
+                                ) : (
+                                    <Image source={images.profile} style={styles.avatar} />
+                                )}
                             </LinearGradient>
                         </View>
 
-                        <Text style={[styles.name, {fontFamily: fontsLoaded ? 'Caprasimo-Regular' : undefined }]}>{name}</Text>
+                        <Text style={[styles.name, { fontFamily: fontsLoaded ? 'Caprasimo-Regular' : undefined }]}>{name}</Text>
                         <Text style={styles.email}>{email}</Text>
 
                         {/* ID Verified Badge */}
@@ -52,7 +59,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ name, email, cryptoBalanc
                     <View style={styles.balanceItem}>
                         <Text style={[styles.balanceLabel, { color: textColor }]}>Crypto Asset</Text>
                         <View style={styles.balanceRow}>
-                            <Image source={images.wallet} style={styles.balanceIcon} />
+                            <Image source={wallet_icon} style={styles.balanceIcon} />
                             <Text style={[styles.balanceAmount, { color: amountColor }]}>{cryptoBalance}</Text>
                             <View style={styles.balanceCurrencyName} >
                                 <Text style={{ color: textColor }}>USD</Text>
@@ -65,7 +72,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ name, email, cryptoBalanc
                     <View style={styles.balanceItem}>
                         <Text style={[styles.balanceLabel, { color: textColor }]}>Naira Asset</Text>
                         <View style={styles.balanceRow}>
-                            <Image source={images.wallet} style={styles.balanceIcon} />
+                            <Image source={wallet_icon} style={styles.balanceIcon} />
                             <Text style={[styles.balanceAmount, { color: amountColor }]}>{nairaBalance} </Text>
                             <View style={styles.balanceCurrencyName} >
                                 <Text style={{ color: textColor }}>NGN</Text>

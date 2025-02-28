@@ -21,6 +21,7 @@ const API_ENDPOINTS = {
     GetBalance: API_DOMAIN + "/user/balance",
     GetAssests: API_DOMAIN + "/user/assets",
     GetBankDetail: API_DOMAIN + "/get-bank-account",
+    ChangePassword: API_DOMAIN + "/user/change-password",
   },
   ACCOUNT_MANAGEMENT: {
     GetUserProfileData: API_DOMAIN + "/edit-profile-details",

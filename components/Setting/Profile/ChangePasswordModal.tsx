@@ -1,9 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Modal, StyleSheet, Image } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import PrimaryButton from '@/components/Buy/PrimaryButton';
 import { images } from '@/constants';
+
+
+//Code related to the Integration
+import { useMutation } from '@tanstack/react-query';
+import { changePassword } from '@/utils/mutations/accountMutations';
+import { getFromStorage } from '@/utils/storage';
 
 interface ChangePasswordModalProps {
   visible: boolean;
@@ -18,16 +23,51 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ visible, onCl
   const textTitleColor = useThemeColor({ light: '#25AE7A', dark: '#25AE7A' }, 'textTitle');
   const close = useThemeColor({ light: images.cross_white, dark: images.cross_black }, 'close');
 
+  const [token, setToken] = useState<string | null>(null); // State to hold the token
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  
+
   // State to track focus
   const [focusedInput, setFocusedInput] = useState<string | null>(null);
 
   // Function to handle focus and blur
   const handleFocus = (field: string) => setFocusedInput(field);
   const handleBlur = () => setFocusedInput(null);
+
+  // Fetch the token and user data when the component mounts
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const fetchedToken = await getFromStorage("authToken");
+      setToken(fetchedToken);
+      console.log("🔹 Retrieved Token:", fetchedToken);
+    };
+
+    fetchUserData();
+  }, []);
+  console.log("🔹 Token:", token);
+  const { isPending: isPendingChangePassword, mutate: mutateChangePassword } = useMutation({
+    mutationFn: (data: { oldPassword: string; newPassword: string }) => changePassword({ data, token }), // Pass the token and the data as expected
+
+    onSuccess: (response) => {
+      console.log("✅ Password Changed Successfully:", response);
+      alert("Password changed successfully!");
+      setOldPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+      onClose();
+    },
+    onError: (error) => {
+      console.error("❌ Error changing password:", error);
+      setOldPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+      alert(`❌ Error changing password: ${error.message || 'An unknown error occurred'}`);
+
+    },
+  });
+
+
 
   return (
     <Modal visible={visible} transparent animationType="slide">
@@ -83,7 +123,21 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ visible, onCl
 
           {/* Update Button */}
           <View style={styles.buttonContainer}>
-            <PrimaryButton title="Update" onPress={onClose} />
+            <PrimaryButton
+              title={isPendingChangePassword ? "Updating..." : "Update"}
+              onPress={() => {
+                if (!oldPassword || !newPassword || !confirmPassword) {
+                  alert("Please fill in all fields.");
+                  return;
+                }
+                if (newPassword !== confirmPassword) {
+                  alert("New passwords do not match.");
+                  return;
+                }
+                mutateChangePassword({ oldPassword, newPassword });
+              }}
+              disabled={isPendingChangePassword} // Disable button while updating
+            />
           </View>
         </View>
       </View>

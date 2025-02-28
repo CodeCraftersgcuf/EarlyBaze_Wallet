@@ -232,7 +232,7 @@ interface GetBankDetail {
 
 interface UserBalance {
   id: number;
-  crypto_balance: number;
+  crypto_balance: number ;
   naira_balance: number;
   user_id: number;
   account_number: string;

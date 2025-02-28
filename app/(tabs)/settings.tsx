@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ScrollView, View, StyleSheet, SafeAreaView } from 'react-native';
 import ProfileHeader from '@/components/Setting/ProfileHeader';
 import SettingsList from '@/components/Setting/SettingsList';
@@ -7,18 +7,55 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 import { useRouter, router } from 'expo-router';
 import { images } from '@/constants';
 
+//Code related to the integraion:
+import { useQuery } from '@tanstack/react-query';
+import { getFromStorage } from "@/utils/storage";
+import { getUserDetails } from "@/utils/queries/appQueries";
+
+import { getUserBalance } from "@/utils/queries/appQueries";
+
 const SettingsScreen: React.FC = () => {
+  const [token, setToken] = useState<string | null>(null); // State to hold the token
+
   const [isDarkMode, setIsDarkMode] = useState(false);
   const backgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#000000' }, 'background');
 
   const handleThemeToggle = (theme: 'Light' | 'Dark') => {
     setIsDarkMode(theme === 'Dark');
   };
+  // Fetch the token and user data when the component mounts
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const fetchedToken = await getFromStorage("authToken");
+      setToken(fetchedToken);
+      console.log("🔹 Retrieved Token:", fetchedToken);
+    };
+
+    fetchUserData();
+  }, []);
+
+  const { data: userDetails, error: userError, isLoading: userLoading } = useQuery(
+    {
+      queryKey: ["userDetails"],
+      queryFn: () => getUserDetails({ token }),
+      enabled: !!token, // Only run the query when the token is available
+    }
+  );
+
+  console.log("🔹 User Details:", userDetails);
+
+
+  // Fetch user balance using `useQuery`
+  const { data: userBalance, error: userBalanceError, isLoading: userBalanceLoading, } = useQuery({
+    queryKey: ['userBalance'],
+    queryFn: () => getUserBalance({ token }), // Replace with actual API function
+    enabled: !!token, // Only run the query when the token is available
+  });
 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
-        <ProfileHeader name="Qamardeen" email="Qamardeenoladimaji@gmail.com" cryptoBalance="35,000" nairaBalance="35,000" />
+        <ProfileHeader name={userDetails?.data.name} email={userDetails?.data.email} cryptoBalance={userBalance?.data.crypto_balance} nairaBalance={userBalance?.data.naira_balance} profileImage={userDetails?.data.profile_picture}/>
 
         {/* Settings Grid */}
         <View style={[styles.gridContainer, { backgroundColor }]}>
@@ -50,6 +87,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 16,
     paddingTop: 20,
+    marginTop: 10,
   },
 });
 

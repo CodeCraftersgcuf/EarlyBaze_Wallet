@@ -61,7 +61,7 @@ const double_side_black = require("../assets/images/double_side_black.png");
 const double_side_white = require("../assets/images/double_side_white.png");
 const red_cross = require("../assets/images/red_cross.png");
 const gallery = require("../assets/images/gallery.png");
-
+const wallet_black = require("../assets/images/wallet_black.png");
 const images = {
   indexService,
   slider_bg,
@@ -126,6 +126,7 @@ const images = {
   double_side_white,
   red_cross,
   gallery,
+  wallet_black,
 };
 
 export default images;

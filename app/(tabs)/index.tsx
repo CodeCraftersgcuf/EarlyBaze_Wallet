@@ -13,7 +13,7 @@ import { getFromStorage } from "@/utils/storage";
 import { getUserDetails } from "@/utils/queries/appQueries";
 
 export default function HomeScreen() {
-  const [token, setToken] = useState<string | null>(null); // State to hold the token
+const [token, setToken] = useState<string | null>(null); // State to hold the token
   const [isCrypto, setIsCrypto] = useState(true);
   const backgroundColor = useThemeColor({ light: '#EFFEF9', dark: '#000000' }, 'background');
   
