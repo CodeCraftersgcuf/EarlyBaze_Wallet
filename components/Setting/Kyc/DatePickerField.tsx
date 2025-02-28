@@ -1,6 +1,6 @@
-import React, { useState, useRef } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image } from 'react-native';
-import DatePicker from 'react-native-date-picker';
+import React, { useState } from 'react';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image, Platform } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { images } from '@/constants';
 
@@ -12,7 +12,7 @@ interface DatePickerFieldProps {
 
 const DatePickerField: React.FC<DatePickerFieldProps> = ({ label, value, onChange }) => {
   const [date, setDate] = useState(new Date());
-  const datePickerRef = useRef<DatePicker>(null);
+  const [showPicker, setShowPicker] = useState(false);
 
   // Theme colors for light & dark mode
   const backgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#1E1E1E' }, 'background');
@@ -20,13 +20,16 @@ const DatePickerField: React.FC<DatePickerFieldProps> = ({ label, value, onChang
   const placeholderColor = useThemeColor({ light: '#888888', dark: '#CCCCCC' }, 'placeholder');
   const borderColor = useThemeColor({ light: '#E0E0E0', dark: '#444444' }, 'border');
 
-  const handleDateChange = (newDate: Date) => {
-    setDate(newDate);
-    onChange(newDate.toISOString().split('T')[0]); // Format YYYY-MM-DD
+  const handleDateChange = (event: any, selectedDate?: Date) => {
+    setShowPicker(false);
+    if (selectedDate) {
+      setDate(selectedDate);
+      onChange(selectedDate.toISOString().split('T')[0]); // Format YYYY-MM-DD
+    }
   };
 
   const openDatePicker = () => {
-    datePickerRef.current?.openPicker();
+    setShowPicker(true);
   };
 
   return (
@@ -51,15 +54,15 @@ const DatePickerField: React.FC<DatePickerFieldProps> = ({ label, value, onChang
         </TouchableOpacity>
       </TouchableOpacity>
 
-      {/* Date Picker Modal */}
-      <DatePicker
-        ref={datePickerRef}
-        modal
-        date={date}
-        mode="date"
-        onConfirm={handleDateChange}
-        onCancel={() => datePickerRef.current?.closePicker()}
-      />
+      {/* Date Picker for Android & iOS */}
+      {showPicker && (
+        <DateTimePicker
+          value={date}
+          mode="date"
+          display={Platform.OS === 'ios' ? 'spinner' : 'calendar'}
+          onChange={handleDateChange}
+        />
+      )}
     </View>
   );
 };

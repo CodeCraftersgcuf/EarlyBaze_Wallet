@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { TextInput, View, Text, StyleSheet } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
 
@@ -16,15 +16,31 @@ const InputField: React.FC<InputFieldProps> = ({ label, placeholder, value, onCh
   const placeholderColor = useThemeColor({ light: '#888888', dark: '#CCCCCC' }, 'placeholder');
   const borderColor = useThemeColor({ light: '#E0E0E0', dark: '#444444' }, 'border');
 
+  // State to track if the input field is focused
+  const [isFocused, setIsFocused] = useState(false);
+
+  // Handle focus and blur to change the border color
+  const handleFocus = () => setIsFocused(true);
+  const handleBlur = () => setIsFocused(false);
+
   return (
     <View style={styles.container}>
       <Text style={[styles.label, { color: textColor }]}>{label}</Text>
       <TextInput 
-        style={[styles.input, { backgroundColor, borderColor, color: textColor }]} 
+        style={[
+          styles.input, 
+          { 
+            backgroundColor, 
+            borderColor: isFocused ? '#25AE7A' : borderColor, // Green border on focus
+            color: textColor 
+          }
+        ]}
         placeholder={placeholder} 
         placeholderTextColor={placeholderColor} 
         value={value} 
         onChangeText={onChangeText} 
+        onFocus={handleFocus} // Set focus to true
+        onBlur={handleBlur}   // Set focus to false
       />
     </View>
   );

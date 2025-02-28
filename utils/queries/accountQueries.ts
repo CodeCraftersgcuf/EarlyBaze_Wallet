@@ -1,14 +1,25 @@
-import axios from 'axios';
-import { apiCall } from '../customApiCall';
-import { API_ENDPOINTS } from '@/apiConfig';
-
+import axios from "axios";
+import { apiCall } from "../customApiCall";
+import { API_ENDPOINTS } from "@/apiConfig";
 
 export const getUserProfile = async (
   token: string
 ): Promise<IUserProfileResponse> => {
   return await apiCall(
     API_ENDPOINTS.ACCOUNT_MANAGEMENT.GetUserProfileData,
-    'GET',
+    "GET",
+    undefined,
+    token
+  );
+};
+
+export const getKycStatus = async (
+  token: string
+): Promise<IUserKycResponse> => {
+  console.log("🔹 Sending KYC Status Request", token);
+  return await apiCall(
+    API_ENDPOINTS.USER.GetKycStatus,
+    "GET",
     undefined,
     token
   );
@@ -19,7 +30,7 @@ export const getUnreadNotifications = async (
 ): Promise<INotificationsResponse> => {
   return await apiCall(
     API_ENDPOINTS.ACCOUNT_MANAGEMENT.GetNotifications,
-    'GET',
+    "GET",
     undefined,
     token
   );
@@ -27,7 +38,7 @@ export const getUnreadNotifications = async (
 export const markAllRead = async (token: string) => {
   return await apiCall(
     API_ENDPOINTS.ACCOUNT_MANAGEMENT.markAllNotificationsAsRead,
-    'GET',
+    "GET",
     undefined,
     token
   );
@@ -35,20 +46,20 @@ export const markAllRead = async (token: string) => {
 
 export const checkBvnStatus = async (
   token: string
-): Promise<{ status: 'active' | 'pending' }> => {
+): Promise<{ status: "active" | "pending" }> => {
   return await apiCall(
     API_ENDPOINTS.AUTH.CheckBvnStatus,
-    'GET',
+    "GET",
     undefined,
     token
   );
 };
 export const verifyBvnStatus = async (
   token: string
-): Promise<{ status: 'checked' | 'unchecked' }> => {
+): Promise<{ status: "checked" | "unchecked" }> => {
   return await apiCall(
     API_ENDPOINTS.AUTH.CheckBvnVerified,
-    'GET',
+    "GET",
     undefined,
     token
   );
@@ -59,7 +70,7 @@ export const getBillPaymentHistory = async (
 ): Promise<IBillTransactionResponse> => {
   return await apiCall(
     API_ENDPOINTS.ACCOUNT_MANAGEMENT.GetBillPaymentHistory,
-    'GET',
+    "GET",
     undefined,
     token
   );
@@ -69,7 +80,7 @@ export const getTransferHistory = async (
 ): Promise<ITransferTransactionResponse> => {
   return await apiCall(
     API_ENDPOINTS.ACCOUNT_MANAGEMENT.GetTransferHistory,
-    'GET',
+    "GET",
     undefined,
     token
   );
@@ -77,7 +88,7 @@ export const getTransferHistory = async (
 export const generateBvnLinkAgain = async ({ token }: { token: string }) => {
   return await apiCall(
     API_ENDPOINTS.ACCOUNT_MANAGEMENT.RequestBvnConsent,
-    'POST',
+    "POST",
     undefined,
     token
   );
@@ -88,17 +99,16 @@ export const getFundAccountNo = async (
 ): Promise<IFundAccResponse> => {
   return await apiCall(
     API_ENDPOINTS.MONEY_TRANSFER.GetFundAccountNo,
-    'GET',
+    "GET",
     undefined,
     token
   );
 };
 
-
 export const getBalance = async (token: string): Promise<IBalanceResposne> => {
   return await apiCall(
     API_ENDPOINTS.ACCOUNT_MANAGEMENT.GetBalance,
-    'GET',
+    "GET",
     undefined,
     token
   );
@@ -109,7 +119,7 @@ export const getMonthlyStats = async (
 ): Promise<IStatsResponse> => {
   return await apiCall(
     API_ENDPOINTS.ACCOUNT_MANAGEMENT.GetMonthlyStats,
-    'GET',
+    "GET",
     undefined,
     token
   );
@@ -120,7 +130,7 @@ export const getYearlyStats = async (
 ): Promise<IStatsResponse> => {
   return await apiCall(
     API_ENDPOINTS.ACCOUNT_MANAGEMENT.GetYearlyStats,
-    'GET',
+    "GET",
     undefined,
     token
   );
@@ -131,7 +141,7 @@ export const getQuarterlyStats = async (
 ): Promise<IStatsResponse> => {
   return await apiCall(
     API_ENDPOINTS.ACCOUNT_MANAGEMENT.GetQuarterlyStats,
-    'GET',
+    "GET",
     undefined,
     token
   );
@@ -152,12 +162,34 @@ interface IBalanceResposne {
   balance: number;
   totalIncome: number;
   totalBillPayment: number;
-  unreadNotification?:number
+  unreadNotification?: number;
 }
 
 interface IUserProfileResponse {
   status: string;
   data: IUserProfileData;
+}
+interface IUserKycResponse {
+  status: string;
+  data: {
+    id: number;
+    user_id: number;
+    first_name: string;
+    last_name: string;
+    address: string;
+    state: string;
+    dob: string;
+    bvn: string;
+    document_type: string;
+    document_number: string;
+    picture: string;
+    document_front: string;
+    document_back: string;
+    status: string;
+    created_at: string;
+    updated_at: string;
+  };
+  message: string;
 }
 
 export interface IUserProfileData {
@@ -208,7 +240,7 @@ export type ITrasnferTransaction = {
   logo: string;
   type: string;
   date: string; // ISO date format
-  status: 'Completed' | 'Pending' | 'Failed';
+  status: "Completed" | "Pending" | "Failed";
 };
 // export type ITrasnferTransaction = {
 //   transaction_id: number;
@@ -229,7 +261,7 @@ export type ITrasnferTransaction = {
 // };
 
 type ITransferTransactionResponse = {
-  status: 'success' | 'error';
+  status: "success" | "error";
   data: ITrasnferTransaction[];
 };
 
@@ -241,8 +273,8 @@ export interface IBillTransaction {
   transaction_date: string;
   refference: string;
   customerId: string;
-  sign: 'negative' | 'positive';
-  status: 'completed' | 'pending' | 'failed'; // Add more statuses if applicable
+  sign: "negative" | "positive";
+  status: "completed" | "pending" | "failed"; // Add more statuses if applicable
   category: string;
   paymentitemname: string;
   billerType: string;
@@ -256,12 +288,12 @@ export interface IBillTransaction {
 }
 
 interface IBillTransactionResponse {
-  status: 'success' | 'error';
+  status: "success" | "error";
   data: IBillTransaction[];
 }
 
 interface IFundAccResponse {
-  status: 'success' | 'error';
+  status: "success" | "error";
   message: string;
   data: AccData;
 }

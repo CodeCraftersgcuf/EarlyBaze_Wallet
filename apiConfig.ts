@@ -22,6 +22,8 @@ const API_ENDPOINTS = {
     GetAssests: API_DOMAIN + "/user/assets",
     GetBankDetail: API_DOMAIN + "/get-bank-account",
     ChangePassword: API_DOMAIN + "/user/change-password",
+    GetKycStatus: API_DOMAIN + "/kyc/get",
+    CreatekycRequest: API_DOMAIN + "/kyc/create",
   },
   ACCOUNT_MANAGEMENT: {
     GetUserProfileData: API_DOMAIN + "/edit-profile-details",
