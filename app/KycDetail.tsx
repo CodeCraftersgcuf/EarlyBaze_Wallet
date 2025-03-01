@@ -71,6 +71,53 @@ const KycDetail: React.FC = () => {
             console.error("❌ KYC Request Failed:", error);
         }
     });
+    const handleKycSubmission = (form: any, token: string | null, mutateKyc: Function) => {
+        if (!token) {
+            console.error("❌ No token available");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("first_name", form.first_name);
+        formData.append("last_name", form.last_name);
+        formData.append("dob", form.dob);
+        formData.append("address", form.address);
+        formData.append("state", form.state);
+        formData.append("bvn", form.bvn);
+        formData.append("document_type", form.document_type);
+        formData.append("document_number", form.document_number);
+
+        // Append images only if they exist
+        if (form.profile_image) {
+            formData.append("profile_image", {
+                uri: form.profile_image,
+                name: "profile.jpg",
+                type: "image/jpeg",
+            } as any);
+        }
+
+        if (form.document_front) {
+            formData.append("document_front", {
+                uri: form.document_front,
+                name: "document_front.jpg",
+                type: "image/jpeg",
+            } as any);
+        }
+
+        if (form.document_back) {
+            formData.append("document_back", {
+                uri: form.document_back,
+                name: "document_back.jpg",
+                type: "image/jpeg",
+            } as any);
+        }
+
+        console.log("📤 Submitting KYC Request:", formData);
+
+        // Call mutation with FormData and token
+        mutateKyc({ data: formData, token });
+    };
+
     return (
         <ScrollView contentContainerStyle={[styles.container, { backgroundColor }]}>
             <Header title="KYC Details" />
@@ -102,57 +149,12 @@ const KycDetail: React.FC = () => {
                 setBackImage={(uri) => setForm({ ...form, document_back: uri })}
             />
 
-
             <PrimaryButton
                 title={isPendingKyc ? "Submitting..." : "Proceed"}
-                onPress={() => {
-                    if (!token) {
-                        console.error("❌ No token available");
-                        return;
-                    }
-
-                    const formData = new FormData();
-                    formData.append("first_name", form.first_name);
-                    formData.append("last_name", form.last_name);
-                    formData.append("dob", form.dob);
-                    formData.append("address", form.address);
-                    formData.append("state", form.state);
-                    formData.append("bvn", form.bvn);
-                    formData.append("document_type", form.document_type);
-                    formData.append("document_number", form.document_number);
-
-                    // Append images only if they exist
-                    if (form.profile_image) {
-                        formData.append("profile_image", {
-                            uri: form.profile_image,
-                            name: "profile.jpg",
-                            type: "image/jpeg",
-                        } as any);
-                    }
-
-                    if (form.document_front) {
-                        formData.append("document_front", {
-                            uri: form.document_front,
-                            name: "document_front.jpg",
-                            type: "image/jpeg",
-                        } as any);
-                    }
-
-                    if (form.document_back) {
-                        formData.append("document_back", {
-                            uri: form.document_back,
-                            name: "document_back.jpg",
-                            type: "image/jpeg",
-                        } as any);
-                    }
-
-                    console.log("📤 Submitting KYC Request:", formData);
-
-                    // Call mutation with FormData and token
-                    mutateKyc({ data: formData, token });
-                }}
+                onPress={() => handleKycSubmission(form, token, mutateKyc)}
             />
->
+
+
         </ScrollView>
     );
 };

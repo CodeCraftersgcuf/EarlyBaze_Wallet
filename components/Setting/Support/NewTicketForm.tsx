@@ -1,12 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { Ionicons } from '@expo/vector-icons';
 import PrimaryButton from '@/components/Buy/PrimaryButton';
 import PrioritySelector from './PrioritySelector';
 import SubjectSelectionModal from './SubjectSelectionModal'; // Import the new component
+import { router } from 'expo-router';
+
+
+//Code related to the integration:
+import { createSupportTicket } from "@/utils/mutations/accountMutations";
+import { useMutation } from "@tanstack/react-query";
+import { getFromStorage } from "@/utils/storage";
+
 
 const NewTicketForm: React.FC = () => {
+  const [token, setToken] = useState<string | null>(null); // State to hold the token
   const cardBackgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#1A1A1A' }, 'card');
   const textColor = useThemeColor({ light: '#222222', dark: '#FFFFFF' }, 'text');
   const placeholderColor = useThemeColor({ light: '#888888', dark: '#CCCCCC' }, 'placeholder');
@@ -16,6 +25,38 @@ const NewTicketForm: React.FC = () => {
   const [priority, setPriority] = useState('Low');
   const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [message, setMessage] = useState<string>('');
+  const [subjectError, setSubjectError] = useState<boolean>(false);
+  const [messageError, setMessageError] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false); // Track loading state
+
+
+
+  // Fetch the token and user data when the component mounts
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const fetchedToken = await getFromStorage("authToken");
+      setToken(fetchedToken);
+      console.log("🔹 Retrieved Token:", fetchedToken);
+    };
+
+    fetchUserData();
+  }, []);
+
+  // Mutation to create a new support ticket
+  const { isPending, mutate: createTicket } = useMutation({
+    mutationFn: (data: any) => createSupportTicket({ data, token }),
+    onSuccess: () => {
+      console.log("🔹 Ticket created successfully!");
+      setIsSubmitting(false);
+      router.push('/Tickets');
+    },
+    onError: (error) => {
+      console.error("🔴 Error creating ticket:", error);
+      setIsSubmitting(false);
+    },
+  });
+
 
   return (
     <View style={[styles.container, { backgroundColor: cardBackgroundColor }]}>
@@ -25,20 +66,32 @@ const NewTicketForm: React.FC = () => {
 
       {/* Subject Label */}
       <Text style={[styles.label, { color: textColor }]}>Subject</Text>
-      <TouchableOpacity style={[styles.dropdownContainer, { borderColor }]} onPress={() => setModalVisible(true)}>
+      <TouchableOpacity
+        style={[
+          styles.dropdownContainer,
+          { borderColor: subjectError ? 'red' : borderColor },
+        ]}
+        onPress={() => setModalVisible(true)}
+      >
         <Text style={[styles.subjectText, { color: selectedSubject ? textColor : placeholderColor }]}>
           {selectedSubject || 'Enter subject'}
         </Text>
         <Ionicons name="chevron-down" size={20} color={textColor} />
       </TouchableOpacity>
 
+
       {/* Message Label */}
       <Text style={[styles.label, { color: textColor }]}>Message</Text>
       <TextInput
-        style={[styles.textarea, { color: textColor, borderColor }]}
+        style={[
+          styles.textarea,
+          { color: textColor, borderColor: messageError ? 'red' : borderColor },
+        ]}
         placeholder="Type your message"
         placeholderTextColor={placeholderColor}
         multiline
+        value={message}
+        onChangeText={setMessage}
       />
 
       {/* Priority Label */}
@@ -47,7 +100,28 @@ const NewTicketForm: React.FC = () => {
 
       {/* Submit Button */}
       <View style={{ marginTop: 20 }}>
-        <PrimaryButton title="Send" onPress={() => console.log('Ticket Submitted')} />
+        <PrimaryButton
+          title={isSubmitting ? "Sending..." : "Send"}
+          onPress={() => {
+            if (!selectedSubject) {
+              setSubjectError(true);
+            } else {
+              setSubjectError(false);
+            }
+            if (!message) {
+              setMessageError(true);
+            } else {
+              setMessageError(false);
+            }
+
+            if (selectedSubject && message) {
+              setIsSubmitting(true);
+              createTicket({ subject: selectedSubject, issue: message });
+            }
+          }}
+          disabled={isSubmitting}
+        />
+
       </View>
 
       {/* Pass necessary props to the SubjectSelectionModal component */}

@@ -25,6 +25,9 @@ export const getKycStatus = async (
   );
 };
 
+export const getTickets = async (token: string): Promise<ITicketsResponse> =>
+  await apiCall(API_ENDPOINTS.USER.GetTickets, "GET", undefined, token);
+
 export const getUnreadNotifications = async (
   token: string
 ): Promise<INotificationsResponse> => {
@@ -35,6 +38,19 @@ export const getUnreadNotifications = async (
     token
   );
 };
+export const getSingleTicket = async (
+  token: string,
+  ticketId: number
+): Promise<ITicketsResponse> => {
+  return await apiCall(
+    `${API_ENDPOINTS.USER.GetSingleTicket}/${ticketId}`,  // Append ticketId dynamically
+    "GET",
+    undefined,
+    token
+  );
+};
+
+
 export const markAllRead = async (token: string) => {
   return await apiCall(
     API_ENDPOINTS.ACCOUNT_MANAGEMENT.markAllNotificationsAsRead,
@@ -189,6 +205,23 @@ interface IUserKycResponse {
     created_at: string;
     updated_at: string;
   };
+  message: string;
+}
+
+interface ITicket {
+  id: number;
+  user_id: number;
+  subject: string;
+  issue: string;
+  status: string;
+  answered: string;
+  created_at: string;
+  updated_at: string;
+}
+
+interface ITicketsResponse {
+  status: string;
+  data: ITicket[];
   message: string;
 }
 

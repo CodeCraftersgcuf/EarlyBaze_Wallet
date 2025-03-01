@@ -7,7 +7,7 @@ interface TicketTabsProps {
   onSelect: (tab: string) => void;
 }
 
-const tabs = ['All', 'Unanswered', 'Answered'];
+const tabs = ['All', 'unanswered', 'answered'];
 
 const TicketTabs: React.FC<TicketTabsProps> = ({ selectedTab, onSelect }) => {
   const activeColor = useThemeColor({ light: '#25AE7A', dark: '#25AE7A' }, 'activeTab');

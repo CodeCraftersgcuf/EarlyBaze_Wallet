@@ -24,6 +24,9 @@ const API_ENDPOINTS = {
     ChangePassword: API_DOMAIN + "/user/change-password",
     GetKycStatus: API_DOMAIN + "/kyc/get",
     CreatekycRequest: API_DOMAIN + "/kyc/create",
+    GetTickets: API_DOMAIN + "/support/get-tickets",
+    CreateSupportTicket: API_DOMAIN + "/support/create-ticket",
+    GetSingleTicket: API_DOMAIN + "/support/get-ticket",
   },
   ACCOUNT_MANAGEMENT: {
     GetUserProfileData: API_DOMAIN + "/edit-profile-details",

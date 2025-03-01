@@ -41,6 +41,16 @@ export const createKycRequest = async ({
   return await apiCall(API_ENDPOINTS.USER.CreatekycRequest, "POST", data, token);
 };
 
+export const createSupportTicket = async ({
+  data,
+  token,
+}: {
+  data: FormData;
+  token: string;
+}) => {
+  return await apiCall(API_ENDPOINTS.USER.CreateSupportTicket, "POST", data, token);
+};
+
 export const createIndividualAccount = async ({
   data,
   token,

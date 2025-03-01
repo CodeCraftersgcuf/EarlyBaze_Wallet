@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
     View,
     ScrollView,
@@ -7,7 +7,8 @@ import {
     TouchableOpacity,
     Image,
     KeyboardAvoidingView,
-    Platform
+    Platform,
+    Text
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useThemeColor } from '@/hooks/useThemeColor';
@@ -17,7 +18,14 @@ import TicketDetails from '@/components/Setting/Support/TicketDetails';
 import ChatMessage from '@/components/Setting/Support/ChatMessage';
 import { Ionicons, Entypo } from '@expo/vector-icons';
 
+
+//Code related to the integration:
+import { getSingleTicket } from "@/utils/queries/accountQueries";
+import { useQuery } from "@tanstack/react-query";
+import { getFromStorage } from "@/utils/storage";
+
 const TicketChat: React.FC = () => {
+    const [token, setToken] = useState<string | null>(null); // State to hold the token
     const backgroundColor = useThemeColor({ light: '#EFFEF9', dark: '#000000' }, 'background');
     const inputBackground = useThemeColor({ light: '#E5E5E5', dark: '#1A1A1A' }, 'inputBackground');
     const textColor = useThemeColor({ light: '#222222', dark: '#FFFFFF' }, 'text');
@@ -35,6 +43,27 @@ const TicketChat: React.FC = () => {
     const [messageText, setMessageText] = useState('');
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
     const scrollViewRef = useRef<ScrollView>(null);
+
+    // Fetch the token and user data when the component mounts
+    useEffect(() => {
+        const fetchUserData = async () => {
+            const fetchedToken = await getFromStorage("authToken");
+            setToken(fetchedToken);
+            console.log("🔹 Retrieved Token:", fetchedToken);
+        };
+
+        fetchUserData();
+    }, []);
+
+
+    // Query to fetch ticket details
+    const { data: ticket, error: ticketError, isLoading: ticketLoading } = useQuery({
+        queryKey: ["ticket", id], // Query key will track the ticket for a given `id`
+        queryFn: () => getSingleTicket(token, id), // Pass token and id separately
+        enabled: !!token, // Only enable query if token is available
+    });
+
+    console.log("🔹 Ticket:", ticket);
 
     // Function to handle sending messages (text or image)
     const sendMessage = () => {
@@ -99,14 +128,22 @@ const TicketChat: React.FC = () => {
         <View style={[styles.container, { backgroundColor }]}>
             <Header title={`Ticket ${id}`} />
 
-            {/* Ticket Details */}
-            <TicketDetails
-                status="Answered"
-                name="Qamardeen"
-                subject="Swap"
-                priority="High"
-                dateCreated="01 - 01 - 24 / 11:12 AM"
-            />
+            {/* Ticket Details - Pass dynamic data from ticket */}
+            {ticketLoading ? (
+                <Text>Loading...</Text>
+            ) : ticketError ? (
+                <Text>Error fetching ticket details</Text>
+            ) : (
+                ticket?.data && (
+                    <TicketDetails
+                        status={ticket.data.status} // Status of the ticket
+                        name="Qamardeen" // You can also pass the user's name if available
+                        subject={ticket.data.subject} // Subject of the ticket
+                        priority="High" // Hardcoded, can be adjusted based on the ticket data if available
+                        dateCreated={new Date(ticket.data.created_at).toLocaleString()} // Format the created date
+                    />
+                )
+            )}
 
             {/* Chat Messages */}
             <KeyboardAvoidingView
