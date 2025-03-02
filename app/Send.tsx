@@ -14,7 +14,6 @@ const Send: React.FC = () => {
     const [selectedTab, setSelectedTab] = useState<'Crypto Address' | 'Internal Transfer'>('Crypto Address');
 
     const backgroundColor = useThemeColor({ light: '#EFFEF9', dark: '#000000' }, 'background');
-    const navigation = useNavigation();
 
     return (
         <ScrollView contentContainerStyle={[styles.container, { backgroundColor }]}>

@@ -43,6 +43,39 @@ export const getUserBalance = async ({
   return await apiCall(API_ENDPOINTS.USER.GetBalance, "GET", undefined, token);
 };
 
+export const getUserAssets = async ({
+  token,
+}: {
+  token: string;
+}): Promise<UserAssetsResponse> => {
+  return await apiCall(API_ENDPOINTS.USER.GetAssets, "GET", undefined, token);
+};
+
+export const getWalletCurrency = async ({
+  token,
+}: {
+  token: string;
+}): Promise<WalletCurrency[]> => {
+  return await apiCall(
+    API_ENDPOINTS.USER.GetWalletCurrency,
+    "GET",
+    undefined,
+    token
+  );
+};
+
+export const getNetworkCurreny = async (
+  token: string,
+  coinId: any
+): Promise<NetworkResponse> => {
+  return await apiCall(
+    `${API_ENDPOINTS.USER.GetWalletNetworks}/${coinId}`, // Append ticketId dynamically
+    "GET",
+    undefined,
+    token
+  );
+};
+
 export const getBillerCategories = async ({
   token,
 }: {
@@ -232,7 +265,7 @@ interface GetBankDetail {
 
 interface UserBalance {
   id: number;
-  crypto_balance: number ;
+  crypto_balance: number;
   naira_balance: number;
   user_id: number;
   account_number: string;
@@ -246,6 +279,39 @@ interface UserBalance {
 interface UserBalanceResponse {
   status: string;
   data: UserBalance;
+  message: string;
+}
+
+interface WalletCurrency {
+  id: number;
+  price: number;
+  symbol: string | null;
+  naira_price: number;
+}
+
+interface UserAsset {
+  id: number;
+  currency: string;
+  blockchain: string;
+  currency_id: number;
+  available_balance: string;
+  account_balance: string;
+  wallet_currency: WalletCurrency;
+}
+
+interface UserAssetsResponse {
+  status: string;
+  data: UserAsset[];
+  message: string;
+}
+
+interface NetworkResponse {
+  status: string;
+  data: Array<{
+    id: number;
+    network: string;
+    symbol: string;
+  }>;
   message: string;
 }
 

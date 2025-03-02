@@ -1,13 +1,14 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
+import { images } from '@/constants';
 
 interface AssetCardProps {
     name: string;
     fullName: string;
     balance: string;
     price: string;
-    icon: any;
+    icon: string; // Ensure it's a string (URL)
 }
 
 const AssetCard: React.FC<AssetCardProps> = ({ name, fullName, balance, price, icon }) => {
@@ -15,12 +16,13 @@ const AssetCard: React.FC<AssetCardProps> = ({ name, fullName, balance, price, i
     const textColor = useThemeColor({ light: '#000000', dark: '#FFFFFF' }, 'text');
     const secondaryTextColor = useThemeColor({ light: '#666', dark: '#999' }, 'secondaryText');
 
+    console.log("the Icon", icon);
     return (
         <View style={[styles.card, { backgroundColor }]}>
             {/* Icon and Asset Name */}
             <View style={styles.iconRow}>
                 <View style={styles.iconContainer}>
-                    <Image source={icon} style={styles.icon} />
+                <Image source={typeof icon === "string" ? { uri: icon } : icon ||images.account} style={styles.icon} />
                 </View>
                 <View style={styles.textContainer}>
                     <Text style={[styles.assetName, { color: textColor }]}>{name}</Text>
@@ -69,8 +71,8 @@ const styles = StyleSheet.create({
         marginRight: 10,
     },
     icon: {
-        width: 50,
-        height: 50,
+        width: 42,
+        height: 42,
         resizeMode: 'contain',
     },
     textContainer: {

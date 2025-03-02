@@ -1,20 +1,14 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 import AssetCard from '@/components/AssetCard';
 import icons from '@/constants/icons';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useRouter } from 'expo-router';
 
-const assetData = [
-    { id: '1', name: 'BTC', fullName: 'Bitcoin', balance: '0.00234', price: '$97,456.33', icon: icons.bitCoin },
-    { id: '2', name: 'ETH', fullName: 'Ethereum', balance: '0.0000', price: '$3,754.34', icon: icons.bitCoin },
-    { id: '3', name: 'USDT', fullName: 'Tether', balance: '1,546', price: '$1.11', icon: icons.bitCoin },
-    { id: '4', name: 'SOL', fullName: 'Solana', balance: '3.12', price: '$197.35', icon: icons.bitCoin },
-    { id: '5', name: 'XRP', fullName: 'Ripple', balance: '5,000', price: '$0.53', icon: icons.bitCoin },
-    { id: '6', name: 'ADA', fullName: 'Cardano', balance: '2,300', price: '$0.40', icon: icons.bitCoin },
-    { id: '7', name: 'DOT', fullName: 'Polkadot', balance: '10.50', price: '$7.32', icon: icons.bitCoin },
-    { id: '8', name: 'DOGE', fullName: 'Dogecoin', balance: '20,000', price: '$0.08', icon: icons.bitCoin },
-];
+// Code related to the integration:
+import { useQuery } from '@tanstack/react-query';
+import { getFromStorage } from "@/utils/storage";
+import { getUserAssets } from "@/utils/queries/appQueries";
 
 const AssetList: React.FC<{ selectedTab: 'All Assets' | 'My Assets'; searchQuery: string; type: string }> = ({
     selectedTab,
@@ -24,10 +18,42 @@ const AssetList: React.FC<{ selectedTab: 'All Assets' | 'My Assets'; searchQuery
     console.log("Type from SendReceive:", type);
     const backgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#000000' }, 'background');
     const router = useRouter();
+    const [token, setToken] = useState<string | null>(null);
 
-    let filteredData = selectedTab === 'All Assets' ? assetData : assetData.filter((asset) => Number(asset.balance) > 0);
+    // Fetch the token when the component mounts
+    useEffect(() => {
+        const fetchUserData = async () => {
+            const fetchedToken = await getFromStorage("authToken");
+            setToken(fetchedToken);
+            console.log("🔹 Retrieved Token:", fetchedToken);
+        };
 
-    // Filter assets based on search query
+        fetchUserData();
+    }, []);
+
+    const { data: userAssets, error: userAssetsError, isLoading: userAssetsLoading } = useQuery({
+        queryKey: ["userAssets"],
+        queryFn: () => getUserAssets({ token }),
+        enabled: !!token, // Only run the query when the token is available
+    });
+
+    console.log("🔹 User Assets:", userAssets);
+
+    // Convert API data to match required structure
+    const formattedAssets = userAssets?.data?.map((asset: any) => ({
+        id: asset.id.toString(),
+        name: asset.currency,
+        fullName: asset.blockchain.charAt(0).toUpperCase() + asset.blockchain.slice(1), // Capitalize blockchain name
+        balance: asset.available_balance,
+        price: asset.wallet_currency?.price ? `$${asset.wallet_currency.price}` : "N/A", // Get price or use "N/A"
+        icon: asset.wallet_currency?.symbol
+            ? `https://earlybaze.hmstech.xyz/storage/${asset.wallet_currency.symbol}`
+            : icons.bitCoin, // Use API icon if available, else default
+    })) || [];
+
+
+    // Filter assets based on selection & search query
+    let filteredData = selectedTab === 'All Assets' ? formattedAssets : formattedAssets.filter((asset) => Number(asset.balance) > 0);
     if (searchQuery) {
         filteredData = filteredData.filter(
             (asset) =>
@@ -51,13 +77,14 @@ const AssetList: React.FC<{ selectedTab: 'All Assets' | 'My Assets'; searchQuery
                                     pathname: '/Receive',
                                     params: { assetName: item.name, fullName: item.fullName, icon: item.icon },
                                 });
-                            } else if (type === 'send') {
+                            } else if (type === 'send' && Number(item.balance) > 0) {
                                 router.push({
                                     pathname: '/Send',
                                     params: { assetName: item.name, fullName: item.fullName, icon: item.icon },
                                 });
-                            }
-                            else {
+                            } else if (type === 'send' && Number(item.balance) === 0) {
+                                console.log(`❌ Cannot send ${item.name} - Balance is zero`);
+                            } else {
                                 console.log(`Normal action for ${item.name}`);
                             }
                         }}

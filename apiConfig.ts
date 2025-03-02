@@ -27,6 +27,9 @@ const API_ENDPOINTS = {
     GetTickets: API_DOMAIN + "/support/get-tickets",
     CreateSupportTicket: API_DOMAIN + "/support/create-ticket",
     GetSingleTicket: API_DOMAIN + "/support/get-ticket",
+    GetAssets: API_DOMAIN + "/user/assets",
+    GetWalletCurrency: API_DOMAIN + "/user/wallet-currencies",
+    GetWalletNetworks: API_DOMAIN + "/user/networks",
   },
   ACCOUNT_MANAGEMENT: {
     GetUserProfileData: API_DOMAIN + "/edit-profile-details",

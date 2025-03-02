@@ -19,6 +19,12 @@ interface SendCryptoFormProps {
 import TabSwitcher from './TabSwitcher';
 import QrModal from './QrModal';
 
+import SelectionBox from '@/components/Buy/SelectionBox';
+import InputField from '@/components/Buy/InputField';
+import networkOptions from '@/constants/networkOptions.json';
+import NetworkSelectionModal from '../Receive/NetworkSelectionModal';
+
+
 const SendCryptoForm: React.FC<SendCryptoFormProps> = ({ selectedTab, setSelectedTab }) => {
     // Theme-based colors
     const cardBackgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#1A1A1A' }, 'card');
@@ -31,6 +37,11 @@ const SendCryptoForm: React.FC<SendCryptoFormProps> = ({ selectedTab, setSelecte
     const [scannedAddress, setScannedAddress] = useState('');
     const [hasPermission, setHasPermission] = useState<boolean | null>(null);
     const [isScannerOpen, setIsScannerOpen] = useState(false);
+    const [selectedCoin, setSelectedCoin] = useState(networkOptions[0]); // Default coin
+    const [selectedNetwork, setSelectedNetwork] = useState(networkOptions[0]); // Default network
+    const [modalType, setModalType] = useState<string | null>(null); // Store modal type
+    const [modalVisible, setModalVisible] = useState(false);
+
 
     const scan = useThemeColor({
         light: images.scan,
@@ -51,6 +62,21 @@ const SendCryptoForm: React.FC<SendCryptoFormProps> = ({ selectedTab, setSelecte
     };
 
 
+    const coinId = selectedCoin?.id ? selectedCoin.id.toString() : null; // ✅ Ensure proper check
+
+    const handleSelectNetwork = (network: any) => {
+        if (modalType === "coin") {
+            setSelectedCoin(network);
+        } else if (modalType === "network") {
+            setSelectedNetwork(network);
+        }
+        setModalVisible(false); // Close modal after selection
+    };
+
+    const openModal = (type: string) => {
+        setModalType(type); // Store the type
+        setModalVisible(true); // Show the modal
+    };
 
     return (
         <View style={styles.container}>
@@ -74,41 +100,46 @@ const SendCryptoForm: React.FC<SendCryptoFormProps> = ({ selectedTab, setSelecte
                 </View>
 
                 {/* Amount and Currency Selection */}
-                <View style={styles.amountContainer}>
-                    <View style={[styles.amountBox, { borderColor }]}>
-                        <Text style={styles.amountLabel}>BTC</Text>
-                        <Text style={[styles.amountValue, { color: textColor }]}>0.000234</Text>
-                        <Text style={styles.maxText}>Max</Text>
-                    </View>
-                    <TouchableOpacity style={[styles.swapButton, { borderColor: arrowBorderColor }]}>
-                        <Image source={doublearrow} style={styles.swapIcon} />
-                    </TouchableOpacity>
-                    <View style={[styles.selectionBox, { borderColor }]}>
-                        <Text style={styles.selectionLabel}>Coin</Text>
-                        <View style={styles.coinWrapper}>
-                            <Text style={[styles.coinText, { color: textColor }]}>Bitcoin</Text>
-                            <Image source={images.solana} style={styles.coinIcon} />
-                        </View>
-                    </View>
+                <View style={styles.exchangeContainer}>
+                    <InputField label="USD" value="2,345" />
+                    <SelectionBox
+                        label="Coin"
+                        id={selectedCoin.id}
+                        value={selectedCoin.name}
+                        icon={selectedCoin.icon}
+                        onPress={() => openModal("coin")}
+                    />
                 </View>
 
-                {/* Coin & Network Selection */}
+
+                {/* Network Selection */}
                 <View style={styles.selectionContainer}>
-                    <View style={[styles.amountBox, { borderColor }]}>
-                        <Text style={styles.amountLabel}>USD</Text>
-                        <Text style={[styles.amountValue, { color: textColor }]}>2,345</Text>
-                        <Text style={styles.maxText}>Max</Text>
-                    </View>
-                    <View style={[styles.selectionBox, { borderColor }]}>
-                        <Text style={styles.selectionLabel}>Network</Text>
-                        <View style={styles.coinWrapper}>
-                            <Text style={[styles.coinText, { color: textColor }]}>Bitcoin</Text>
-                            <Image source={images.solana} style={styles.coinIcon} />
-                        </View>
-                    </View>
+                    <InputField label="BTC" value="0.000234" />
+                    <SelectionBox
+                        label="Network"
+                        id={selectedNetwork.id}
+                        value={selectedNetwork.name}
+                        icon={selectedNetwork.icon}
+                        onPress={coinId ? () => openModal("network") : undefined}
+                        disabled={!coinId}
+                        style={!coinId ? { opacity: 0.5 } : undefined} // ✅ Ensure `undefined` if no extra styles
+                    />
+
+
+
                 </View>
             </View>
-
+            {coinId && (
+                <NetworkSelectionModal
+                    visible={modalVisible}
+                    onClose={() => setModalVisible(false)}
+                    onSelectNetwork={handleSelectNetwork}
+                    selectedNetwork={selectedNetwork}
+                    networks={networkOptions}
+                    modelType={modalType} // ✅ Dynamically sets modelType
+                    coinId={selectedCoin.id} // ✅ Passes selected coin ID
+                />
+            )}
             {/* QR Scanner Modal */}
             <QrModal isVisible={isScannerOpen} onClose={() => setIsScannerOpen(false)} />
         </View>
@@ -126,6 +157,12 @@ const styles = StyleSheet.create({
         marginHorizontal: 16,
         marginBottom: 16,
         padding: 4,
+    },
+    exchangeContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: 16,
+        gap: 8,
     },
     tabButton: {
         flex: 1,

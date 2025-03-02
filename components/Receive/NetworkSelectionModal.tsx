@@ -1,5 +1,5 @@
 // components/Receive/NetworkSelectionModal.tsx
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     View,
     Text,
@@ -12,12 +12,20 @@ import {
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { images } from '@/constants';
 
+
+//Code related to the integration:
+import { useQuery } from '@tanstack/react-query';
+import { getFromStorage } from '@/utils/storage';
+import { getWalletCurrency, getNetworkCurreny } from '@/utils/queries/appQueries';
+
+
 // Define network type
 interface NetworkOption {
     id: string;
     name: string;
     icon: any;
     color: string;
+
 }
 
 interface NetworkSelectionModalProps {
@@ -26,6 +34,8 @@ interface NetworkSelectionModalProps {
     onSelectNetwork: (network: NetworkOption) => void;
     selectedNetwork: NetworkOption;
     networks: NetworkOption[];
+    modelType: string | null;
+    coinId?: string;
 }
 
 const NetworkSelectionModal: React.FC<NetworkSelectionModalProps> = ({
@@ -33,8 +43,11 @@ const NetworkSelectionModal: React.FC<NetworkSelectionModalProps> = ({
     onClose,
     onSelectNetwork,
     selectedNetwork,
-    networks
+    networks,
+    modelType,
+    coinId
 }) => {
+    const [token, setToken] = useState<string | null>(null); // State to hold the token
     const backgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#000000' }, 'background');
     const textColor = useThemeColor({ light: '#004d00', dark: '#F6FBFF' }, 'text');
     const borderColor = useThemeColor({ light: '#DCDCDC', dark: '#1F1F1F' }, 'border');
@@ -42,6 +55,41 @@ const NetworkSelectionModal: React.FC<NetworkSelectionModalProps> = ({
     const titleTextColor = useThemeColor({ light: '#25AE7A', dark: '#25AE7A' }, 'text');
     const close = useThemeColor({ light: images.cross_white, dark: images.cross_black }, 'close');
 
+
+    // Fetch the token when the component mounts
+    useEffect(() => {
+        const fetchUserData = async () => {
+            const fetchedToken = await getFromStorage("authToken");
+            setToken(fetchedToken);
+            console.log("🔹 Retrieved Token:", fetchedToken);
+        };
+
+        fetchUserData();
+    }, []);
+
+    const { data: walletCurrency, error: walletCurrencyError, isLoading: walletCurrencyLoading } = useQuery(
+        {
+            queryKey: ["walletCurrency"],
+            queryFn: () => getWalletCurrency({ token }),
+            enabled: !!token && modelType === "coin", // Only run the query when token is available and modelType is "coin"
+        }
+    );
+
+    console.log("🔹 Wallet Currencyss:", walletCurrency);
+
+
+    const { data: networkCurrency, error: networkCurrencyError, isLoading: networkCurrencyLoading } = useQuery(
+        {
+            queryKey: ["networkCurrency", coinId], // Include coinId in queryKey
+            queryFn: () => getNetworkCurreny(token as string, coinId), // Ensure token is a string
+            enabled: !!token && !!coinId && modelType === "network", // Ensure coinId is selected
+        }
+    );
+
+
+    console.log("🔹 Network Currencyss:", networkCurrency);
+
+    console.log("The Model Type is:", modelType);
     return (
         <Modal visible={visible} animationType="slide" transparent>
             <View style={styles.modalContainer}>
@@ -57,7 +105,24 @@ const NetworkSelectionModal: React.FC<NetworkSelectionModalProps> = ({
 
                     {/* Network Options */}
                     <FlatList
-                        data={networks}
+                        data={
+                            modelType === "coin" && walletCurrency?.data
+                                ? walletCurrency.data.map((item) => ({
+                                    id: item.currency.id.toString(),
+                                    name: item.currency.currency,
+                                    icon: { uri: `https://earlybaze.hmstech.xyz/storage/${item.currency.symbol}` },
+                                    color: "#DCDCDC", // Default color
+                                }))
+                                : modelType === "network" && networkCurrency?.data
+                                    ? networkCurrency.data.map((item) => ({
+                                        id: item.id.toString(),
+                                        name: item.network,
+                                        icon: { uri: `https://earlybaze.hmstech.xyz/storage/${item.symbol}` },
+                                        color: "#DCDCDC", // Default color
+                                    }))
+                                    : networks
+                        }
+
                         keyExtractor={(item) => item.id}
                         numColumns={3}
                         contentContainerStyle={styles.networkList}
@@ -66,22 +131,21 @@ const NetworkSelectionModal: React.FC<NetworkSelectionModalProps> = ({
                                 style={[
                                     styles.networkItem,
                                     selectedNetwork.id === item.id && styles.selectedNetwork,
-                                    { backgroundColor: itemBackgroundColor }
+                                    { backgroundColor: itemBackgroundColor },
                                 ]}
                                 onPress={() => onSelectNetwork(item)} // Update network on tap
                             >
                                 <View style={[styles.networkIconContainer, { backgroundColor: item.color }]}>
                                     <Image source={item.icon} style={styles.networkIcon} />
                                 </View>
-                                <Text style={[styles.networkText, { color: textColor }]}>
-                                    {item.name}
-                                </Text>
+                                <Text style={[styles.networkText, { color: textColor }]}>{item.name}</Text>
                             </TouchableOpacity>
                         )}
                     />
                 </View>
             </View>
         </Modal>
+
     );
 };
 

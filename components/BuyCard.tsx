@@ -20,52 +20,83 @@ const BuyCard: React.FC = () => {
 
   // State to handle modal visibility
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedNetwork, setSelectedNetwork] = useState(networkOptions[0]); // Default to the first network
+  const [selectedCoin, setSelectedCoin] = useState(networkOptions[0]); // Default coin
+  const [selectedNetwork, setSelectedNetwork] = useState(networkOptions[0]); // Default network
+  const [modalType, setModalType] = useState<string | null>(null); // Store modal type
 
   // Function to handle network selection
   const handleSelectNetwork = (network: any) => {
-    setSelectedNetwork(network);
+    if (modalType === "coin") {
+      setSelectedCoin(network);
+    } else if (modalType === "network") {
+      setSelectedNetwork(network);
+    }
     setModalVisible(false); // Close modal after selection
+  };
+
+  // Function to handle coin selection
+  const coinId = selectedCoin?.id ? selectedCoin.id.toString() : null; // ✅ Ensure proper check
+
+  const openModal = (type: string) => {
+    setModalType(type); // Store the type
+    setModalVisible(true); // Show the modal
   };
 
   return (
     <View style={[styles.card, { backgroundColor }]}>
       <PaymentMethodHeader />
 
+      {/* Coin Selection */}
       <View style={styles.exchangeContainer}>
         <InputField label="USD" value="2,345" />
         <SelectionBox
           label="Coin"
-          value="Bitcoin"
-          icon={icons.bitCoin}
-          onPress={() => setModalVisible(true)} // Open modal when clicking
+          id={selectedCoin.id}
+          value={selectedCoin.name}
+          icon={selectedCoin.icon}
+          onPress={() => openModal("coin")}
         />
       </View>
 
+      {/* Swap Button */}
       <TouchableOpacity style={[styles.swapButton, { borderColor: arrowBorderColor }]}>
         <Image source={doublearrow} style={styles.swapIcon} />
       </TouchableOpacity>
 
+      {/* Network Selection */}
       <View style={styles.selectionContainer}>
         <InputField label="BTC" value="0.000234" />
         <SelectionBox
           label="Network"
+          id={selectedNetwork.id}
           value={selectedNetwork.name}
           icon={selectedNetwork.icon}
-          onPress={() => setModalVisible(true)} // Open modal when clicking
+          onPress={coinId ? () => openModal("network") : undefined}
+          disabled={!coinId}
+          style={!coinId ? { opacity: 0.5 } : undefined} // ✅ Ensure `undefined` if no extra styles
         />
+
+
+
       </View>
 
+      {/* Amount to Pay Section */}
       <AmountToPay label="Amount to pay" value="NGN 25,000,000" />
 
-      {/* Show Modal */}
-      <NetworkSelectionModal
-        visible={modalVisible}
-        onClose={() => setModalVisible(false)}
-        onSelectNetwork={handleSelectNetwork}
-        selectedNetwork={selectedNetwork}
-        networks={networkOptions}
-      />
+      {/* Show Modal with Correct Type */}
+      {/* Show Modal with Correct Type (only when coinId exists) */}
+      {coinId && (
+        <NetworkSelectionModal
+          visible={modalVisible}
+          onClose={() => setModalVisible(false)}
+          onSelectNetwork={handleSelectNetwork}
+          selectedNetwork={selectedNetwork}
+          networks={networkOptions}
+          modelType={modalType} // ✅ Dynamically sets modelType
+          coinId={selectedCoin.id} // ✅ Passes selected coin ID
+        />
+      )}
+
     </View>
   );
 };
@@ -104,7 +135,6 @@ const styles = StyleSheet.create({
     top: '50%',
     right: '45%',
   },
-
   swapIcon: {
     width: 28,
     height: 28,

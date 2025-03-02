@@ -4,6 +4,7 @@ import { InputValues as SignUpProps } from "@/app/register";
 import { InputValues as LoginProps } from "@/app/login";
 
 export const signUpUser = async (data: SignUpProps): Promise<any> => {
+  console.log("🔹 Sending Register Request:", data); // ✅ Log request before sending
   return await apiCall(API_ENDPOINTS.AUTH.Register, "POST", data);
 };
 

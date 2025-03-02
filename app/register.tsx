@@ -32,7 +32,7 @@ export interface InputValues {
   phone: string;
   password: string;
   invite_code: string;
-  picture?: string; // ✅ Add optional picture field
+  profile_picture?: string; // ✅ Add optional picture field
 }
 
 const Register = () => {
@@ -41,12 +41,30 @@ const Register = () => {
   const [selectedImage, setSelectedImage] = useState(null);
 
 
-  // ✅ Mutation for Register
   const { isPending: isPendingRegister, mutate: mutateRegister } = useMutation({
-    mutationFn: (data: InputValues) => signUpUser(data),
-    onSuccess: (data, variables) => { // ✅ Get variables (form input data)
+    mutationFn: async (data: InputValues) => {
+      const formData = new FormData();
+
+      formData.append("name", data.name);
+      formData.append("email", data.email);
+      formData.append("phone", data.phone);
+      formData.append("password", data.password);
+      formData.append("invite_code", data.invite_code);
+
+      if (data.profile_picture) {
+        const fileExtension = data.profile_picture.split('.').pop();
+        formData.append("profile_picture", {
+          uri: data.profile_picture,
+          name: `profile.${fileExtension}`, // Set a file name
+          type: `image/${fileExtension}` // Set the MIME type
+        } as any);
+      }
+
+      return signUpUser(formData);
+    },
+    onSuccess: (data, variables) => {
       console.log("✅ Register Successful:", data);
-      push({ pathname: "/Otp", params: { email: variables.email } }); // ✅ Pass email to OTP screen
+      push({ pathname: "/Otp", params: { email: variables.email } });
     },
     onError: (error) => {
       console.error("❌ Register Failed:", error);
@@ -130,7 +148,7 @@ const Register = () => {
                       invite_code: "",
                     }}
                     onSubmit={(values) => {
-                      mutateRegister({ ...values, picture: selectedImage || "" }); // ✅ Pass picture if available
+                      mutateRegister({ ...values, profile_picture: selectedImage || "" }); // ✅ Pass picture if available
                     }}
                     validationSchema={validationRegistrationSchema}
                   >
