@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, ScrollView, View, TouchableOpacity, Image, Text } from 'react-native';
 import { ThemedView } from '@/components/ThemedView';
 import Header from '@/components/Header';
@@ -10,7 +10,17 @@ import transactionsData from '@/constants/transactionsData.json';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import icons from '@/constants/icons';
 
+
+//Code related to the integration:
+import { useQuery } from '@tanstack/react-query';
+import { getFromStorage } from "@/utils/storage";
+import {
+  getTransactionAll
+} from "@/utils/queries/appQueries";
+
+
 const Transactions: React.FC = () => {
+  const [token, setToken] = useState<string | null>(null); // State to hold the token
   const backgroundColor = useThemeColor({ light: '#EFFEF9', dark: '#000000' }, 'background');
   const subBackgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#1A1A1A' }, 'background');
   const [activeTab, setActiveTab] = useState<string>('All');
@@ -21,15 +31,45 @@ const Transactions: React.FC = () => {
   // Convert "Processing" to check for "Pending" transactions
   const filterKey = selectedFilter === 'Processing' ? 'Pending' : selectedFilter;
 
-  const bar= useThemeColor({ light: icons.bar, dark: icons.bar_black }, 'icon');
-  const arrow= useThemeColor({ light: icons.arrow, dark: icons.arrow_black }, 'icon');
+  const bar = useThemeColor({ light: icons.bar, dark: icons.bar_black }, 'icon');
+  const arrow = useThemeColor({ light: icons.arrow, dark: icons.arrow_black }, 'icon');
 
-  // Filter Transactions Based on Active Tab & Selected Filter
-  const filteredTransactions = transactionsData.filter(tx => {
-    const tabMatch = activeTab === 'All' || tx.type === activeTab.toLowerCase();
-    const statusMatch = filterKey === 'All' || tx.status === filterKey;
-    return tabMatch && statusMatch;
-  });
+  const { data: transactionsResponse, error: transactionsError, isLoading: transactionsLoading } = useQuery<TransactionsResponse>(
+    {
+      queryKey: ["transactions"],
+      queryFn: () => getTransactionAll({ token }),
+      enabled: !!token, // Only run the query when the token is available
+    }
+  );
+
+  // Ensure transactions data is set from the response
+  const transactions = transactionsResponse?.data || [];
+
+  console.log("🔹 Transactions:", transactions);
+  // Ensure transactions data is available before filtering
+  const filteredTransactions = transactions.length > 0
+    ? transactions.filter(tx => {
+      const tabMatch = activeTab === 'All' || tx.type.toLowerCase() === activeTab.toLowerCase();
+      const statusMatch = filterKey === 'All' || tx.status.toLowerCase() === filterKey.toLowerCase();
+      return tabMatch && statusMatch;
+    })
+    : [];
+
+
+  // Fetch the token and user data when the component mounts
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const fetchedToken = await getFromStorage("authToken");
+      setToken(fetchedToken);
+      console.log("🔹 Retrieved Token:", fetchedToken);
+    };
+
+    fetchUserData();
+  }, []);
+
+
+
+
 
   return (
     <ThemedView style={[styles.container, { backgroundColor }]}>
@@ -42,7 +82,7 @@ const Transactions: React.FC = () => {
         {/* Show Filter Button When NOT on "All" Tab */}
         {activeTab !== 'All' && (
           <TouchableOpacity
-            style={[styles.filterButton, {backgroundColor: filterBackgroundColor}, { width: 60 + selectedFilter.length * 7 }]} // Dynamic Width Based on Text Length
+            style={[styles.filterButton, { backgroundColor: filterBackgroundColor }, { width: 60 + selectedFilter.length * 7 }]} // Dynamic Width Based on Text Length
             onPress={() => setFilterModalVisible(true)}
           >
             <Image source={bar} style={styles.filterIcon} />
@@ -56,7 +96,7 @@ const Transactions: React.FC = () => {
           {/* {activeTab === 'All' ? <TransactionsGraph /> : null} */}
 
           {/* Transaction List */}
-          <TransactionList transactions={filteredTransactions} />
+          <TransactionList transactions={transactionsLoading || filteredTransactions.length === 0 ? [] : filteredTransactions} />
         </ScrollView>
       </View>
 

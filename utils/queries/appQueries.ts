@@ -76,6 +76,20 @@ export const getNetworkCurreny = async (
   );
 };
 
+export const getTransactionAll
+= async ({
+  token,
+}: {
+  token: string;
+}): Promise<TransactionAllResponse> => {
+  return await apiCall(
+    API_ENDPOINTS.USER.GetWalletTransactions,
+    "GET",
+    undefined,
+    token
+  );
+};
+
 export const getBillerCategories = async ({
   token,
 }: {
@@ -313,6 +327,25 @@ interface NetworkResponse {
     symbol: string;
   }>;
   message: string;
+}
+
+interface TransactionAllResponse {
+  status: string;
+  data: TransactionAll[];
+}
+
+interface TransactionAll {
+  id: number;
+  user_id: number;
+  currency: string;
+  amount: string;
+  type: string;
+  status: string;
+  network: string;
+  reference: string;
+  amount_usd: string;
+  created_at: string;
+  updated_at: string;
 }
 
 interface Slide {

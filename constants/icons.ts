@@ -24,7 +24,6 @@ const arrow = require('../assets/icons/arrow.png');
 const arrow_black = require('../assets/icons/arrow_black.png');
 const cross = require('../assets/icons/cross.png');
 
-const share = require('../assets/icons/share.png');
 const save = require('../assets/icons/save.png');
 const upload_black = require('../assets/icons/upload_black.png');
 const cross_circle = require('../assets/icons/cross_circle.png');
@@ -39,6 +38,13 @@ const faq_white = require('../assets/icons/faq_white.png');
 const faq_black = require('../assets/icons/faq_black.png');
 
 const edit = require('../assets/icons/edit.png');
+
+const send = require('../assets/icons/share.png');
+
+const receive = require('../assets/icons/receive.png');
+const buy = require('../assets/icons/buy.png');
+const swap = require('../assets/icons/swap.png');
+const withdraw = require('../assets/icons/withdraw.png');
 
 const icons = {
   bitCoin,
@@ -59,7 +65,7 @@ const icons = {
   bar,
   arrow,
   cross,
-  share,
+  send,
   save,
   upload_black,
   cross_circle,
@@ -74,6 +80,11 @@ const icons = {
   faq_white,
   faq_black,
   edit,
+  receive,
+  buy,
+  swap,
+  withdraw
+
 };
 
 export default icons;

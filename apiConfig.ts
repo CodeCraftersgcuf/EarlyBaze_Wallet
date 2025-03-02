@@ -30,6 +30,7 @@ const API_ENDPOINTS = {
     GetAssets: API_DOMAIN + "/user/assets",
     GetWalletCurrency: API_DOMAIN + "/user/wallet-currencies",
     GetWalletNetworks: API_DOMAIN + "/user/networks",
+    GetWalletTransactions: API_DOMAIN + "/transaction/get-all",
   },
   ACCOUNT_MANAGEMENT: {
     GetUserProfileData: API_DOMAIN + "/edit-profile-details",

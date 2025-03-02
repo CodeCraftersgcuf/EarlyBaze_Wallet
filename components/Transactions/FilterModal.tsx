@@ -17,7 +17,7 @@ interface FilterModalProps {
   setSelectedFilter: (filter: string) => void;
 }
 
-const filters = ['All', 'Successful', 'Processing', 'Failed'];
+const filters = ['All', 'completed', 'pending', 'failed'];
 
 const FilterModal: React.FC<FilterModalProps> = ({ visible, onClose, selectedFilter, setSelectedFilter }) => {
   const backgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#1A1A1A' }, 'background');

@@ -7,7 +7,7 @@ interface TransactionListProps {
     id: string;
     type: string;
     amount: string;
-    date: string;
+    created_at: string;
     status: string;
   }[];
 }

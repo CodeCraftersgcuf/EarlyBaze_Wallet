@@ -2,17 +2,17 @@ import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import icons from '@/constants/icons';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useRouter, router } from 'expo-router';
 
 interface TransactionItemProps {
   type: string;
   amount: string;
-  date: string;
+  created_at: string;
   status: string;
 }
 
-const TransactionItem: React.FC<TransactionItemProps> = ({ type, amount, date, status }) => {
+const TransactionItem: React.FC<TransactionItemProps> = ({ type, amount, created_at, status }) => {
   const backgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#1A1A1A' }, 'background');
   const textColor = useThemeColor({ light: '#000000', dark: '#FFFFFF' }, 'text');
 
@@ -26,7 +26,20 @@ const TransactionItem: React.FC<TransactionItemProps> = ({ type, amount, date, s
   const statusColor = statusColors[status.toLowerCase()] || '#888';
 
   // Get icon based on transaction type
-  const iconSource = icons.share;
+  const iconSource = icons?.[type];
+  const formattedDate = created_at.substring(0, 19); // This removes the `.000000Z` part
+
+
+  // Define colors for different transaction types
+  const transactionTypeColors: Record<string, string> = {
+    send: '#C6FFC7', // Green for send
+    receive: '#FFCAEE', // Pink for receive
+    buy: '#E0D6FF', // Purple for buy
+    swap: '#FFDFDF', // Red for swap
+    withdraw: '#D9D9D9', // Gray for withdraw
+  };
+
+  const iconBackgroundColor = transactionTypeColors[type] || '#C6FFC7'; // Default to send color if no match
 
   return (
     <TouchableOpacity
@@ -41,7 +54,7 @@ const TransactionItem: React.FC<TransactionItemProps> = ({ type, amount, date, s
     >
       <View style={styles.leftContainer}>
         {/* Transaction Type Icon */}
-        <View style={[styles.iconWrapper, { backgroundColor: `${statusColor}30` }]}>
+        <View style={[styles.iconWrapper, { backgroundColor: iconBackgroundColor }]}>
           <Image source={iconSource} style={styles.icon} />
         </View>
 
@@ -58,7 +71,7 @@ const TransactionItem: React.FC<TransactionItemProps> = ({ type, amount, date, s
       {/* Amount & Date */}
       <View style={styles.rightContainer}>
         <Text style={[styles.amount, { color: textColor }]}>{amount}</Text>
-        <Text style={styles.date}>{date}</Text>
+        <Text style={styles.date}>{formattedDate}</Text>
       </View>
 
       {/* Arrow Icon */}
@@ -88,6 +101,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   iconWrapper: {
+    backgroundColor: '#C6FFC7',
     width: 40,
     height: 40,
     borderRadius: 20,
@@ -96,8 +110,8 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   icon: {
-    width: 24,
-    height: 24,
+    width: 15,
+    height: 15,
   },
   transactionType: {
     fontSize: 16,
