@@ -29,8 +29,6 @@ export const changePassword = async ({
   );
 };
 
-
-
 export const createKycRequest = async ({
   data,
   token,
@@ -38,7 +36,12 @@ export const createKycRequest = async ({
   data: FormData;
   token: string;
 }) => {
-  return await apiCall(API_ENDPOINTS.USER.CreatekycRequest, "POST", data, token);
+  return await apiCall(
+    API_ENDPOINTS.USER.CreatekycRequest,
+    "POST",
+    data,
+    token
+  );
 };
 
 export const createSupportTicket = async ({
@@ -48,7 +51,30 @@ export const createSupportTicket = async ({
   data: FormData;
   token: string;
 }) => {
-  return await apiCall(API_ENDPOINTS.USER.CreateSupportTicket, "POST", data, token);
+  return await apiCall(
+    API_ENDPOINTS.USER.CreateSupportTicket,
+    "POST",
+    data,
+    token
+  );
+};
+
+export const createReplyTicket = async ({
+  data,
+  token,
+}: {
+  data: {
+    ticket_id: string;
+    message: string;
+  };
+  token: string;
+}) => {
+  return await apiCall(
+    API_ENDPOINTS.USER.CreateReplyTicket,
+    "POST",
+    data,
+    token
+  );
 };
 
 export const createIndividualAccount = async ({

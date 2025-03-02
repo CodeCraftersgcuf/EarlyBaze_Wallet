@@ -23,104 +23,95 @@ import { Ionicons, Entypo } from '@expo/vector-icons';
 import { getSingleTicket } from "@/utils/queries/accountQueries";
 import { useQuery } from "@tanstack/react-query";
 import { getFromStorage } from "@/utils/storage";
+import { createReplyTicket } from "@/utils/mutations/accountMutations";
+import { useMutation } from '@tanstack/react-query';
+
+
+interface IReply {
+    id: number;
+    ticket_id: number;
+    message: string;
+    attachment: string | null;
+    sender_type: "user" | "support"; // Ensure sender type is valid
+    created_at: string;
+    updated_at: string;
+}
 
 const TicketChat: React.FC = () => {
-    const [token, setToken] = useState<string | null>(null); // State to hold the token
+    const [token, setToken] = useState<string | null>(null);
     const backgroundColor = useThemeColor({ light: '#EFFEF9', dark: '#000000' }, 'background');
     const inputBackground = useThemeColor({ light: '#E5E5E5', dark: '#1A1A1A' }, 'inputBackground');
     const textColor = useThemeColor({ light: '#222222', dark: '#FFFFFF' }, 'text');
     const chatBackgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#1A1A1A' }, 'card');
 
-    // Get Ticket ID from router params
     const { id } = useLocalSearchParams();
-
-    // Chat state
-    const [messages, setMessages] = useState([
-        { id: '1', sender: 'You', text: 'There is an issue with my swap, please help me resolve it, it is urgent, thank you', time: '11:12 AM', isUser: true },
-        { id: '2', sender: 'Alex', text: 'Your complaint has been received and we are sorry for the inconvenience. We will resolve it shortly.', time: '11:12 AM', isUser: false },
-    ]);
-
+    const [messages, setMessages] = useState<IReply[]>([]);
     const [messageText, setMessageText] = useState('');
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
     const scrollViewRef = useRef<ScrollView>(null);
 
-    // Fetch the token and user data when the component mounts
     useEffect(() => {
         const fetchUserData = async () => {
             const fetchedToken = await getFromStorage("authToken");
             setToken(fetchedToken);
             console.log("🔹 Retrieved Token:", fetchedToken);
         };
-
         fetchUserData();
     }, []);
 
-
-    // Query to fetch ticket details
-    const { data: ticket, error: ticketError, isLoading: ticketLoading } = useQuery({
-        queryKey: ["ticket", id], // Query key will track the ticket for a given `id`
-        queryFn: () => getSingleTicket(token, id), // Pass token and id separately
-        enabled: !!token, // Only enable query if token is available
+    const { data: ticket, error: ticketError, isLoading: ticketLoading, refetch } = useQuery({
+        queryKey: ["ticket", id],
+        queryFn: () => getSingleTicket(token, id),
+        enabled: !!token, // ✅ Keeps query disabled if token is missing
     });
 
-    console.log("🔹 Ticket:", ticket);
+    // ✅ Use `useEffect` to handle API response
+    useEffect(() => {
+        if (ticket?.data?.replies && Array.isArray(ticket.data.replies)) {
+            console.log("🔹 Full Ticket Data:", ticket);
+            console.log("🔹 Ticket Replies:", ticket.data.replies);
 
-    // Function to handle sending messages (text or image)
-    const sendMessage = () => {
-        if (messageText.trim().length > 0 || selectedImage) {
-            const timestamp = Date.now(); // Unique timestamp-based ID
+            setMessages(ticket.data.replies); // ✅ Updates messages
+        } else {
+            setMessages([]); // ✅ Ensure messages are not undefined
+        }
+    }, [ticket]); // ✅ Runs whenever `ticket` changes
 
-            const newMessage = {
-                id: `${timestamp}-user`,
-                sender: 'You',
-                text: messageText,
-                image: selectedImage,
-                time: 'Now',
-                isUser: true
+
+    console.log("🔹 Ticket Data:", ticket);
+
+    const { mutate: createReply } = useMutation({
+        mutationFn: createReplyTicket,
+        onSuccess: (_, variables) => {
+            console.log("✅ Reply created successfully");
+
+            const newReply: IReply = {
+                id: Date.now(),
+                ticket_id: parseInt(id as string, 10),
+                message: variables.data.message,
+                attachment: null,
+                sender_type: "user",
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
             };
 
-            setMessages((prevMessages) => [...prevMessages, newMessage]);
+            setMessages((prevMessages) => [...prevMessages, newReply]);
             setMessageText('');
             setSelectedImage(null);
-
-            // Auto-scroll to the bottom after sending a message
             setTimeout(() => scrollViewRef.current?.scrollToEnd({ animated: true }), 100);
+            refetch(); // Refresh ticket data
+        },
+        onError: (error) => {
+            console.error("❌ Reply creation failed:", error);
+        },
+    });
 
-            // Simulating a reply from the support team after a short delay
-            setTimeout(() => {
-                const botResponse = {
-                    id: `${timestamp}-bot`, // Different unique ID for bot response
-                    sender: 'Alex',
-                    text: 'We are looking into your issue. Please hold on.',
-                    time: 'Now',
-                    isUser: false
-                };
-                setMessages((prevMessages) => [...prevMessages, botResponse]);
-
-                // Auto-scroll after bot response
-                setTimeout(() => scrollViewRef.current?.scrollToEnd({ animated: true }), 100);
-            }, 1500);
-        }
-    };
-
-
-    // Function to pick an image from the gallery
-    const pickImage = async () => {
-        const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (!permissionResult.granted) {
-            alert('Permission to access gallery is required!');
-            return;
-        }
-
-        const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 1,
-        });
-
-        if (!result.canceled) {
-            setSelectedImage(result.assets[0].uri);
+    const sendMessage = () => {
+        if (messageText.trim().length > 0 && token) {
+            createReply({
+                data: { ticket_id: id as string, message: messageText },
+                token: token,
+            });
         }
     };
 
@@ -128,7 +119,6 @@ const TicketChat: React.FC = () => {
         <View style={[styles.container, { backgroundColor }]}>
             <Header title={`Ticket ${id}`} />
 
-            {/* Ticket Details - Pass dynamic data from ticket */}
             {ticketLoading ? (
                 <Text>Loading...</Text>
             ) : ticketError ? (
@@ -136,40 +126,41 @@ const TicketChat: React.FC = () => {
             ) : (
                 ticket?.data && (
                     <TicketDetails
-                        status={ticket.data.status} // Status of the ticket
-                        name="Qamardeen" // You can also pass the user's name if available
-                        subject={ticket.data.subject} // Subject of the ticket
-                        priority="High" // Hardcoded, can be adjusted based on the ticket data if available
-                        dateCreated={new Date(ticket.data.created_at).toLocaleString()} // Format the created date
+                        status={ticket.data.status}
+                        name="Qamardeen"
+                        subject={ticket.data.subject}
+                        priority="High"
+                        dateCreated={new Date(ticket.data.created_at).toLocaleString()}
                     />
                 )
             )}
 
-            {/* Chat Messages */}
-            <KeyboardAvoidingView
-                behavior={Platform.OS === "ios" ? "padding" : "height"}
-                style={{ flex: 1 }}
-            >
+            <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
                 <ScrollView
                     ref={scrollViewRef}
                     contentContainerStyle={[styles.chatContainer, { backgroundColor: chatBackgroundColor }]}
                     onContentSizeChange={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
                 >
-                    {messages.map((msg) => (
-                        <ChatMessage key={msg.id} {...msg} />
-                    ))}
-
-                    {/* Show selected image preview before sending */}
-                    {selectedImage && (
-                        <Image source={{ uri: selectedImage }} style={styles.previewImage} />
+                    {messages.length > 0 ? (
+                        messages.map((msg) => (
+                            <ChatMessage
+                                key={msg.id}
+                                sender={msg.sender_type}
+                                text={msg.message}
+                                time={new Date(msg.created_at).toLocaleTimeString()}
+                                isUser={msg.sender_type === "user"}
+                            />
+                        ))
+                    ) : (
+                        <Text style={{ textAlign: 'center', color: textColor, marginTop: 20 }}>
+                            No replies yet.
+                        </Text>
                     )}
+
+                    {selectedImage && <Image source={{ uri: selectedImage }} style={styles.previewImage} />}
                 </ScrollView>
 
-                {/* Chat Input */}
                 <View style={[styles.inputContainer, { backgroundColor: inputBackground }]}>
-                    <TouchableOpacity onPress={pickImage}>
-                        <Entypo name="attachment" size={22} color="#333" style={styles.icon} />
-                    </TouchableOpacity>
                     <TextInput
                         style={[styles.input, { color: textColor }]}
                         placeholder="Type a message..."
@@ -185,6 +176,8 @@ const TicketChat: React.FC = () => {
         </View>
     );
 };
+
+
 
 const styles = StyleSheet.create({
     container: {

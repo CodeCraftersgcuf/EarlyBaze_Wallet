@@ -208,6 +208,16 @@ interface IUserKycResponse {
   message: string;
 }
 
+interface IReply {
+  id: number;
+  ticket_id: number;
+  message: string;
+  attachment: string | null;
+  sender_type: string;
+  created_at: string;
+  updated_at: string;
+}
+
 interface ITicket {
   id: number;
   user_id: number;
@@ -217,13 +227,15 @@ interface ITicket {
   answered: string;
   created_at: string;
   updated_at: string;
+  replies?: IReply[]; // ✅ Make replies optional
 }
 
 interface ITicketsResponse {
   status: string;
-  data: ITicket[];
+  data: ITicket;
   message: string;
 }
+
 
 export interface IUserProfileData {
   firstName: string;
