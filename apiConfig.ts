@@ -32,6 +32,9 @@ const API_ENDPOINTS = {
     GetWalletNetworks: API_DOMAIN + "/user/networks",
     GetWalletTransactions: API_DOMAIN + "/transaction/get-all",
     CreateReplyTicket: API_DOMAIN + "/support/send-reply",
+    StoreBankDetails: API_DOMAIN + "/create-bank-account",
+    UpdateBankDetails: API_DOMAIN + "/update-bank-account",
+    DeleteBankAccount: API_DOMAIN + "/delete-bank-account",
   },
   ACCOUNT_MANAGEMENT: {
     GetUserProfileData: API_DOMAIN + "/edit-profile-details",

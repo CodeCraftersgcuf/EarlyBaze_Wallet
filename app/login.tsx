@@ -18,8 +18,9 @@ import Button from "@/utils/Button";
 import { router, useRouter } from "expo-router";
 import useLoadFonts from "@/hooks/useLoadFonts";
 import { loginUser } from "@/utils/mutations/authMutations";
-
+import { useEffect } from "react";
 import { saveToStorage } from "@/utils/storage";
+import { BackHandler, Alert } from 'react-native';
 
 //Related to the Integration of the Login Page
 import { useMutation } from '@tanstack/react-query';
@@ -33,7 +34,29 @@ const Login = () => {
   const { dark } = useTheme();
   const { push } = useRouter();
   const fontsLoaded = useLoadFonts(); // Load custom fonts
+  const { replace } = useRouter(); // ✅ Use replace to clear stack history
 
+  // ✅ Handle Back Press to Confirm Exit
+  useEffect(() => {
+    const backAction = () => {
+      Alert.alert("Hold on!", "Are you sure you want to exit?", [
+        {
+          text: "Cancel",
+          onPress: () => null,
+          style: "cancel"
+        },
+        { text: "Exit", onPress: () => BackHandler.exitApp() }
+      ]);
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, []);
 
   // ✅ Mutation for Login
   const { isPending: isPendingLogin, mutate: mutateLogin } = useMutation({
@@ -47,17 +70,14 @@ const Login = () => {
 
         // ✅ Store token securely
         await saveToStorage("authToken", token);
-
-        // ✅ Store user data securely
         await saveToStorage("user", user);
-
-        // ✅ Store assets securely
         await saveToStorage("assets", assets);
 
         console.log("🔹 Token, User, and Assets saved successfully!");
 
-        // Navigate to main screen
-        push("/(tabs)");
+        // ✅ Remove login screen from stack and navigate to main screen
+        replace("/(tabs)"); // ✅ Removes login from stack
+
       } catch (error) {
         console.error("❌ Error saving data:", error);
       }

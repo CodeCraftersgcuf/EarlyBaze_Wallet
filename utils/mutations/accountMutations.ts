@@ -137,6 +137,62 @@ export const updateProfile = async ({
   );
 };
 
+export const storeBankDetails = async ({
+  data,
+  token,
+}: {
+  data: {
+    account_number: string;
+    account_name: string;
+    bank_name: string;
+    is_default: any;
+  };
+  token: string;
+}) => {
+  return await apiCall(
+    API_ENDPOINTS.USER.StoreBankDetails,
+    "POST",
+    data,
+    token
+  );
+};
+
+export const updateBankDetails = async ({
+  data,
+  token,
+}: {
+  data: {
+    id: string;
+    account_number: string;
+    account_name: string;
+    bank_name: string;
+    is_default: any;
+  };
+  token: string;
+}) => {
+  // Use data.id instead of id
+  return await apiCall(
+    `${API_ENDPOINTS.USER.UpdateBankDetails}/${data.id}`, // Access data.id here
+    "PUT",
+    data,
+    token
+  );
+};
+export const deleteBankDetail = async ({
+  data,
+  token,
+}: {
+  data: { id: string };
+  token: string;
+}) => {
+  return await apiCall(
+    `${API_ENDPOINTS.USER.DeleteBankAccount}/${data.id}`,
+    "DELETE",
+    data,
+    token
+  );
+};
+
 // export const updateEmail = async({})
 export const validateCustomer = async ({
   data,
