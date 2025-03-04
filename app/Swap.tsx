@@ -20,34 +20,44 @@ const Swap: React.FC = () => {
   const doublearrow = useThemeColor({ light: images.double_arrow_white, dark: images.double_arrow_black }, 'doublearrow');
   const containerBackgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#0D0D0D' }, 'card');
 
-  const [selectedTab, setSelectedTab] = useState<'Naira' | 'Crypto'>('Naira');
-
   // ✅ Manage state for the modal
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedAsset, setSelectedAsset] = useState({ name: "USDT", icon: bitCoin });
-  const [selectedNetwork, setSelectedNetwork] = useState({ name: "Tron", icon: bitCoin });
+  const [modalType, setModalType] = useState<'asset' | 'network'>('asset'); // Start with asset selection
+
+  const [selectedAsset, setSelectedAsset] = useState<{ id: string; name: string; icon: any }>({
+    id: "",
+    name: "Select Asset",
+    icon: bitCoin,
+  });
+
+  const [selectedNetwork, setSelectedNetwork] = useState<{ id: string; name: string; icon: any }>({
+    id: "",
+    name: "Select Network",
+    icon: bitCoin,
+  });
+
+  // ✅ Ensure network selection is only possible when an asset is selected
+  const assetId = selectedAsset?.id ? selectedAsset.id : null;
 
   // Function to update asset or network on selection
   const handleSelectItem = (item: any) => {
     if (modalType === 'asset') {
       setSelectedAsset(item);
+      setSelectedNetwork({ id: "", name: "Select Network", icon: bitCoin }); // Reset network selection when asset changes
     } else {
       setSelectedNetwork(item);
     }
     setModalVisible(false);
   };
 
-  // To track whether modal is for asset or network selection
-  const [modalType, setModalType] = useState<'asset' | 'network'>('asset');
-
   return (
     <View style={[styles.container, { backgroundColor }]}>
       <Header />
       <BuyHead buttonText="Swap Crypto" />
-      {/* <SwapTabs selectedTab={selectedTab} setSelectedTab={setSelectedTab} /> */}
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={[styles.swapContainer, { backgroundColor: containerBackgroundColor }]}>
+          {/* Asset Selection */}
           <SwapAssetSection
             title="You Send"
             asset={selectedAsset.name}
@@ -57,17 +67,23 @@ const Swap: React.FC = () => {
             amount="12,500"
             converted="5,123"
             onPressAsset={() => {
-              setModalType('asset');
+              setModalType('asset'); // ✅ Open modal for asset selection first
               setModalVisible(true);
             }}
-            onPressNetwork={() => {
-              setModalType('network');
+            onPressNetwork={assetId ? () => {
+              setModalType('network'); // ✅ Open modal for network selection only when asset is selected
               setModalVisible(true);
-            }}
+            } : undefined} // Disable if asset is not selected
+            disabled={!assetId} // Ensure proper disable behavior
+            style={!assetId ? { opacity: 0.5 } : undefined} // Visual disable
           />
+
+          {/* Swap Button */}
           <TouchableOpacity style={[styles.swapButton, { borderColor: arrowBorderColor }]}>
             <Image source={doublearrow} style={styles.swapIcon} />
           </TouchableOpacity>
+
+          {/* Receive Section */}
           <SwapAssetSection
             title="You Receive"
             asset="Naira"
@@ -75,26 +91,32 @@ const Swap: React.FC = () => {
             amount="54,000,000"
           />
         </View>
+
         <View style={styles.exchangeRate}>
           <ExchangeRate rate="$1 = 1,750 NGN" />
         </View>
         <NoteSwapBox />
       </ScrollView>
+
       <View style={styles.fixedButtonContainer}>
         <PrimaryButton title="Proceed" onPress={() => router.push('/SwapSummary')} />
       </View>
 
-      {/* Show Modal */}
+      {/* ✅ Show Modal (Opens First with Coin, then Network) */}
       <NetworkSelectionModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
         onSelectNetwork={handleSelectItem}
         selectedNetwork={modalType === 'asset' ? selectedAsset : selectedNetwork}
-        networks={networkOptions}
+        networks={networkOptions} // You might need to fetch network options dynamically
+        modelType={modalType === 'asset' ? 'coin' : 'network'} // ✅ First opens as 'coin', then switches to 'network'
+        coinId={selectedAsset.id} // ✅ Ensures network fetch depends on selected asset
       />
     </View>
   );
 };
+
+
 
 const styles = StyleSheet.create({
   container: { flex: 1, marginTop: 25, paddingTop: 10 },
