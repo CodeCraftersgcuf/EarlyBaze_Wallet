@@ -12,6 +12,7 @@ import icons from '@/constants/icons';
 
 
 //Code related to the integration:
+import LoadingIndicator from '@/components/LoadingIndicator';
 import { useQuery } from '@tanstack/react-query';
 import { getFromStorage } from "@/utils/storage";
 import {
@@ -96,7 +97,12 @@ const Transactions: React.FC = () => {
           {/* {activeTab === 'All' ? <TransactionsGraph /> : null} */}
 
           {/* Transaction List */}
-          <TransactionList transactions={transactionsLoading || filteredTransactions.length === 0 ? [] : filteredTransactions} />
+          {transactionsLoading ? (
+            <LoadingIndicator message="Fetching transactions..." />
+          ) : (
+            <TransactionList transactions={filteredTransactions.length === 0 ? [] : filteredTransactions} />
+          )}
+
         </ScrollView>
       </View>
 

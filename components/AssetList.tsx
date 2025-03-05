@@ -9,6 +9,7 @@ import { useRouter } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import { getFromStorage } from "@/utils/storage";
 import { getUserAssets } from "@/utils/queries/appQueries";
+import LoadingIndicator from "@/components/LoadingIndicator";
 
 const AssetList: React.FC<{ selectedTab: 'All Assets' | 'My Assets'; searchQuery: string; type: string }> = ({
     selectedTab,
@@ -64,38 +65,43 @@ const AssetList: React.FC<{ selectedTab: 'All Assets' | 'My Assets'; searchQuery
 
     return (
         <View style={[styles.mainContainer, { backgroundColor }]}>
-            <FlatList
-                data={filteredData}
-                keyExtractor={(item) => item.id}
-                numColumns={2} // Ensures two items per row
-                renderItem={({ item }) => (
-                    <TouchableOpacity
-                        style={styles.cardContainer}
-                        onPress={() => {
-                            if (type === 'receive') {
-                                router.push({
-                                    pathname: '/Receive',
-                                    params: { assetName: item.name, fullName: item.fullName, icon: item.icon },
-                                });
-                            } else if (type === 'send' && Number(item.balance) > 0) {
-                                router.push({
-                                    pathname: '/Send',
-                                    params: { assetName: item.name, fullName: item.fullName, icon: item.icon },
-                                });
-                            } else if (type === 'send' && Number(item.balance) === 0) {
-                                console.log(`❌ Cannot send ${item.name} - Balance is zero`);
-                            } else {
-                                console.log(`Normal action for ${item.name}`);
-                            }
-                        }}
-                    >
-                        <AssetCard {...item} />
-                    </TouchableOpacity>
-                )}
-                contentContainerStyle={styles.list}
-            />
+            {userAssetsLoading ? (
+                <LoadingIndicator /> // ✅ Show the loading indicator
+            ) : (
+                <FlatList
+                    data={filteredData}
+                    keyExtractor={(item) => item.id}
+                    numColumns={2} // Ensures two items per row
+                    renderItem={({ item }) => (
+                        <TouchableOpacity
+                            style={styles.cardContainer}
+                            onPress={() => {
+                                if (type === 'receive') {
+                                    router.push({
+                                        pathname: '/Receive',
+                                        params: { assetName: item.name, fullName: item.fullName, icon: item.icon },
+                                    });
+                                } else if (type === 'send' && Number(item.balance) > 0) {
+                                    router.push({
+                                        pathname: '/Send',
+                                        params: { assetName: item.name, fullName: item.fullName, icon: item.icon },
+                                    });
+                                } else if (type === 'send' && Number(item.balance) === 0) {
+                                    console.log(`❌ Cannot send ${item.name} - Balance is zero`);
+                                } else {
+                                    console.log(`Normal action for ${item.name}`);
+                                }
+                            }}
+                        >
+                            <AssetCard {...item} />
+                        </TouchableOpacity>
+                    )}
+                    contentContainerStyle={styles.list}
+                />
+            )}
         </View>
     );
+
 };
 
 const styles = StyleSheet.create({

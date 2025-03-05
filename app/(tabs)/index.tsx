@@ -13,10 +13,10 @@ import { getFromStorage } from "@/utils/storage";
 import { getUserDetails } from "@/utils/queries/appQueries";
 
 export default function HomeScreen() {
-const [token, setToken] = useState<string | null>(null); // State to hold the token
+  const [token, setToken] = useState<string | null>(null); // State to hold the token
   const [isCrypto, setIsCrypto] = useState(true);
   const backgroundColor = useThemeColor({ light: '#EFFEF9', dark: '#000000' }, 'background');
-  
+
   const toggleWallet = () => setIsCrypto(!isCrypto);
 
   // Fetch the token and user data when the component mounts
@@ -28,7 +28,7 @@ const [token, setToken] = useState<string | null>(null); // State to hold the to
     };
 
     fetchUserData();
-  }, []); 
+  }, []);
 
   const { data: userDetails, error: userError, isLoading: userLoading } = useQuery(
     {
@@ -46,7 +46,7 @@ const [token, setToken] = useState<string | null>(null); // State to hold the to
       <WalletCard isCrypto={isCrypto} onToggle={toggleWallet} />
       <ServiceOptions />
       <ImageSlider />
-      <AssetsTab />
+    <AssetsTab />
     </ScrollView>
   );
 }

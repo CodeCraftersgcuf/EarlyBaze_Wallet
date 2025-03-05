@@ -17,6 +17,7 @@ import { images } from '@/constants';
 import { useQuery } from '@tanstack/react-query';
 import { getFromStorage } from '@/utils/storage';
 import { getWalletCurrency, getNetworkCurreny } from '@/utils/queries/appQueries';
+import LoadingIndicator from "@/components/LoadingIndicator";
 
 
 // Define network type
@@ -104,44 +105,49 @@ const NetworkSelectionModal: React.FC<NetworkSelectionModalProps> = ({
                     <View style={styles.horizontalLine} />
 
                     {/* Network Options */}
-                    <FlatList
-                        data={
-                            modelType === "coin" && walletCurrency?.data
-                                ? walletCurrency.data.map((item) => ({
-                                    id: item.currency.id.toString(),
-                                    name: item.currency.currency,
-                                    icon: { uri: `https://earlybaze.hmstech.xyz/storage/${item.currency.symbol}` },
-                                    color: "#DCDCDC", // Default color
-                                }))
-                                : modelType === "network" && networkCurrency?.data
-                                    ? networkCurrency.data.map((item) => ({
-                                        id: item.id.toString(),
-                                        name: item.network,
-                                        icon: { uri: `https://earlybaze.hmstech.xyz/storage/${item.symbol}` },
+                    {walletCurrencyLoading || networkCurrencyLoading ? (
+                        <LoadingIndicator /> // ✅ Show loading indicator while fetching data
+                    ) : (
+                        <FlatList
+                            data={
+                                modelType === "coin" && walletCurrency?.data
+                                    ? walletCurrency.data.map((item) => ({
+                                        id: item.currency.id.toString(),
+                                        name: item.currency.currency,
+                                        icon: { uri: `https://earlybaze.hmstech.xyz/storage/${item.currency.symbol}` },
                                         color: "#DCDCDC", // Default color
                                     }))
-                                    : networks
-                        }
+                                    : modelType === "network" && networkCurrency?.data
+                                        ? networkCurrency.data.map((item) => ({
+                                            id: item.id.toString(),
+                                            name: item.network,
+                                            icon: { uri: `https://earlybaze.hmstech.xyz/storage/${item.symbol}` },
+                                            color: "#DCDCDC", // Default color
+                                        }))
+                                        : networks
+                            }
+                            keyExtractor={(item) => item.id}
+                            numColumns={3}
+                            contentContainerStyle={styles.networkList}
+                            renderItem={({ item }) => (
+                                <TouchableOpacity
+                                    style={[
+                                        styles.networkItem,
+                                        selectedNetwork.id === item.id && styles.selectedNetwork,
+                                        { backgroundColor: itemBackgroundColor },
+                                    ]}
+                                    onPress={() => onSelectNetwork(item)} // Update network on tap
+                                >
+                                    <View style={[styles.networkIconContainer, { backgroundColor: item.color }]}>
+                                        <Image source={item.icon} style={styles.networkIcon} />
+                                    </View>
+                                    <Text style={[styles.networkText, { color: textColor }]}>{item.name}</Text>
+                                </TouchableOpacity>
+                            )}
+                        />
+                    )}
 
-                        keyExtractor={(item) => item.id}
-                        numColumns={3}
-                        contentContainerStyle={styles.networkList}
-                        renderItem={({ item }) => (
-                            <TouchableOpacity
-                                style={[
-                                    styles.networkItem,
-                                    selectedNetwork.id === item.id && styles.selectedNetwork,
-                                    { backgroundColor: itemBackgroundColor },
-                                ]}
-                                onPress={() => onSelectNetwork(item)} // Update network on tap
-                            >
-                                <View style={[styles.networkIconContainer, { backgroundColor: item.color }]}>
-                                    <Image source={item.icon} style={styles.networkIcon} />
-                                </View>
-                                <Text style={[styles.networkText, { color: textColor }]}>{item.name}</Text>
-                            </TouchableOpacity>
-                        )}
-                    />
+
                 </View>
             </View>
         </Modal>

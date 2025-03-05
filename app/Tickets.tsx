@@ -1,12 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import { View, ScrollView, StyleSheet } from 'react-native';
+import React, { useState, useEffect, } from 'react';
+import { View, ScrollView, StyleSheet, Text } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import Header from '@/components/Header';
 import TicketTabs from '@/components/Setting/Support/TicketTabs';
 import TicketItem from '@/components/Setting/Support/TicketItem';
+
+
+
+//Code Related to the integration
 import { useQuery } from '@tanstack/react-query';
 import { getFromStorage } from '@/utils/storage';
 import { getTickets } from '@/utils/queries/accountQueries';
+import LoadingIndicator from '@/components/LoadingIndicator';
+
+
 
 const Tickets: React.FC = () => {
   const [token, setToken] = useState<string | null>(null);
@@ -51,19 +58,25 @@ const Tickets: React.FC = () => {
       <TicketTabs selectedTab={selectedTab} onSelect={setSelectedTab} />
 
       {/* Ticket List */}
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        {filteredTickets.map((ticket: any) => (
-          <TicketItem
-            key={ticket.id.toString()}
-            id={ticket.id.toString()}
-            title={`Ticket ${ticket.id} - ${ticket.subject}`}
-            date={new Date(ticket.created_at).toLocaleString()}
-            status={ticket.answered} // "answered" or "unanswered"
-            hasNotification={ticket.status === "open"}
-            notificationCount={ticket.status === "open" ? 1 : 0}
-          />
-        ))}
-      </ScrollView>
+      {ticketsLoading ? (
+        <LoadingIndicator /> // ✅ Show loading indicator while fetching tickets
+      ) : ticketsError ? (
+        <Text style={{ textAlign: 'center', marginTop: 20, color: 'red' }}>Failed to load tickets</Text>
+      ) : (
+        <ScrollView contentContainerStyle={styles.scrollContainer}>
+          {filteredTickets.map((ticket: any) => (
+            <TicketItem
+              key={ticket.id.toString()}
+              id={ticket.id.toString()}
+              title={`Ticket ${ticket.id} - ${ticket.subject}`}
+              date={new Date(ticket.created_at).toLocaleString()}
+              status={ticket.answered} // "answered" or "unanswered"
+              hasNotification={ticket.status === "open"}
+              notificationCount={ticket.status === "open" ? 1 : 0}
+            />
+          ))}
+        </ScrollView>
+      )}
     </View>
   );
 };

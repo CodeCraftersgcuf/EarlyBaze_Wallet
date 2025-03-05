@@ -15,6 +15,7 @@ import { getFromStorage } from '@/utils/storage';
 import { deleteBankDetail } from '@/utils/mutations/accountMutations';
 import { useMutation } from '@tanstack/react-query';
 import { useQueryClient } from "@tanstack/react-query"; // ✅ Import queryClient
+import LoadingIndicator from '@/components/LoadingIndicator';
 
 const Account: React.FC = () => {
     const queryClient = useQueryClient(); // ✅ Get query client instance
@@ -108,12 +109,13 @@ const Account: React.FC = () => {
 
             {/* List of Accounts */}
             {bankLoading ? (
-                <Text style={{ textAlign: 'center', marginTop: 20 }}>Loading accounts...</Text>
+                <LoadingIndicator /> // ✅ Show loading indicator while fetching accounts
             ) : bankError ? (
                 <Text style={{ textAlign: 'center', marginTop: 20, color: 'red' }}>Failed to load accounts</Text>
             ) : (
                 <AccountList title={title} accounts={accounts} onEdit={handleEdit} onDelete={handleDelete} />
             )}
+
 
             {/* Add New Account Button */}
             <View style={styles.buttonContainer}>

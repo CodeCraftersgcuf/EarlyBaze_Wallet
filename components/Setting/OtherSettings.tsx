@@ -5,6 +5,12 @@ import SettingOption from './SettingOption';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, router } from 'expo-router';
 import { icons } from '@/constants';
+
+
+import { Alert } from "react-native";
+import { removeFromStorage } from "@/utils/storage";
+
+
 interface OtherSettingsProps {
   isDarkMode: boolean;
   onToggleTheme: (theme: 'Light' | 'Dark') => void;
@@ -102,7 +108,30 @@ const OtherSettings: React.FC<OtherSettingsProps> = ({ isDarkMode, onToggleTheme
         iconName="log-out-outline"
         iconColor="red"
         textColor="red"
-        onPress={() => { }}
+        onPress={() => {
+          Alert.alert(
+            "Confirm Logout",
+            "Are you sure you want to logout?",
+            [
+              { text: "Cancel", style: "cancel" },
+              {
+                text: "Logout",
+                style: "destructive",
+                onPress: async () => {
+                  // ✅ Remove user-related data from storage
+                  await removeFromStorage("authToken");
+                  await removeFromStorage("user");
+                  await removeFromStorage("assets");
+
+                  console.log("✅ User logged out successfully");
+
+                  // ✅ Navigate to login screen and reset the navigation stack
+                  router.replace("/login");
+                }
+              }
+            ]
+          );
+        }}
       />
 
       {/* Close Account Button */}
