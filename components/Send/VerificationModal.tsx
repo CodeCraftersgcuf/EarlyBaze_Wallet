@@ -13,13 +13,64 @@ import PrimaryButton from '@/components/Buy/PrimaryButton';
 import { Ionicons } from '@expo/vector-icons';
 import { images } from '@/constants';
 
+
+import { useMutation } from '@tanstack/react-query';
+import { createInternalTransfer } from "@/utils/mutations/accountMutations";
+import { verifyPin } from "@/utils/mutations/authMutations";
+
+
 interface VerificationModalProps {
     visible: boolean;
     onClose: () => void;
     onFail: () => void; // New prop to handle failure
 }
 
-const VerificationModal: React.FC<VerificationModalProps> = ({ visible, onClose, onFail }) => {
+const VerificationModal: React.FC<VerificationModalProps & { requestData: any; onSuccess: (reference: string) => void }> = ({ visible, onClose, onFail, requestData, onSuccess }) => {
+    // ✅ First mutation - Verify PIN
+    const { isPending: isPendingPin, mutate: mutatePin } = useMutation({
+        mutationFn: (data: { email: string; pin: string }) => verifyPin(data),
+        onSuccess: () => {
+            console.log("✅ Pin Verification Successful");
+
+            // If PIN is correct, proceed to transfer
+            mutateTransfer(
+                {
+                    data: {
+                        currency: requestData.currency,
+                        network: requestData.network,
+                        amount: requestData.amount,
+                        email: requestData.email,
+                    },
+                    token: requestData.token,
+                },
+                {
+                    onSuccess: (response) => {
+                        console.log("✅ Transfer Successful:", response);
+
+                        // Extract transaction reference
+                        const reference = response?.data?.reference || "N/A";
+                        onSuccess(reference);
+
+                        onClose(); // ✅ Close verification modal
+                    },
+                    onError: (error) => {
+                        console.error("❌ Transfer Failed:", error);
+                        onFail(); // ✅ Show failure modal
+                    },
+                }
+            );
+        },
+        onError: (error) => {
+            console.error("❌ Pin Verification Failed:", error);
+            onFail(); // ✅ Show failure modal
+        },
+    });
+
+    // ✅ Second mutation - Create Internal Transfer
+    const { isPending: isPendingTransfer, mutate: mutateTransfer } = useMutation({
+        mutationFn: (data: { data: any; token: string }) => createInternalTransfer(data),
+    });
+
     const cardBackgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#1A1A1A' }, 'card');
     const textTitleColor = useThemeColor({ light: '#25AE7A', dark: '#25AE7A' }, 'textTitle');
     const textColor = useThemeColor({ light: '#222222', dark: '#FFFFFF' }, 'text');
@@ -56,7 +107,7 @@ const VerificationModal: React.FC<VerificationModalProps> = ({ visible, onClose,
                     {/* Header */}
                     <View style={styles.header}>
                         <Text style={[styles.title, { color: textTitleColor }]}>Verification</Text>
-                        <TouchableOpacity onPress={onClose} style={[styles.closeButton, { backgroundColor: backgroundColor }]}>
+                        <TouchableOpacity onPress={onClose} style={[styles.closeButton, { backgroundColor }]}>
                             <Image source={close} style={styles.closeIcon} />
                         </TouchableOpacity>
                     </View>
@@ -67,7 +118,7 @@ const VerificationModal: React.FC<VerificationModalProps> = ({ visible, onClose,
                         <Text style={[styles.label, { color: textColor }]}>Email OTP</Text>
                         <View style={[styles.inputRow, { borderColor: isOtpFocused ? '#25AE7A' : borderColor }]}>
                             <TextInput
-                                placeholder="Input OTP"
+                                placeholder="Email"
                                 placeholderTextColor="#A1A1A1"
                                 style={[styles.inputField, { color: textColor }]}
                                 value={otp}
@@ -118,13 +169,53 @@ const VerificationModal: React.FC<VerificationModalProps> = ({ visible, onClose,
                     </View>
 
                     <View style={styles.buttonContainer}>
-                        {/* Proceed Button - Closes VerificationModal & Opens TransactionFailedModal */}
+                        {/* Proceed Button - Calls API Request */}
                         <PrimaryButton
-                            title="Proceed"
+                            title={isPendingTransfer || isPendingPin ? "Processing..." : "Proceed"}
                             onPress={() => {
-                                onClose(); // Close the verification modal
-                                onFail(); // Show the failure modal
+                                console.log("🔹 Verifying PIN for:", requestData.email);
+
+                                mutatePin(
+                                    { email: requestData.email, pin }, // ✅ Verify PIN first
+                                    {
+                                        onSuccess: () => {
+                                            console.log("✅ PIN Verified! Proceeding with Transfer...");
+
+                                            mutateTransfer(
+                                                {
+                                                    data: {
+                                                        currency: requestData.currency,
+                                                        network: requestData.network,
+                                                        amount: requestData.amount,
+                                                        email: requestData.email,
+                                                    },
+                                                    token: requestData.token,
+                                                },
+                                                {
+                                                    onSuccess: (response) => {
+                                                        console.log("✅ Transfer Successful:", response);
+
+                                                        // Extract transaction reference
+                                                        const reference = response?.data?.reference || "N/A";
+                                                        onSuccess(reference);
+
+                                                        onClose(); // ✅ Close verification modal
+                                                    },
+                                                    onError: (error) => {
+                                                        console.error("❌ Transfer Failed:", error);
+                                                        onFail(); // ✅ Show failure modal
+                                                    },
+                                                }
+                                            );
+                                        },
+                                        onError: (error) => {
+                                            console.error("❌ PIN Verification Failed:", error);
+                                            onFail(); // ✅ Show failure modal
+                                        },
+                                    }
+                                );
                             }}
+                            disabled={isPendingTransfer || isPendingPin}
                         />
                     </View>
                 </View>
@@ -132,6 +223,9 @@ const VerificationModal: React.FC<VerificationModalProps> = ({ visible, onClose,
         </Modal>
     );
 };
+
+
+
 
 const styles = StyleSheet.create({
     overlay: {

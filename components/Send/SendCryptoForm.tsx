@@ -25,126 +25,121 @@ import networkOptions from '@/constants/networkOptions.json';
 import NetworkSelectionModal from '../Receive/NetworkSelectionModal';
 
 
-const SendCryptoForm: React.FC<SendCryptoFormProps> = ({ selectedTab, setSelectedTab }) => {
-    // Theme-based colors
-    const cardBackgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#1A1A1A' }, 'card');
-    const textColor = useThemeColor({ light: '#222222', dark: '#FFFFFF' }, 'text');
-    const borderColor = useThemeColor({ light: '#E5E5E5', dark: '#333333' }, 'border');
-    const doublearrow = useThemeColor({ light: images.double_arrow_white, dark: images.double_arrow_black }, 'doublearrow');
-    const arrowBorderColor = useThemeColor({ light: '#E5E5E5', dark: '#095D3F' }, 'arrowBorder');
+const SendCryptoForm: React.FC<{
+    selectedTab: 'Crypto Address' | 'Internal Transfer';
+    setSelectedTab: React.Dispatch<React.SetStateAction<'Crypto Address' | 'Internal Transfer'>>;
+    selectedCoin: any;
+    setSelectedCoin: React.Dispatch<React.SetStateAction<any>>;
+    selectedNetwork: any;
+    setSelectedNetwork: React.Dispatch<React.SetStateAction<any>>;
+    usdAmount: string;
+    setUsdAmount: React.Dispatch<React.SetStateAction<string>>;
+    scannedAddress: string;
+    setScannedAddress: React.Dispatch<React.SetStateAction<string>>;
+}> = ({
+    selectedTab,
+    setSelectedTab,
+    selectedCoin,
+    setSelectedCoin,
+    selectedNetwork,
+    setSelectedNetwork,
+    usdAmount,
+    setUsdAmount,
+    scannedAddress,
+    setScannedAddress
+}) => {
+        const cardBackgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#1A1A1A' }, 'card');
+        const textColor = useThemeColor({ light: '#222222', dark: '#FFFFFF' }, 'text');
+        const borderColor = useThemeColor({ light: '#E5E5E5', dark: '#333333' }, 'border');
 
-    // QR Scanner State
-    const [scannedAddress, setScannedAddress] = useState('');
-    const [hasPermission, setHasPermission] = useState<boolean | null>(null);
-    const [isScannerOpen, setIsScannerOpen] = useState(false);
-    const [selectedCoin, setSelectedCoin] = useState(networkOptions[0]); // Default coin
-    const [selectedNetwork, setSelectedNetwork] = useState(networkOptions[0]); // Default network
-    const [modalType, setModalType] = useState<string | null>(null); // Store modal type
-    const [modalVisible, setModalVisible] = useState(false);
+        const [isScannerOpen, setIsScannerOpen] = useState(false);
+        const [modalType, setModalType] = useState<string | null>(null);
+        const [modalVisible, setModalVisible] = useState(false);
 
+        const scan = useThemeColor({ light: images.scan, dark: images.scan_black }, 'scan');
 
-    const scan = useThemeColor({
-        light: images.scan,
-        dark: images.scan_black
-    }, 'scan');
-    // Request Camera Permission
-    useEffect(() => {
-        (async () => {
-            // const { status } = await BarCodeScanner.requestPermissionsAsync();
-            setHasPermission(status === 'granted');
-        })();
-    }, []);
+        // Ensure selectedCoin and selectedNetwork are never null
+        const coinId = selectedCoin?.id ? selectedCoin.id.toString() : undefined;
 
-    // Handle QR Code Scanning
-    const handleBarCodeScanned = ({ data }: { data: string }) => {
-        setScannedAddress(data);
-        setIsScannerOpen(false);
-    };
+        const handleSelectNetwork = (network: any) => {
+            if (modalType === "coin") {
+                setSelectedCoin(network);
+            } else if (modalType === "network") {
+                setSelectedNetwork(network);
+            }
+            setModalVisible(false);
+        };
 
+        const openModal = (type: string) => {
+            setModalType(type);
+            setModalVisible(true);
+        };
 
-    const coinId = selectedCoin?.id ? selectedCoin.id.toString() : null; // ✅ Ensure proper check
+        return (
+            <View style={styles.container}>
+                <TabSwitcher selectedTab={selectedTab} setSelectedTab={setSelectedTab} />
 
-    const handleSelectNetwork = (network: any) => {
-        if (modalType === "coin") {
-            setSelectedCoin(network);
-        } else if (modalType === "network") {
-            setSelectedNetwork(network);
-        }
-        setModalVisible(false); // Close modal after selection
-    };
+                {/* Main Card Container */}
+                <View style={[styles.mainContainer, { backgroundColor: cardBackgroundColor, borderColor }]}>
+                    {/* ✅ Input Address Field */}
+                    <View style={[styles.inputContainer, { borderColor }]}>
+                        <TextInput
+                            placeholder={selectedTab === "Internal Transfer" ? "Enter Email" : "Input Address"}
+                            placeholderTextColor="#A1A1A1"
+                            style={[styles.inputField, { color: textColor }]}
+                            value={scannedAddress}
+                            onChangeText={setScannedAddress}
+                        />
+                        <TouchableOpacity onPress={() => setIsScannerOpen(true)}>
+                            <Image source={scan} style={styles.scanIcon} />
+                        </TouchableOpacity>
+                    </View>
 
-    const openModal = (type: string) => {
-        setModalType(type); // Store the type
-        setModalVisible(true); // Show the modal
-    };
+                    {/* ✅ Amount and Currency Selection */}
+                    <View style={styles.exchangeContainer}>
+                        <InputField label="USD" value={usdAmount} onChange={setUsdAmount} />
+                        <SelectionBox
+                            label="Coin"
+                            id={selectedCoin?.id || ""}
+                            value={selectedCoin?.name || "Select Coin"} // ✅ Default to "Select Coin" if empty
+                            icon={selectedCoin?.icon || images.solana} // ✅ Provide a default icon
+                            onPress={() => openModal("coin")}
+                        />
+                    </View>
 
-    return (
-        <View style={styles.container}>
-            <TabSwitcher selectedTab={selectedTab} setSelectedTab={setSelectedTab} />
-
-
-            {/* Main Card Container */}
-            <View style={[styles.mainContainer, { backgroundColor: cardBackgroundColor, borderColor }]}>
-                {/* Input Address Field */}
-                <View style={[styles.inputContainer, { borderColor }]}>
-                    <TextInput
-                        placeholder="Input Address"
-                        placeholderTextColor="#A1A1A1"
-                        style={[styles.inputField, { color: textColor }]}
-                        value={scannedAddress}
-                        onChangeText={setScannedAddress}
-                    />
-                    <TouchableOpacity onPress={() => setIsScannerOpen(true)}>
-                        <Image source={scan} style={styles.scanIcon} />
-                    </TouchableOpacity>
+                    {/* ✅ Network Selection */}
+                    <View style={styles.selectionContainer}>
+                        <InputField label="USD" value={usdAmount} onChange={setUsdAmount} />
+                        <SelectionBox
+                            label="Network"
+                            id={selectedNetwork.id}
+                            value={selectedNetwork.name}
+                            icon={selectedNetwork.icon}
+                            onPress={coinId ? () => openModal("network") : undefined}
+                            disabled={!coinId}
+                            style={!coinId ? { opacity: 0.5 } : undefined}
+                        />
+                    </View>
                 </View>
 
-                {/* Amount and Currency Selection */}
-                <View style={styles.exchangeContainer}>
-                    <InputField label="USD" value="2,345" />
-                    <SelectionBox
-                        label="Coin"
-                        id={selectedCoin.id}
-                        value={selectedCoin.name}
-                        icon={selectedCoin.icon}
-                        onPress={() => openModal("coin")}
+                {coinId && (
+                    <NetworkSelectionModal
+                        visible={modalVisible}
+                        onClose={() => setModalVisible(false)}
+                        onSelectNetwork={handleSelectNetwork}
+                        selectedNetwork={selectedNetwork}
+                        networks={networkOptions}
+                        modelType={modalType}
+                        coinId={selectedCoin.id}
                     />
-                </View>
+                )}
 
-
-                {/* Network Selection */}
-                <View style={styles.selectionContainer}>
-                    <InputField label="BTC" value="0.000234" />
-                    <SelectionBox
-                        label="Network"
-                        id={selectedNetwork.id}
-                        value={selectedNetwork.name}
-                        icon={selectedNetwork.icon}
-                        onPress={coinId ? () => openModal("network") : undefined}
-                        disabled={!coinId}
-                        style={!coinId ? { opacity: 0.5 } : undefined} // ✅ Ensure `undefined` if no extra styles
-                    />
-
-
-
-                </View>
+                {/* ✅ QR Scanner Modal */}
+                <QrModal isVisible={isScannerOpen} onClose={() => setIsScannerOpen(false)} />
             </View>
-            {coinId && (
-                <NetworkSelectionModal
-                    visible={modalVisible}
-                    onClose={() => setModalVisible(false)}
-                    onSelectNetwork={handleSelectNetwork}
-                    selectedNetwork={selectedNetwork}
-                    networks={networkOptions}
-                    modelType={modalType} // ✅ Dynamically sets modelType
-                    coinId={selectedCoin.id} // ✅ Passes selected coin ID
-                />
-            )}
-            {/* QR Scanner Modal */}
-            <QrModal isVisible={isScannerOpen} onClose={() => setIsScannerOpen(false)} />
-        </View>
-    );
-};
+        );
+    };
+
 
 const styles = StyleSheet.create({
     container: {

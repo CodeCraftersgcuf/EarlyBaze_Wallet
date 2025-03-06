@@ -29,6 +29,26 @@ export const changePassword = async ({
   );
 };
 
+export const createInternalTransfer = async ({
+  data,
+  token,
+}: {
+  data: {
+    currency: string;
+    network: string;
+    amount: string;
+    email: string;
+  };
+  token: string;
+}) => {
+  return await apiCall(
+    API_ENDPOINTS.USER.SendInternalTransfer,
+    "POST",
+    data,
+    token
+  );
+};
+
 export const createKycRequest = async ({
   data,
   token,

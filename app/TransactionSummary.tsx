@@ -1,11 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Image } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import PrimaryButton from '@/components/Buy/PrimaryButton';
-import { useNavigation } from '@react-navigation/native';
 import Header from '@/components/Header';
 import TransactionDetailItem from '@/components/Buy/TransactionDetailItem';
-import { ThemedText } from '@/components/ThemedText';
 import icons from '@/constants/icons';
 import { useLocalSearchParams } from 'expo-router';
 import VerificationModal from '@/components/Send/VerificationModal';
@@ -13,17 +11,37 @@ import { useState } from 'react';
 import TransactionFailedModal from '@/components/Send/TransactionFailedModal';
 import TransactionSuccessfulModal from '@/components/Send/TransactionSuccessfulModal';
 
+
+//Code Related to the Integration:
+import { useMutation } from '@tanstack/react-query';
+import { getFromStorage } from "@/utils/storage";
+import { createInternalTransfer } from "@/utils/mutations/accountMutations";
+
 const TransactionSummary: React.FC = () => {
-  const { type } = useLocalSearchParams();
+  const { type, currency, network, amount, email, address } = useLocalSearchParams();
+  const [token, setToken] = useState<string | null>(null); // State to hold the token
 
   console.log('Received type from navigation:', type);
   const backgroundColor = useThemeColor({ light: '#EFFEF9', dark: '#000000' }, 'background');
   const cardBackgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#1A1A1A' }, 'card');
   const textBackgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#0000' }, 'textBackground');
   const [isModalVisible, setModalVisible] = useState(false);
+  const [transactionReference, setTransactionReference] = useState<string | null>(null);
+
   const [isVerificationVisible, setVerificationVisible] = useState(false);
-  const [isFailedModalVisible, setFailedModalVisible] = useState(false);
-  const navigation = useNavigation();
+  const [isSuccessModalVisible, setSuccessModalVisible] = useState(false);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const fetchedToken = await getFromStorage("authToken");
+      setToken(fetchedToken);
+      console.log("🔹 Retrieved Token:", fetchedToken);
+    };
+
+    fetchUserData();
+  }, []);
+
+  const { mutate } = useMutation(createInternalTransfer);
 
   return (
     <ScrollView contentContainerStyle={[styles.container, { backgroundColor }]}>
@@ -66,16 +84,22 @@ const TransactionSummary: React.FC = () => {
         visible={isVerificationVisible}
         onClose={() => setVerificationVisible(false)}
         onFail={() => {
-          setVerificationVisible(false); // Close Verification Modal
-          setFailedModalVisible(true);  // Open Transaction Failed Modal
+          setVerificationVisible(false);
+          setModalVisible(true); // ✅ Show failed modal when transfer fails
         }}
+        onSuccess={(data) => {
+          console.log("The data is:", data);
+          setTransactionReference(data);
+          setSuccessModalVisible(true); // ✅ Show success modal on transfer success
+        }}
+        requestData={{ currency, network, amount, email, token }}
       />
 
-      {/* Show Transaction Failed Modal */}
       <TransactionSuccessfulModal
-        visible={isFailedModalVisible}
-        onClose={() => setFailedModalVisible(false)}
-      />    </ScrollView>
+        visible={isSuccessModalVisible}
+        onClose={() => setSuccessModalVisible(false)}
+      />
+    </ScrollView>
   );
 };
 

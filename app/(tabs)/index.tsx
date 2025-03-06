@@ -46,7 +46,7 @@ export default function HomeScreen() {
       <WalletCard isCrypto={isCrypto} onToggle={toggleWallet} />
       <ServiceOptions />
       <ImageSlider />
-    <AssetsTab />
+      <AssetsTab />
     </ScrollView>
   );
 }

@@ -38,7 +38,7 @@ const SelectionBox: React.FC<SelectionBoxProps> = ({ label, value, icon, onPress
         <View style={styles.iconContainer}>
           <Image source={icon} style={styles.icon} />
           <TouchableOpacity onPress={disabled ? undefined : onPress} activeOpacity={disabled ? 1 : 0.7}>
-            <Image source={arrow} style={[styles.arrowIcon, { opacity: disabled ? 0.5 : 1 }]} />
+            <Image source={arrow} style={[styles.arrowIcon,]} />
           </TouchableOpacity>
         </View>
       </View>
@@ -88,7 +88,6 @@ const styles = StyleSheet.create({
   arrowIcon: {
     width: 12,
     height: 12,
-    tintColor: "#000", // Adjust color if needed
   },
 });
 
