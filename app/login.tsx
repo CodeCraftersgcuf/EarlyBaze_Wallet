@@ -24,6 +24,7 @@ import { BackHandler, Alert } from 'react-native';
 
 //Related to the Integration of the Login Page
 import { useMutation } from '@tanstack/react-query';
+import Toast from "react-native-toast-message"; // ✅ Import Toast
 
 export interface InputValues {
   email: string;
@@ -75,18 +76,37 @@ const Login = () => {
 
         console.log("🔹 Token, User, and Assets saved successfully!");
 
-        // ✅ Remove login screen from stack and navigate to main screen
-        replace("/(tabs)"); // ✅ Removes login from stack
+        // ✅ Show success toast before navigating
+        Toast.show({
+          type: "success",
+          text1: "Login Successful 🎉",
+          text2: "Welcome back!",
+          visibilityTime: 3000, // 3 seconds
+        });
+
+        // ✅ Delay navigation so toast is visible
+        setTimeout(() => {
+          replace("/(tabs)"); // ✅ Navigate after delay
+        }, 800); // 1 second delay
 
       } catch (error) {
         console.error("❌ Error saving data:", error);
       }
     },
+
     onError: (error) => {
       console.error("❌ Login Failed:", error);
-      alert(error.message || "Login failed, please try again.");
+
+      // ✅ Show error toast
+      Toast.show({
+        type: "error",
+        text1: "Login Failed ❌",
+        text2: error.message || "Please try again.",
+        visibilityTime: 3000, // 3 seconds
+      });
     }
   });
+
 
 
 
@@ -223,6 +243,8 @@ const Login = () => {
             </Text>
           </View>
         </View>
+        <Toast /> {/* ✅ Add Toast Component to Render */}
+
       </ScrollView>
     </SafeAreaView>
   );

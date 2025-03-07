@@ -85,6 +85,11 @@ const VerificationModal: React.FC<VerificationModalProps & { requestData: any; o
     const [isOtpFocused, setIsOtpFocused] = useState(false);
     const [isPinFocused, setIsPinFocused] = useState(false);
 
+    // ✅ Disable Proceed button if email or PIN is missing
+    const isProceedDisabled = 
+    !requestData.email || 
+    !pin.trim() ;
+
     // Start countdown when timer > 0
     useEffect(() => {
         if (timer > 0) {
@@ -215,7 +220,7 @@ const VerificationModal: React.FC<VerificationModalProps & { requestData: any; o
                                     }
                                 );
                             }}
-                            disabled={isPendingTransfer || isPendingPin}
+                            disabled={isProceedDisabled} // ✅ Button disabled if email or PIN is empty
                         />
                     </View>
                 </View>

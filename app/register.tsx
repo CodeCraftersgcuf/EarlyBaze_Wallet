@@ -24,6 +24,7 @@ import { KeyboardAvoidingView, Platform } from "react-native"; // ✅ Import
 //Related to the Integration of the Register Page
 import { signUpUser } from '@/utils/mutations/authMutations'
 import { useMutation } from '@tanstack/react-query';
+import Toast from "react-native-toast-message"; // ✅ Import Toast
 
 
 export interface InputValues {
@@ -64,14 +65,26 @@ const Register = () => {
     },
     onSuccess: (data, variables) => {
       console.log("✅ Register Successful:", data);
+      // ✅ Show Success Toast
+      Toast.show({
+        type: "success",
+        text1: "Success ✅",
+        text2: "Register Successful!",
+        visibilityTime: 3000,
+      });
       push({ pathname: "/Otp", params: { email: variables.email } });
     },
     onError: (error) => {
       console.error("❌ Register Failed:", error);
-      alert(error.message || "Register failed, please try again.");
+      // ✅ Show Error Toast
+      Toast.show({
+        type: "error",
+        text1: "Error ❌",
+        text2: error.message || "Register failed, please try again.",
+        visibilityTime: 3000,
+      });
     },
   });
-
 
 
   const pickImage = async () => {
@@ -320,6 +333,8 @@ const Register = () => {
               </View>
             </View>
           </View>
+          <Toast /> {/* ✅ Add Toast Component to Render */}
+
         </View>
       </SafeAreaView >
     </KeyboardAvoidingView>

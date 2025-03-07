@@ -22,6 +22,7 @@ import useLoadFonts from "@/hooks/useLoadFonts";
 //Code of the Integration 
 import { forgotPassword, verifyPasswordOTP } from '@/utils/mutations/authMutations'
 import { useMutation } from '@tanstack/react-query';
+import Toast from "react-native-toast-message"; // ✅ Import Toast
 
 
 
@@ -49,9 +50,23 @@ const ForgetPassword = () => {
     mutationFn: async (data: { email: string }) => await forgotPassword(data),
     onSuccess: (data) => {
       console.log("✅ Forgot Password:", data);
+      Toast.show({
+        type: "success",
+        text1: "Success",
+        text2: "OTP sent to your email.",
+      });
+      setTimer(60);
+      setIsTimerActive(true);
     },
     onError: (error) => {
       console.log("❌ Forgot Password Error:", error);
+      // ✅ Show Error Toast
+      Toast.show({
+        type: "error",
+        text1: "Error ❌",
+        text2: error.message || "Something went wrong.",
+        visibilityTime: 3000,
+      });
     },
   });
 
@@ -61,11 +76,29 @@ const ForgetPassword = () => {
     onSuccess: (data, variables) => {
       console.log("✅ Verify Password OTP:", data);
       console.log("The Email we are passing", variables.email);
-      push({ pathname: "/resetpassword", params: { email: variables.email } });
 
+      // ✅ Show Success Toast
+      Toast.show({
+        type: "success",
+        text1: "OTP Verified ✅",
+        text2: "Proceeding to reset password...",
+        visibilityTime: 3000,
+      });
+
+      setTimeout(() => {
+        push({ pathname: "/resetpassword", params: { email: variables.email } });
+      }, 1000); // ✅ Navigate after showing toast
     },
     onError: (error) => {
       console.log("❌ Verify Password OTP Error:", error);
+
+      // ✅ Show Error Toast
+      Toast.show({
+        type: "error",
+        text1: "OTP Verification Failed ❌",
+        text2: error.message || "Invalid OTP, please try again.",
+        visibilityTime: 3000,
+      });
     },
   });
 
@@ -191,17 +224,19 @@ const ForgetPassword = () => {
                           title="Proceed"
                           onPress={() => {
                             if (!values.email || !values.inputPin) {
-                              alert("Please enter both email and OTP.");
+                              Toast.show({
+                                type: "error",
+                                text1: "Missing Fields ❌",
+                                text2: "Please enter both email and OTP.",
+                                visibilityTime: 3000,
+                              });
                               return;
                             }
-                            verifyPassOtp({ otp: values.inputPin, email: values.email }, {
-                              onSuccess: () => {
-                                console.log("✅ OTP Verified, Navigating to Reset Password");
-                                push(`/resetpassword?timer=${timer}`); // ✅ Navigate only if OTP is correct
-                              }
-                            });
+
+                            verifyPassOtp({ otp: values.inputPin, email: values.email });
                           }}
                         />
+
                       </View>
                     </View>
                   )}
@@ -209,6 +244,8 @@ const ForgetPassword = () => {
               </View>
             </Text>
           </View>
+            <Toast /> {/* ✅ Add Toast Component to Render */}
+
         </View>
       </ScrollView>
     </SafeAreaView>

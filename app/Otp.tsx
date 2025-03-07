@@ -12,6 +12,7 @@ import useLoadFonts from '@/hooks/useLoadFonts';
 import { useLocalSearchParams } from 'expo-router';
 import { verifyEmailOTP, setPin, verifyPin } from '@/utils/mutations/authMutations';
 import { useMutation } from '@tanstack/react-query';
+import Toast from "react-native-toast-message"; // ✅ Import Toast
 
 const Otp: React.FC = () => {
     const backgroundColor = useThemeColor({ light: '#EFFEF9', dark: '#000000' }, 'background');
@@ -34,11 +35,27 @@ const Otp: React.FC = () => {
         mutationFn: (data: { otp: string; email: string }) => verifyEmailOTP(data),
         onSuccess: (data) => {
             console.log("✅ OTP Verified:", data);
+
+            // ✅ Show success toast
+            Toast.show({
+                type: "success",
+                text1: "OTP Verified ✅",
+                text2: "Proceed to the next step.",
+                visibilityTime: 3000,
+            });
+
             setStep(2);
         },
         onError: (error) => {
             console.log("❌ OTP Verification Error:", error);
-            Alert.alert("Error", "Invalid OTP. Please try again.");
+
+            // ✅ Show error toast
+            Toast.show({
+                type: "error",
+                text1: "Invalid OTP ❌",
+                text2: "Please try again.",
+                visibilityTime: 3000,
+            });
         },
     });
 
@@ -47,25 +64,58 @@ const Otp: React.FC = () => {
         mutationFn: (data: { email: string; pin: string }) => setPin(data),
         onSuccess: (data) => {
             console.log("✅ Pin Set Successfully:", data);
+
+            // ✅ Show success toast
+            Toast.show({
+                type: "success",
+                text1: "PIN Set ✅",
+                text2: "Your PIN has been set successfully!",
+                visibilityTime: 3000,
+            });
+
             setStep(3);
         },
         onError: (error) => {
             console.log("❌ Set Pin Error:", error);
-            Alert.alert("Error", "Failed to set PIN. Please try again.");
+
+            // ✅ Show error toast
+            Toast.show({
+                type: "error",
+                text1: "PIN Setup Failed ❌",
+                text2: "Please try again.",
+                visibilityTime: 3000,
+            });
         },
     });
 
-    // ✅ Verify Pin Mutation (Fixed: Now includes email)
+    // ✅ Verify Pin Mutation
     const { mutate: checkPin, isPending: isVerifyingPin } = useMutation({
         mutationFn: (data: { email: string; pin: string }) => verifyPin(data),
         onSuccess: (data) => {
             console.log("✅ Pin Verified Successfully:", data);
-            Alert.alert("Success", "PIN verified successfully!");
-            router.push('/login'); // Navigate to main screen
+
+            // ✅ Show success toast
+            Toast.show({
+                type: "success",
+                text1: "PIN Verified ✅",
+                text2: "Redirecting to login...",
+                visibilityTime: 3000,
+            });
+
+            setTimeout(() => {
+                router.push('/login'); // ✅ Navigate to login after showing toast
+            }, 1000);
         },
         onError: (error) => {
             console.log("❌ Verify Pin Error:", error);
-            Alert.alert("Error", "Invalid PIN. Please try again.");
+
+            // ✅ Show error toast
+            Toast.show({
+                type: "error",
+                text1: "Invalid PIN ❌",
+                text2: "Please try again.",
+                visibilityTime: 3000,
+            });
         },
     });
 
@@ -128,6 +178,8 @@ const Otp: React.FC = () => {
                     disabled={isVerifyingOtp || isSettingPin || isVerifyingPin}
                 />
             </View>
+            <Toast /> {/* ✅ Add Toast Component to Render */}
+
         </View>
     );
 };

@@ -10,12 +10,12 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import ScreenStacks from '../components/screenstacks';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { UserBalanceProvider } from '../contexts/UserBalanceContext';
+import Toast from 'react-native-toast-message'; // ✅ Import Toast
 
 // Prevent splash screen auto-hide before loading
 SplashScreen.preventAutoHideAsync();
 
 const queryClient = new QueryClient();
-
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -39,6 +39,7 @@ export default function RootLayout() {
         <QueryClientProvider client={queryClient}>
           <ScreenStacks />
         </QueryClientProvider>
+        <Toast /> {/* ✅ Add Toast Provider */}
         <StatusBar style="auto" />
       </UserBalanceProvider>
     </ThemeProvider>

@@ -21,15 +21,14 @@ import useLoadFonts from "@/hooks/useLoadFonts";
 //Code for the Integration of the Reset Password Screen
 import { resetPassword } from '@/utils/mutations/authMutations'
 import { useMutation } from '@tanstack/react-query'
+import Toast from "react-native-toast-message"; // ✅ Import Toast
 
 
 const ResetPassword = () => {
   const { dark } = useTheme();
-  const {  email } = useLocalSearchParams();
-  const [remainingTime, setRemainingTime] = useState(Number(timer) || 60);
+  const { email } = useLocalSearchParams();
   const { back, push } = useRouter();
 
-  c
   console.log("📩 Received email:", email); // Debugging
 
 
@@ -39,12 +38,32 @@ const ResetPassword = () => {
       await resetPassword(data),
     onSuccess: (data) => {
       console.log("✅ Reset Password:", data);
-      push("/login");
+
+      // ✅ Show Success Toast
+      Toast.show({
+        type: "success",
+        text1: "Password Reset ✅",
+        text2: "You can now log in with your new password.",
+        visibilityTime: 3000, // 3 seconds
+      });
+
+      setTimeout(() => {
+        push("/login");
+      }, 1000); // ✅ Navigate after showing toast
     },
     onError: (error) => {
       console.log("❌ Reset Password Error:", error);
+
+      // ✅ Show Error Toast
+      Toast.show({
+        type: "error",
+        text1: "Reset Failed ❌",
+        text2: error.message || "Please try again.",
+        visibilityTime: 3000,
+      });
     },
   });
+
 
   const fontsLoaded = useLoadFonts(); // Load custom fonts
   return (
@@ -151,25 +170,42 @@ const ResetPassword = () => {
 
                       <View style={{ paddingVertical: 10, marginBottom: 10 }}>
                         <Button
-                          title="Proceed"
+                          title={isResettingPass ? "Processing..." : "Proceed"} // ✅ Update text based on mutation state
                           onPress={() => {
                             if (!values.password || !values.confirmPassword) {
-                              alert("Please fill in both password fields.");
+                              Toast.show({
+                                type: "error",
+                                text1: "Missing Fields ❌",
+                                text2: "Please fill in both password fields.",
+                                visibilityTime: 3000,
+                              });
                               return;
                             }
                             if (values.password !== values.confirmPassword) {
-                              alert("Passwords do not match.");
+                              Toast.show({
+                                type: "error",
+                                text1: "Passwords Mismatch ❌",
+                                text2: "Passwords do not match.",
+                                visibilityTime: 3000,
+                              });
                               return;
                             }
                             if (!email) {
-                              alert("Error: No email found, please restart the process.");
+                              Toast.show({
+                                type: "error",
+                                text1: "Error ❌",
+                                text2: "No email found, please restart the process.",
+                                visibilityTime: 3000,
+                              });
                               return;
                             }
 
-                            resetPass({ email, password: values.password });
+                            resetPass({ email, password: values.password }); // ✅ Trigger API call
                           }}
-
+                          disabled={isResettingPass} // ✅ Disable button while request is pending
                         />
+
+
                       </View>
                     </View>
                   )}
@@ -177,6 +213,8 @@ const ResetPassword = () => {
               </View>
             </Text>
           </View>
+          <Toast /> {/* ✅ Add Toast Component to Render */}
+
         </View>
       </ScrollView>
     </SafeAreaView>
