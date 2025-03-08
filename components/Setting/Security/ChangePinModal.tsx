@@ -1,14 +1,22 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, Modal, StyleSheet, TextInput, TouchableOpacity, Alert, Image } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
-import { Ionicons } from '@expo/vector-icons';
 import { images } from '@/constants';
+
+//Code related to the integration: 
+import { verifyPin, setPin } from '@/utils/mutations/authMutations';
+import { useMutation } from '@tanstack/react-query';
+import { getFromStorage } from "@/utils/storage";
+import Toast from "react-native-toast-message"; // ✅ Import Toast
+
+
 interface ChangePinModalProps {
   visible: boolean;
   onClose: () => void;
 }
 
 const ChangePinModal: React.FC<ChangePinModalProps> = ({ visible, onClose }) => {
+  const [email, setEmail] = useState<string | null>(null);
   const backgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#1A1A1A' }, 'background');
   const textColor = useThemeColor({ light: '#000', dark: '#fff' }, 'text');
   const buttonColor = useThemeColor({ light: '#22A45D', dark: '#2E7D32' }, 'button');
@@ -31,6 +39,70 @@ const ChangePinModal: React.FC<ChangePinModalProps> = ({ visible, onClose }) => 
       setConfirmPin(['', '', '', '']);
     }
   }, [visible]);
+
+  // Fetch the token and user data when the component mounts
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const user = await getFromStorage("user");
+      const email= user.email
+      setEmail(email);
+      console.log("🔹 Retrieved email:", email);
+    };
+
+    fetchUserData();
+  }, []);
+  console.log("🔹 Email:", email);
+
+  // Mutation to verify the old pin
+  const { mutate: verifyOldPin } = useMutation({
+    mutationFn: () => verifyPin({ email: email || '', pin: pin.join('') }),
+    onSuccess: () => {
+      setStep(2);
+      // Show success toast
+      Toast.show({
+        type: 'success',
+        text1: 'Success ✅',
+        text2: 'Old PIN verified successfully!',
+        visibilityTime: 3000,
+      });
+    },
+    onError: (error) => {
+      // Show error toast
+      Toast.show({
+        type: 'error',
+        text1: 'Error ❌',
+        text2: error.message || 'Failed to verify PIN.',
+        visibilityTime: 3000,
+      });
+    },
+  });
+
+  // Mutation for Setting new pin
+  const { mutate: setNewPinMutation } = useMutation({
+    mutationFn: () => setPin({ email: email || '', pin: newPin.join('') }),
+    onSuccess: () => {
+      setStep(3);
+      // Show success toast
+      Toast.show({
+        type: 'success',
+        text1: 'Success ✅',
+        text2: 'New PIN set successfully!',
+        visibilityTime: 3000,
+      });
+      onClose();
+    },
+    onError: (error) => {
+      // Show error toast
+      Toast.show({
+        type: 'error',
+        text1: 'Error ❌',
+        text2: error.message || 'Failed to set new PIN.',
+        visibilityTime: 3000,
+      });
+    },
+  });
+
+
 
   const handleChange = (text: string, index: number) => {
     if (!/^\d*$/.test(text)) return; // Ensure only numeric input
@@ -62,8 +134,11 @@ const ChangePinModal: React.FC<ChangePinModalProps> = ({ visible, onClose }) => 
     }
 
     if (step === 1) {
-      setStep(2);
-      setNewPin(['', '', '', '']); // Reset new PIN fields
+      if (email) {
+        verifyOldPin({ email, pin: enteredPin }); // Verify old pin
+      } else {
+        Alert.alert('Error', 'Email not found.');
+      }
     } else if (step === 2) {
       setStep(3);
       setConfirmPin(['', '', '', '']); // Reset confirm PIN fields
@@ -72,10 +147,14 @@ const ChangePinModal: React.FC<ChangePinModalProps> = ({ visible, onClose }) => 
         Alert.alert('Error', 'New PIN does not match. Please try again.');
         return;
       }
-      Alert.alert('Success', 'PIN successfully changed!');
-      onClose();
+      if (email) {
+        setNewPinMutation({ email, pin: newPin.join('') }); // Set new pin
+      } else {
+        Alert.alert('Error', 'Email not found.');
+      }
     }
   };
+
 
   return (
     <Modal visible={visible} transparent animationType="fade">
@@ -127,6 +206,8 @@ const ChangePinModal: React.FC<ChangePinModalProps> = ({ visible, onClose }) => 
           </View>
         </View>
       </View>
+      <Toast /> {/* ✅ Add Toast Component to Render */}
+
     </Modal>
   );
 };

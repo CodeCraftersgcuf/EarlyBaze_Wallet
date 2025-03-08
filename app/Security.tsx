@@ -48,6 +48,7 @@ const Security: React.FC = () => {
                 <ChangePinButton onPress={() => setIsModalVisible(true)} />
                 <ChangePinModal visible={isModalVisible} onClose={() => setIsModalVisible(false)} />
             </View>
+            
         </ScrollView>
     );
 };
