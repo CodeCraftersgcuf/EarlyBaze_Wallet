@@ -15,7 +15,7 @@ import { images } from '@/constants';
 import { useQuery } from '@tanstack/react-query';
 import { getFromStorage } from '@/utils/storage';
 import { getBanksAccounts } from '@/utils/queries/appQueries';
-
+import { router, useRouter } from 'expo-router';
 interface PaymentMethodModalProps {
   title: string;
   visible: boolean;
@@ -59,7 +59,32 @@ const PaymentMethodModal: React.FC<PaymentMethodModalProps> = ({ title, visible,
   );
 
   console.log("🔹 Bank Accounts:", bankAccounts);
-  const accounts = bankAccounts?.data || []; // ✅ Use API response, default to empty array if undefined
+  const accounts = bankAccounts?.data || [];
+
+  // Show "Add Account" button if no accounts are available
+  if (!bankLoading && accounts.length === 0) {
+    return (
+      <Modal transparent visible={visible} animationType="slide">
+        <View style={styles.overlay}>
+          <View style={[styles.modalContainer, { backgroundColor }]}>
+            <View style={styles.header}>
+              <Text style={[styles.title, { color: titleTextColor }]}>{title}</Text>
+              <TouchableOpacity onPress={onClose} style={[styles.closeButton, { backgroundColor: closeButtonColor }]}>
+                <Image style={styles.closeText} source={close} />
+              </TouchableOpacity>
+            </View>
+            <TouchableOpacity
+              style={[styles.addAccountButton, { backgroundColor: containerBackgroundColor, borderColor }]}
+              onPress={() => router.replace('/Account')} // Replaces current screen with /Account
+            >
+
+              <Text style={[styles.addAccountText, { color: textColor }]}>Add Account</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+    );
+  }
 
   return (
     <Modal transparent visible={visible} animationType="slide">
@@ -139,6 +164,18 @@ const PaymentMethodModal: React.FC<PaymentMethodModalProps> = ({ title, visible,
 };
 
 const styles = StyleSheet.create({
+  addAccountButton: {
+    padding: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    alignItems: 'center',
+    margin: 20,
+  },
+  addAccountText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+
   overlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.4)',

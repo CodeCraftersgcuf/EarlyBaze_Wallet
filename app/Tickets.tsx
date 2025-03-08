@@ -62,6 +62,8 @@ const Tickets: React.FC = () => {
         <LoadingIndicator /> // ✅ Show loading indicator while fetching tickets
       ) : ticketsError ? (
         <Text style={{ textAlign: 'center', marginTop: 20, color: 'red' }}>Failed to load tickets</Text>
+      ) : filteredTickets.length === 0 ? (
+        <Text style={{ textAlign: 'center', marginTop: 20, color: '#555' }}>No Ticket found...</Text> // ✅ Show message if no tickets
       ) : (
         <ScrollView contentContainerStyle={styles.scrollContainer}>
           {filteredTickets.map((ticket: any) => (
@@ -77,6 +79,7 @@ const Tickets: React.FC = () => {
           ))}
         </ScrollView>
       )}
+
     </View>
   );
 };

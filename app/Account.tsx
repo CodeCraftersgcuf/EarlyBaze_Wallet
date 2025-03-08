@@ -112,6 +112,8 @@ const Account: React.FC = () => {
                 <LoadingIndicator /> // ✅ Show loading indicator while fetching accounts
             ) : bankError ? (
                 <Text style={{ textAlign: 'center', marginTop: 20, color: 'red' }}>Failed to load accounts</Text>
+            ) : accounts.length === 0 ? (
+                <Text style={{ textAlign: 'center', marginTop: 20, color: '#555' }}>No account added</Text> // ✅ Show message if no accounts
             ) : (
                 <AccountList title={title} accounts={accounts} onEdit={handleEdit} onDelete={handleDelete} />
             )}

@@ -99,9 +99,12 @@ const Transactions: React.FC = () => {
           {/* Transaction List */}
           {transactionsLoading ? (
             <LoadingIndicator message="Fetching transactions..." />
+          ) : filteredTransactions.length === 0 ? (
+            <Text style={{ textAlign: 'center', marginTop: 20, color: textColor }}>No Transaction found...</Text>
           ) : (
-            <TransactionList transactions={filteredTransactions.length === 0 ? [] : filteredTransactions} />
+            <TransactionList transactions={filteredTransactions} />
           )}
+
 
         </ScrollView>
       </View>

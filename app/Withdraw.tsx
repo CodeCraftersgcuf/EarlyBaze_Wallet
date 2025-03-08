@@ -20,6 +20,7 @@ import { createWithdrawal } from '@/utils/mutations/paymentMutations';
 import { useMutation } from '@tanstack/react-query';
 import { getFromStorage } from '@/utils/storage';
 import { useUserBalanceContext } from '../contexts/UserBalanceContext'
+import Toast from "react-native-toast-message"; // ✅ Import Toast
 
 
 
@@ -56,6 +57,15 @@ const Withdraw: React.FC = () => {
             try {
                 console.log("✅ Withdrawal Successful:", response);
                 refetchBalance(); // Refetch balance after withdrawal
+
+                // ✅ Show Success Toast
+                Toast.show({
+                    type: "success",
+                    text1: "Success ✅",
+                    text2: "Withdrawal Successful!",
+                    visibilityTime: 3000,
+                });
+
                 // Navigate to transaction page
                 router.push({
                     pathname: '/TransactionPage',
@@ -64,6 +74,17 @@ const Withdraw: React.FC = () => {
             } catch (error) {
                 console.error("❌ Error creating withdrawal:", error);
             }
+        },
+        onError: (error) => {
+            console.error("❌ Withdrawal Failed:", error);
+
+            // ✅ Show Error Toast
+            Toast.show({
+                type: "error",
+                text1: "Error ❌",
+                text2: error.message || "Withdrawal failed, please try again.",
+                visibilityTime: 3000,
+            });
         }
     });
 
@@ -147,6 +168,7 @@ const Withdraw: React.FC = () => {
                 }}
             />
 
+            <Toast /> {/* ✅ Add Toast Component to Render */}
         </View>
 
     );
