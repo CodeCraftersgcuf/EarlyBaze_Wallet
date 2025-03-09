@@ -20,7 +20,7 @@ interface PaymentMethodModalProps {
   title: string;
   visible: boolean;
   onClose: () => void;
-  onSelectPaymentMethod: (method: { id: number; account_name: string }) => void; // Updated type
+  onSelectPaymentMethod: (method: { id: number; account_name: string, account_number?: string }) => void; // Updated type
 }
 
 
@@ -134,7 +134,7 @@ const PaymentMethodModal: React.FC<PaymentMethodModalProps> = ({ title, visible,
                       ]}
                       onPress={() => {
                         setSelectedAccount(item.id);
-                        onSelectPaymentMethod({ id: item.id, account_name: item.account_name }); // Pass both id and account_name to parent
+                        onSelectPaymentMethod({ id: item.id, account_name: item.account_name, account_number: item.account_number }); // Pass both id and account_name to parent
                         onClose(); // Close modal after selection
                       }}
                     >

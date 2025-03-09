@@ -36,6 +36,9 @@ const API_ENDPOINTS = {
     UpdateBankDetails: API_DOMAIN + "/update-bank-account",
     DeleteBankAccount: API_DOMAIN + "/delete-bank-account",
     SendInternalTransfer: API_DOMAIN + "/wallet/internal-transfer",
+    BuyTransfter: API_DOMAIN + "/wallet/buy",
+    CalculateExchangeRate:
+      API_DOMAIN + "/exchange-rate/calculate-exchange-rate",
   },
   ACCOUNT_MANAGEMENT: {
     GetUserProfileData: API_DOMAIN + "/edit-profile-details",

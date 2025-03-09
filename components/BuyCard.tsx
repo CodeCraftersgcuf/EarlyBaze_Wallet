@@ -1,90 +1,162 @@
-// components/BuyCard/index.tsx
-import React, { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import InputField from '@/components/Buy/InputField';
 import SelectionBox from '@/components/Buy/SelectionBox';
 import PaymentMethodHeader from '@/components/Buy/PaymentMethodHeader';
-import SwapButton from '@/components/Buy/SwapButton';
 import AmountToPay from '@/components/Buy/AmountToPay';
 import NetworkSelectionModal from './Receive/NetworkSelectionModal';
 import networkOptions from '@/constants/networkOptions.json';
 
-import icons from '@/constants/icons';
 import { images } from '@/constants';
 
-const BuyCard: React.FC = () => {
-  const backgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#161616' }, 'cardBackground');
-  const doublearrow = useThemeColor({ light: images.double_arrow_white, dark: images.double_arrow_black }, 'doublearrow');
-  const arrowBorderColor = useThemeColor({ light: '#E5E5E5', dark: '#095D3F' }, 'arrowBorder');
+//Import realted to the integration
+import { calculateExchangeRate } from '../utils/mutations/accountMutations';
+import { useMutation } from '@tanstack/react-query';
+import { getFromStorage } from "@/utils/storage";
 
-  // State to handle modal visibility
+
+
+interface BuyCardProps {
+  setSelectedData: (data: { selectedCoin: any; selectedNetwork: any }) => void; // ✅ Accepts function to update parent state
+}
+
+
+
+const BuyCard = ({ setSelectedData }) => {
+  const [token, setToken] = useState<string | null>(null);
+  const [usdAmount, setUsdAmount] = useState<string>('');  // For USD input
+  const [btcAmount, setBtcAmount] = useState<string>('0.000234');  // For BTC input
+  const [ngnAmount, setNgnAmount] = useState<string>('NGN 25,000,000');  // For NGN input
+  const [isUsdEditable, setIsUsdEditable] = useState<boolean>(false);  // Control USD input editability
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedCoin, setSelectedCoin] = useState(networkOptions[0]); // Default coin
-  const [selectedNetwork, setSelectedNetwork] = useState(networkOptions[0]); // Default network
-  const [modalType, setModalType] = useState<string | null>(null); // Store modal type
+  const [selectedCoin, setSelectedCoin] = useState(networkOptions[0]);
+  const [selectedNetwork, setSelectedNetwork] = useState(networkOptions[0]);
+  const [selectedPaymentMethodId, setSelectedPaymentMethodId] = useState<{ id: string; account_name: string; account_number: string } | null>(null);
 
-  // Function to handle network selection
+  const [modalType, setModalType] = useState<string | null>(null);
+  const doublearrow = useThemeColor({ light: images.double_arrow_white, dark: images.double_arrow_black }, 'doublearrow');
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const fetchedToken = await getFromStorage('authToken');
+      setToken(fetchedToken);
+      console.log('🔹 Retrieved Token:', fetchedToken);
+    };
+    fetchUserData();
+  }, []);
+
+  const { mutate: getExchangeRate } = useMutation({
+    mutationFn: ({ data, token }: { data: { currency: string; amount: string }; token: string }) =>
+      calculateExchangeRate({ data, token }),
+    onSuccess: (response) => {
+      if (response?.status === 'success') {
+        const { amount_usd, amount_naira } = response.data;
+        setBtcAmount(amount_usd);  // Update BTC input
+        setNgnAmount(`NGN ${parseFloat(amount_naira).toFixed(2)}`);  // Update NGN input
+      }
+    },
+    onError: (error) => {
+      console.error('Error fetching exchange rate:', error);
+    },
+  });
+
+  const handleUsdChange = (value: string) => {
+    setUsdAmount(value);
+    if (token && selectedCoin) {
+      getExchangeRate({
+        data: {
+          currency: selectedCoin.name,
+          amount: value,
+        },
+        token,
+      });
+    }
+  };
+
+
   const handleSelectNetwork = (network: any) => {
-    if (modalType === "coin") {
+    if (modalType === 'coin') {
       setSelectedCoin(network);
-    } else if (modalType === "network") {
+      setIsUsdEditable(true);  // Enable USD input when coin is selected
+    } else if (modalType === 'network') {
       setSelectedNetwork(network);
     }
-    setModalVisible(false); // Close modal after selection
+    setModalVisible(false);
   };
 
-  // Function to handle coin selection
-  const coinId = selectedCoin?.id ? selectedCoin.id.toString() : null; // ✅ Ensure proper check
+  const coinId = selectedCoin?.id ? selectedCoin.id.toString() : null;
 
   const openModal = (type: string) => {
-    setModalType(type); // Store the type
-    setModalVisible(true); // Show the modal
+    setModalType(type);
+    setModalVisible(true);
   };
 
+
+  useEffect(() => {
+    setSelectedData({
+      selectedCoin,
+      selectedNetwork,
+      selectedPaymentMethodId,
+      amount_coin: btcAmount,
+      amount_usd: usdAmount,
+      amount_naira: ngnAmount.replace('NGN ', '')
+    });
+    console.log('🔹 Updated Selection:', {
+      selectedCoin,
+      selectedNetwork,
+      selectedPaymentMethodId,
+      amount_coin: btcAmount,
+      amount_usd: usdAmount,
+      amount_naira: ngnAmount.replace('NGN ', '')
+    });
+  }, [selectedCoin, selectedNetwork, selectedPaymentMethodId, btcAmount, usdAmount, ngnAmount]);
+
+
   return (
-    <View style={[styles.card, { backgroundColor }]}>
-      <PaymentMethodHeader />
+    <View style={[styles.card, { backgroundColor: useThemeColor({ light: '#FFFFFF', dark: '#161616' }, 'cardBackground') }]}>
+      <PaymentMethodHeader setSelectedPaymentMethodId={setSelectedPaymentMethodId} />
 
       {/* Coin Selection */}
       <View style={styles.exchangeContainer}>
-        <InputField label="USD" value="2,345" />
+        <InputField
+          label="USD"
+          value={usdAmount}
+          editable={isUsdEditable}
+          onChangeText={handleUsdChange}
+          keyboardType="numeric"
+        />
         <SelectionBox
           label="Coin"
           id={selectedCoin.id}
           value={selectedCoin.name}
           icon={selectedCoin.icon}
-          onPress={() => openModal("coin")}
+          onPress={() => openModal('coin')}
         />
       </View>
 
       {/* Swap Button */}
-      <TouchableOpacity style={[styles.swapButton, { borderColor: arrowBorderColor }]}>
+      <TouchableOpacity style={[styles.swapButton, { borderColor: useThemeColor({ light: '#E5E5E5', dark: '#095D3F' }, 'arrowBorder') }]}>
         <Image source={doublearrow} style={styles.swapIcon} />
       </TouchableOpacity>
 
       {/* Network Selection */}
       <View style={styles.selectionContainer}>
-        <InputField label="BTC" value="0.000234" />
+        <InputField label="BTC" value={btcAmount} editable={false} />
         <SelectionBox
           label="Network"
           id={selectedNetwork.id}
           value={selectedNetwork.name}
           icon={selectedNetwork.icon}
-          onPress={coinId ? () => openModal("network") : undefined}
+          onPress={coinId ? () => openModal('network') : undefined}
           disabled={!coinId}
-          style={!coinId ? { opacity: 0.5 } : undefined} // ✅ Ensure `undefined` if no extra styles
+          style={!coinId ? { opacity: 0.5 } : undefined}
         />
-
-
-
       </View>
 
       {/* Amount to Pay Section */}
-      <AmountToPay label="Amount to pay" value="NGN 25,000,000" />
+      <AmountToPay label="Amount to pay" value={ngnAmount} />
 
-      {/* Show Modal with Correct Type */}
-      {/* Show Modal with Correct Type (only when coinId exists) */}
       {coinId && (
         <NetworkSelectionModal
           visible={modalVisible}
@@ -92,14 +164,16 @@ const BuyCard: React.FC = () => {
           onSelectNetwork={handleSelectNetwork}
           selectedNetwork={selectedNetwork}
           networks={networkOptions}
-          modelType={modalType} // ✅ Dynamically sets modelType
-          coinId={selectedCoin.id} // ✅ Passes selected coin ID
+          modelType={modalType}
+          coinId={selectedCoin.id}
         />
       )}
-
     </View>
   );
 };
+
+
+
 
 const styles = StyleSheet.create({
   card: {

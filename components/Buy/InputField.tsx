@@ -1,27 +1,27 @@
 // components/common/InputField.tsx
 import React from 'react';
-import { View, Text, TextInput, StyleSheet } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TextInputProps } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
 
-interface InputFieldProps {
-  label: string;
-  value: string;
-  onChange?: (text: string) => void;
+interface InputFieldProps extends TextInputProps {
+  label?: string;
+  value?: string;
+  editable?: boolean;
 }
 
-const InputField: React.FC<InputFieldProps> = ({ label, value, onChange }) => {
+const InputField: React.FC<InputFieldProps> = ({ label = '', value = '', editable = true, ...props }) => {
   const textColor = useThemeColor({ light: '#000000', dark: '#FFFFFF' }, 'text');
   const bgColor = useThemeColor({ light: '#FFFFFF', dark: '#2D2D2D' }, 'inputBackground');
   const borderColor = useThemeColor({ light: '#C2C2C2', dark: '#3A3A3A' }, 'border');
 
   return (
     <View style={[styles.container, { backgroundColor: bgColor, borderColor }]}>
-      <Text style={[styles.label, { color: textColor }]}>{label}</Text>
+      {label ? <Text style={[styles.label, { color: textColor }]}>{label}</Text> : null}
       <TextInput
         style={[styles.input, { color: textColor }]}
         value={value}
-        onChangeText={onChange}
-        keyboardType="numeric"
+        editable={editable}
+        {...props}
       />
     </View>
   );
@@ -32,24 +32,24 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderWidth: 0.31,
-    borderRadius: 15, // Adjusted radius to match the image
-    borderTopLeftRadius: 20, // Specific rounded corner on top left
-    borderColor: '#E0E0E0', // Light gray border
-    width: 160, // Adjust width to fit content
-    height: 75, // Adjust height for better alignment
+    borderRadius: 15,
+    borderTopLeftRadius: 20,
+    borderColor: '#E0E0E0',
+    width: 160,
+    height: 75,
     justifyContent: 'center',
-    alignItems: 'flex-start', // Align text to left like in the image
+    alignItems: 'flex-start',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 3,
-    elevation: 2, // Shadow for Android
+    elevation: 2,
   },
   label: {
     fontSize: 12,
     fontWeight: '500',
-    opacity: 0.6, // Light gray effect like in the image
-    marginBottom: 2, // Adjusted spacing between label and value
+    opacity: 0.6,
+    marginBottom: 2,
   },
   input: {
     fontSize: 18,

@@ -49,6 +49,41 @@ export const createInternalTransfer = async ({
   );
 };
 
+export const createBuy = async ({
+  data,
+  token,
+}: {
+  data: {
+    currency: string;
+    network: string;
+    amount_coin: string;
+    amount_usd: string;
+    amount_naira: string;
+    bank_account_id: string;
+  };
+  token: string;
+}) => {
+  return await apiCall(API_ENDPOINTS.USER.BuyTransfter, "POST", data, token);
+};
+
+export const calculateExchangeRate = async ({
+  data,
+  token,
+}: {
+  data: {
+    currency: string;
+    amount: string;
+  };
+  token: string;
+}) => {
+  return await apiCall(
+    API_ENDPOINTS.USER.CalculateExchangeRate,
+    "POST",
+    data,
+    token
+  );
+};
+
 export const createKycRequest = async ({
   data,
   token,

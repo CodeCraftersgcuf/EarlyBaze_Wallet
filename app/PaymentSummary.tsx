@@ -6,15 +6,15 @@ import { useNavigation } from '@react-navigation/native';
 import Header from '@/components/Header';
 import TransactionDetailItem from '@/components/Buy/TransactionDetailItem';
 import { ThemedText } from '@/components/ThemedText';
-import {router, useRouter} from "expo-router";
+import { useLocalSearchParams, useRouter } from 'expo-router';
 
 const PaymentSummary: React.FC = () => {
-    const { push } = useRouter();
+  const { push } = useRouter();
+  const { coin, network, amount_usd, amount_coin, amount_naira, transaction_id, transaction_reference, transaction_date, bank_name, account_number, account_name, status } = useLocalSearchParams();
 
   const backgroundColor = useThemeColor({ light: '#EFFEF9', dark: '#000000' }, 'background');
   const cardBackgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#1A1A1A' }, 'card');
- const textBackgroundColor = useThemeColor({light: '#FFFFFF', dark: '#0000'}, 'textBackground');
-  const navigation = useNavigation();
+  const textBackgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#0000' }, 'textBackground');
 
   return (
     <ScrollView contentContainerStyle={[styles.container, { backgroundColor }]}>
@@ -23,34 +23,34 @@ const PaymentSummary: React.FC = () => {
 
       {/* Account Details */}
       <View style={styles.accountHeader}>
-        <Text style={styles.accountTitle}>Account 1</Text>
+        <Text style={styles.accountTitle}>Account Details</Text>
       </View>
       <View style={[styles.accountContainer, { backgroundColor: cardBackgroundColor }]}>
-        <TransactionDetailItem label="Bank Name" value="Kuda Bank" />
-        <TransactionDetailItem label="Account Name" value="Qamardeen Abdulmalik" />
-        <TransactionDetailItem label="Account Number" value="123456789" isCopyable />
+        <TransactionDetailItem label="Bank Name" value={bank_name ?? 'N/A'} />
+        <TransactionDetailItem label="Account Name" value={account_name ?? 'N/A'} />
+        <TransactionDetailItem label="Account Number" value={account_number ?? 'N/A'} isCopyable />
       </View>
 
       {/* Payment Summary */}
       <Text style={styles.sectionTitle}>Payment Summary</Text>
       <View style={[styles.paymentContainer, { backgroundColor: cardBackgroundColor }]}>
-        <TransactionDetailItem label="Coin" value="Bitcoin" />
-        <TransactionDetailItem label="Network" value="Bitcoin" />
-        <TransactionDetailItem label="Amount - BTC" value="0.00023BTC" />
-        <TransactionDetailItem label="Amount - USD" value="$2,350" />
-        <TransactionDetailItem label="Amount to pay" value="NGN10,450,445" />
-        <TransactionDetailItem label="Transaction Reference" value="23JFJ46GKDR" isCopyable />
-        <TransactionDetailItem label="Transaction Date" value="24 Dec, 2024 - 07:22 AM" />
+        <TransactionDetailItem label="Coin" value={coin ?? 'N/A'} />
+        <TransactionDetailItem label="Network" value={network ?? 'N/A'} />
+        <TransactionDetailItem label="Amount - Coin" value={`${amount_coin ?? '0'} ${coin ?? ''}`} />
+        <TransactionDetailItem label="Amount - USD" value={`$${amount_usd ?? '0.00'}`} />
+        <TransactionDetailItem label="Amount to pay" value={`NGN${amount_naira ?? '0.00'}`} />
+        <TransactionDetailItem label="Transaction Reference" value={transaction_reference ?? 'N/A'} isCopyable />
+        <TransactionDetailItem label="Transaction Date" value={transaction_date ?? 'N/A'} />
       </View>
 
       {/* Confirmation Message */}
-      <ThemedText style={[styles.confirmationText, {backgroundColor: textBackgroundColor}]}>
+      <ThemedText style={[styles.confirmationText, { backgroundColor: textBackgroundColor }]}>
         Kindly confirm that the details are correct before proceeding
       </ThemedText>
 
       {/* Proceed Button */}
       <View style={styles.buttonContainer}>
-        <PrimaryButton title="I have made payment" onPress={() => router.push('/PaymentProof')} />
+        <PrimaryButton title="I have made payment" onPress={() => push('/PaymentProof')} />
       </View>
     </ScrollView>
   );
@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
     bottom: 20,
     width: '100%',
     alignSelf: 'center',
-    
+
   },
 });
 

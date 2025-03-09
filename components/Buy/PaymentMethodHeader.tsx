@@ -2,24 +2,27 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import PaymentMethodModal from '@/components/Buy/PaymentMethodModal';
-import icons from '@/constants/icons'; // Your arrow icon
 import { images } from '@/constants';
 
-const PaymentMethodHeader: React.FC = () => {
+const PaymentMethodHeader: React.FC<{ setSelectedPaymentMethodId: (data: { id: string; account_name: string; account_number: string }) => void }> = ({ setSelectedPaymentMethodId }) => {
   const backgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#1A1A1A' }, 'cardBackground');
   const borderColor = useThemeColor({ light: '#C2C2C2', dark: '#444' }, 'border');
-  const textColor = useThemeColor({ light: '#1A1A1A', dark: '#C2C2C2' }, 'placeholder'); // Gray text
+  const textColor = useThemeColor({ light: '#1A1A1A', dark: '#C2C2C2' }, 'placeholder');
   const arrow = useThemeColor({ light: images.down_arrow, dark: images.down_arrow_black }, 'arrow');
+  
   const [selectedAccount, setSelectedAccount] = useState<{ id: string; account_name: string } | null>(null);
-
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string | null>(null);
 
-  const handleSelectPaymentMethod = (method: { id: string; account_name: string }) => {
-    setSelectedAccount({ id: method.id, account_name: method.account_name }); // Store full account details
+  const handleSelectPaymentMethod = (method: { id: string; account_name: string; account_number: string }) => {
+    // Set local state for selected account name
+    setSelectedAccount({ id: method.id, account_name: method.account_name });
+
+    // Pass the full object (id, account_name, account_number) to the parent component
+    setSelectedPaymentMethodId({ id: method.id, account_name: method.account_name, account_number: method.account_number });
+
+    // Close the modal after selection
     setModalVisible(false);
   };
-
 
   return (
     <>
@@ -27,13 +30,10 @@ const PaymentMethodHeader: React.FC = () => {
         style={[styles.container, { backgroundColor, borderColor }]}
         onPress={() => setModalVisible(true)}
       >
-        {/* Display Selected Payment Method or Placeholder */}
+        {/* Display Selected Account Name or Default 'Payment Method' */}
         <Text style={[styles.text, { color: textColor }]}>
           {selectedAccount?.account_name || 'Payment Method'}
         </Text>
-
-
-        {/* Arrow Icon */}
         <Image source={arrow} style={styles.arrowIcon} />
       </TouchableOpacity>
 
@@ -43,8 +43,8 @@ const PaymentMethodHeader: React.FC = () => {
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
         onSelectPaymentMethod={(method) => {
-          const { id, account_name } = method; // Destructure the passed object
-          setSelectedAccount({ id, account_name }); // Set both id and account_name
+          const { id, account_name, account_number } = method;
+          setSelectedPaymentMethodId({ id, account_name, account_number });
           setModalVisible(false);
         }}
       />
@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
   text: {
     flex: 1,
     fontSize: 16,
-    fontWeight: '400', // Regular weight for placeholder
+    fontWeight: '400',
   },
   arrowIcon: {
     width: 16,
