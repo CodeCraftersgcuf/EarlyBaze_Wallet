@@ -65,6 +65,20 @@ export const createBuy = async ({
 }) => {
   return await apiCall(API_ENDPOINTS.USER.BuyTransfter, "POST", data, token);
 };
+export const createSwap = async ({
+  data,
+  token,
+}: {
+  data: {
+    currency: string;
+    network: string;
+    amount: string;
+    exchange_rate: string;
+  };
+  token: string;
+}) => {
+  return await apiCall(API_ENDPOINTS.USER.SwapTransfter, "POST", data, token);
+};
 
 export const calculateExchangeRate = async ({
   data,

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, ScrollView, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import PrimaryButton from '@/components/Buy/PrimaryButton';
@@ -9,12 +9,20 @@ import ExchangeRate from '@/components/Swap/ExchangeRate';
 import { useRouter, router } from 'expo-router';
 import NoteSwapBox from '@/components/Swap/NoteSwapBox';
 import NetworkSelectionModal from '@/components/Receive/NetworkSelectionModal'; // ✅ Import modal
-import bitCoin from '@/assets/images/bitcoin.png';
 import { images } from '@/constants';
-import SwapTabs from '@/components/Swap/SwapTabs';
 import networkOptions from '@/constants/networkOptions.json';
 
+
+
+//Code Related to the integration
+import { getFromStorage } from "@/utils/storage";
+import { useMutation } from '@tanstack/react-query';
+import { createSwap } from "@/utils/mutations/accountMutations";
+import { calculateExchangeRate } from '@/utils/mutations/accountMutations';
+import Toast from "react-native-toast-message"; // ✅ Import Toast
+
 const Swap: React.FC = () => {
+  const [token, setToken] = useState<string | null>(null);
   const backgroundColor = useThemeColor({ light: '#EFFEF9', dark: '#000000' }, 'background');
   const arrowBorderColor = useThemeColor({ light: '#E5E5E5', dark: '#095D3F' }, 'arrowBorder');
   const doublearrow = useThemeColor({ light: images.double_arrow_white, dark: images.double_arrow_black }, 'doublearrow');
@@ -22,33 +30,122 @@ const Swap: React.FC = () => {
 
   // ✅ Manage state for the modal
   const [modalVisible, setModalVisible] = useState(false);
-  const [modalType, setModalType] = useState<'asset' | 'network'>('asset'); // Start with asset selection
+  const [modalType, setModalType] = useState<'asset' | 'network'>('asset');
 
+  // ✅ State for selected asset and network
   const [selectedAsset, setSelectedAsset] = useState<{ id: string; name: string; icon: any }>({
     id: "",
     name: "Select Asset",
-    icon: bitCoin,
+    icon: images.solana,
   });
 
   const [selectedNetwork, setSelectedNetwork] = useState<{ id: string; name: string; icon: any }>({
     id: "",
     name: "Select Network",
-    icon: bitCoin,
+    icon: images.solana,
   });
 
-  // ✅ Ensure network selection is only possible when an asset is selected
+  // ✅ State for amount inputs
+  const [enteredAmount, setEnteredAmount] = useState<string>("");
+  const [convertedAmount, setConvertedAmount] = useState<string>("0.00");  // USD amount
+  const [ngnAmount, setNgnAmount] = useState<string>("0.00"); // NGN amount
+
+  // ✅ Fetch the token when the component mounts
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const fetchedToken = await getFromStorage("authToken");
+      if (fetchedToken) {
+        setToken(fetchedToken);
+        console.log("🔹 Retrieved Token:", fetchedToken);
+      }
+    };
+    fetchUserData();
+  }, []);
+
+  // ✅ Mutation Functions
+
+  const convertedAmountRef = useRef<string>("0.00");
+  const ngnAmountRef = useRef<string>("0.00");
+
+  const { mutate: getExchangeRate } = useMutation({
+    mutationFn: ({
+      data,
+      token,
+    }: {
+      data: { currency: string; amount: string };
+      token: string;
+    }) => calculateExchangeRate({ data, token }),
+
+    onSuccess: (response: { data: { amount_usd: string | null; amount_naira: string | null }; message: string; status: string }) => {
+      console.log("✅ Exchange Rate Fetched:", response);
+
+      // Safely destructure and provide fallback values in case of undefined or null
+      const { amount_usd, amount_naira } = response.data;
+
+      // Default to "0.00" if either value is undefined or null
+      const usdAmount = amount_usd ?? "0.00";
+      const ngnAmount = amount_naira ?? "0.00";
+
+      console.log("The data", ngnAmount);
+
+      // ✅ Store exchange rate values in refs to persist them
+      convertedAmountRef.current = usdAmount;
+      ngnAmountRef.current = ngnAmount;
+
+      // ✅ Update state only if values have changed
+      setConvertedAmount(usdAmount);
+      setNgnAmount(ngnAmount);
+    },
+
+    onError: (error: any) => {
+      console.error('❌ Error fetching exchange rate:', error);
+    },
+  });
+
+
+
+  const { mutate: requestSwap, isPending } = useMutation({
+    mutationFn: ({ data, token }: { data: { currency: string; network: string; amount: string; exchange_rate: string }; token: string }) =>
+      createSwap({ data, token }),
+
+    onSuccess: (data) => {
+      console.log("✅ Swap Request Created:", data);
+      router.push('/SwapSummary'); // ✅ Redirect after success
+    },
+
+    onError: (error) => {
+      console.error("❌ Swap Failed:", error);
+
+      // ✅ Show error toast
+      Toast.show({
+        type: "error",
+        text1: "Swap Failed ❌",
+        text2: error.message || "Please try again.",
+        visibilityTime: 3000, // 3 seconds
+      });
+    },
+  });
+
+  // ✅ Get asset ID
   const assetId = selectedAsset?.id ? selectedAsset.id : null;
 
-  // Function to update asset or network on selection
-  const handleSelectItem = (item: any) => {
-    if (modalType === 'asset') {
-      setSelectedAsset(item);
-      setSelectedNetwork({ id: "", name: "Select Network", icon: bitCoin }); // Reset network selection when asset changes
-    } else {
-      setSelectedNetwork(item);
+  // ✅ Effect to trigger exchange rate API when asset is selected and amount is entered
+  useEffect(() => {
+    if (selectedAsset.name !== "Select Asset" && enteredAmount.trim() !== "" && token) {
+      console.log("🔹 Fetching exchange rate...");
+      getExchangeRate({
+        data: { currency: selectedAsset.name, amount: enteredAmount },
+        token,
+      });
     }
-    setModalVisible(false);
+  }, [selectedAsset, enteredAmount, token]); // ✅ Runs when asset, amount, or token changes
+
+  // ✅ Function to handle amount change and trigger API
+  const handleAmountChange = (text: string) => {
+    const numericValue = text.replace(/[^0-9.]/g, ''); // Allow only numbers & decimal
+    setEnteredAmount(numericValue);
   };
+
 
   return (
     <View style={[styles.container, { backgroundColor }]}>
@@ -57,72 +154,126 @@ const Swap: React.FC = () => {
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={[styles.swapContainer, { backgroundColor: containerBackgroundColor }]}>
-          {/* Asset Selection */}
+
+          {/* ✅ Asset Selection */}
           <SwapAssetSection
             title="You Send"
             asset={selectedAsset.name}
             assetImage={selectedAsset.icon}
             network={selectedNetwork.name}
             networkImage={selectedNetwork.icon}
-            amount="12,500"
-            converted="5,123"
+            amount={enteredAmount}
+            converted={convertedAmount}
+            onAmountChange={setEnteredAmount} // ✅ Pass amount to Swap component
+            onConvertedChange={setConvertedAmount} // ✅ Pass converted amount to Swap component
             onPressAsset={() => {
-              setModalType('asset'); // ✅ Open modal for asset selection first
+              setModalType('asset');
               setModalVisible(true);
             }}
             onPressNetwork={assetId ? () => {
-              setModalType('network'); // ✅ Open modal for network selection only when asset is selected
+              setModalType('network');
               setModalVisible(true);
-            } : undefined} // Disable if asset is not selected
-            disabled={!assetId} // Ensure proper disable behavior
-            style={!assetId ? { opacity: 0.5 } : undefined} // Visual disable
+            } : undefined}
+            disabled={!assetId}
+            style={!assetId ? { opacity: 0.5 } : undefined}
           />
 
-          {/* Swap Button */}
+          {/* ✅ Swap Button */}
           <TouchableOpacity style={[styles.swapButton, { borderColor: arrowBorderColor }]}>
             <Image source={doublearrow} style={styles.swapIcon} />
           </TouchableOpacity>
 
-          {/* Receive Section */}
+          {/* ✅ Receive Section (Amount in NGN) */}
+          {/* ✅ Receive Section (Amount in NGN) */}
           <SwapAssetSection
             title="You Receive"
             asset="Naira"
-            assetImage={bitCoin}
-            amount="54,000,000"
+            assetImage={images.naira}
+            amount={`NGN ${parseFloat(ngnAmountRef.current).toFixed(2)}`}
           />
         </View>
 
+        {/* ✅ Exchange Rate Display (Amount in USD) */}
         <View style={styles.exchangeRate}>
-          <ExchangeRate rate="$1 = 1,750 NGN" />
+          <ExchangeRate rate={`$1 = ${parseFloat(convertedAmountRef.current).toFixed(2)} NGN`} />
         </View>
         <NoteSwapBox />
       </ScrollView>
 
+      {/* ✅ Proceed Button to Call Swap API */}
       <View style={styles.fixedButtonContainer}>
-        <PrimaryButton title="Proceed" onPress={() => router.push('/SwapSummary')} />
+        <PrimaryButton
+          title={isPending ? "Processing..." : "Proceed"}  // Change title when loading
+          onPress={() => {
+            if (
+              enteredAmount.trim() !== "" &&
+              selectedAsset.name !== "Select Asset" &&
+              selectedNetwork.name !== "Select Network" &&
+              token
+            ) {
+              requestSwap({
+                data: {
+                  currency: selectedAsset.name,
+                  network: selectedNetwork.name,
+                  amount: enteredAmount,
+                  exchange_rate: convertedAmount,
+                },
+                token,
+              });
+            } else {
+              console.log("❌ Please select asset, network, and enter a valid amount before proceeding.");
+            }
+          }}
+          disabled={isPending} // Disable button while request is being sent
+          loading={isPending} // Show loading spinner when isLoading is true
+        />
       </View>
 
-      {/* ✅ Show Modal (Opens First with Coin, then Network) */}
+      {/* ✅ Show Modal */}
       <NetworkSelectionModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
-        onSelectNetwork={handleSelectItem}
+        onSelectNetwork={(item) => {
+          if (modalType === 'asset') {
+            setSelectedAsset(item);
+            setSelectedNetwork({ id: "", name: "Select Network", icon: images.solana }); // Reset network when asset changes
+          } else {
+            setSelectedNetwork(item);
+          }
+          setModalVisible(false);
+        }}
         selectedNetwork={modalType === 'asset' ? selectedAsset : selectedNetwork}
-        networks={networkOptions} // You might need to fetch network options dynamically
-        modelType={modalType === 'asset' ? 'coin' : 'network'} // ✅ First opens as 'coin', then switches to 'network'
-        coinId={selectedAsset.id} // ✅ Ensures network fetch depends on selected asset
+        networks={networkOptions}
+        modelType={modalType === 'asset' ? 'coin' : 'network'}
+        coinId={selectedAsset.id}
       />
+      <Toast /> {/* ✅ Add Toast Component to Render */}
     </View>
   );
 };
 
 
-
 const styles = StyleSheet.create({
-  container: { flex: 1, marginTop: 25, paddingTop: 10 },
-  scrollContent: { paddingBottom: 0 },
-  swapContainer: { paddingHorizontal: 16, marginHorizontal: 18, borderRadius: 20 },
-  fixedButtonContainer: { position: 'absolute', bottom: 20, left: 18, right: 18, width: '90%' },
+  container: {
+    flex: 1,
+    marginTop: 25,
+    paddingTop: 10,
+  },
+  scrollContent: {
+    paddingBottom: 0,
+  },
+  swapContainer: {
+    paddingHorizontal: 16,
+    marginHorizontal: 18,
+    borderRadius: 20,
+  },
+  fixedButtonContainer: {
+    position: 'absolute',
+    bottom: 20,
+    left: 18,
+    right: 18,
+    width: '90%',
+  },
   swapButton: {
     padding: 11,
     borderRadius: 50,
@@ -133,8 +284,15 @@ const styles = StyleSheet.create({
     top: '50.5%',
     right: '45%',
   },
-  swapIcon: { width: 24, height: 24 },
-  exchangeRate: { paddingHorizontal: 16, marginBottom: 20 },
+  swapIcon: {
+    width: 24,
+    height: 24,
+  },
+  exchangeRate: {
+    paddingHorizontal: 16,
+    marginBottom: 20,
+  },
 });
+
 
 export default Swap;

@@ -40,6 +40,7 @@ const API_ENDPOINTS = {
     CalculateExchangeRate:
       API_DOMAIN + "/exchange-rate/calculate-exchange-rate",
       GetReferral: API_DOMAIN + "/refferal/get-all",
+      SwapTransfter: API_DOMAIN + "/wallet/swap",
   },
   ACCOUNT_MANAGEMENT: {
     GetUserProfileData: API_DOMAIN + "/edit-profile-details",

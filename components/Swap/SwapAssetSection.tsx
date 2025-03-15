@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
   Image,
   TouchableOpacity,
-  StyleSheet
+  StyleSheet, TextInput
 } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { images } from '@/constants';
@@ -16,22 +16,31 @@ interface SwapAssetSectionProps {
   amount: string;
   network?: string;
   networkImage?: any;
-  converted?: string;
+  initialAmount?: string; // ✅ Initial amount
+  conversionRate?: number; // ✅ Added conversion rate (default to 1)
   onPressAsset?: () => void;
   onPressNetwork?: () => void;
+  onAmountChange?: (amount: string) => void; // ✅ Passes amount to parent
+  onConvertedChange?: (convertedAmount: string) => void; // ✅ Passes converted amount to parent
 }
 
 const SwapAssetSection: React.FC<SwapAssetSectionProps> = ({
   title,
   asset,
   assetImage,
-  amount,
   network,
   networkImage,
-  converted,
+  amount,
+  initialAmount = "0",
+  conversionRate = 1.0, // Default conversion rate
   onPressAsset,
-  onPressNetwork
+  onPressNetwork,
+  onAmountChange,
+  onConvertedChange
 }) => {
+  const [enteredAmount, setEnteredAmount] = useState(initialAmount); // ✅ State for user-entered amount
+  const [convertedAmount, setConvertedAmount] = useState((parseFloat(initialAmount) * conversionRate).toFixed(2)); // ✅ State for converted amount
+
   const textColor = useThemeColor({ light: '#000000', dark: '#FFFFFF' }, 'text');
   const cardBackgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#161616' }, 'card');
   const inputBackgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#000000' }, 'input');
@@ -39,32 +48,60 @@ const SwapAssetSection: React.FC<SwapAssetSectionProps> = ({
   const borderColor = useThemeColor({ light: '#E5E5E5', dark: '#000000' }, 'border');
   const arrow = useThemeColor({ light: images.down_arrow, dark: images.down_arrow_black }, 'arrow');
 
+  // ✅ Update Converted Amount when User Inputs Amount
+  const handleAmountChange = (text: string) => {
+    const numericValue = text.replace(/[^0-9.]/g, ''); // Allow only numbers & decimal
+    setEnteredAmount(numericValue);
+    const updatedConvertedAmount = (parseFloat(numericValue || "0") * conversionRate).toFixed(2);
+    setConvertedAmount(updatedConvertedAmount);
+
+    // ✅ Send values back to parent component
+    if (onAmountChange) onAmountChange(numericValue);
+    if (onConvertedChange) onConvertedChange(updatedConvertedAmount);
+  };
+
   return (
     <View style={[styles.swapBox, { backgroundColor: cardBackgroundColor, borderColor }]}>
       <Text style={[styles.label, { color: labelColor }]}>{title}</Text>
 
       {/* Asset Selection */}
       <View style={styles.row}>
-        <TouchableOpacity style={[styles.assetBox, { borderColor, backgroundColor: inputBackgroundColor }]} onPress={onPressAsset}>
+        <TouchableOpacity
+          style={[styles.assetBox, { borderColor, backgroundColor: inputBackgroundColor }]}
+          onPress={onPressAsset}
+        >
           <Image source={assetImage} style={styles.assetImage} />
           <View style={styles.assetTextContainer}>
             <Text style={[styles.assetSubText, { color: labelColor }]}>Asset</Text>
             <Text style={[styles.assetText, { color: textColor }]}>{asset}</Text>
           </View>
-          
-          {title ==='You Send' &&<Image source={arrow} style={styles.arrowIcon} />}
-
+          {title === 'You Send' && <Image source={arrow} style={styles.arrowIcon} />}
         </TouchableOpacity>
 
-        {/* Amount Display */}
-        <View style={[styles.amountBox, { borderColor, backgroundColor: inputBackgroundColor }]}>
-          <Text style={[styles.amountCurrency, { color: labelColor }]}>{asset}</Text>
-          <Text style={[styles.amountText, { color: textColor }]}>{amount}</Text>
-        </View>
+        {/* ✅ Input for "You Send" (Editable only if asset is selected) */}
+        {title === "You Send" ? (
+          <View style={[styles.amountBox, { borderColor, backgroundColor: inputBackgroundColor }]}>
+            <Text style={[styles.amountCurrency, { color: labelColor }]}>{asset}</Text>
+            <TextInput
+              style={[styles.amountText, { color: textColor }]}
+              placeholderTextColor={labelColor}
+              keyboardType="numeric"
+              value={enteredAmount}
+              onChangeText={handleAmountChange}
+              editable={asset !== "Select Asset"} // ✅ Prevents editing when no asset is selected
+            />
+          </View>
+        ) : (
+          /* 🔹 "You Receive" (Non-Editable) */
+          <View style={[styles.amountBox, { borderColor, backgroundColor: inputBackgroundColor }]}>
+            <Text style={[styles.amountCurrency, { color: labelColor }]}>{asset}</Text>
+            <Text style={[styles.amountText, { color: textColor }]}>{amount}</Text>
+          </View>
+        )}
       </View>
 
-      {/* Network Selection Row */}
-      {network && converted && (
+      {/* Network Selection & Converted Amount */}
+      {network && (
         <View style={styles.row}>
           <TouchableOpacity style={[styles.assetBox, { borderColor, backgroundColor: inputBackgroundColor }]} onPress={onPressNetwork}>
             <Image source={networkImage} style={styles.assetImage} />
@@ -74,15 +111,18 @@ const SwapAssetSection: React.FC<SwapAssetSectionProps> = ({
             </View>
             <Image source={arrow} style={styles.arrowIcon} />
           </TouchableOpacity>
+
+          {/* ✅ Converted Amount Updates Dynamically */}
           <View style={[styles.amountBox, { borderColor, backgroundColor: inputBackgroundColor }]}>
             <Text style={[styles.amountCurrency, { color: labelColor }]}>USD</Text>
-            <Text style={[styles.amountText, { color: textColor }]}>{converted}</Text>
+            <Text style={[styles.amountText, { color: textColor }]}>{convertedAmount}</Text>
           </View>
         </View>
       )}
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   swapBox: {
     borderRadius: 20,
@@ -131,7 +171,7 @@ const styles = StyleSheet.create({
     height: 42,
   },
   assetText: {
-    fontSize: 16,
+    fontSize: 13,
     fontWeight: 'bold',
   },
   arrowIcon: {
@@ -156,7 +196,7 @@ const styles = StyleSheet.create({
     opacity: 0.6, // Light gray effect
   },
   amountText: {
-    fontSize: 18,
+    fontSize: 14,
     fontWeight: 'bold',
   },
 });
