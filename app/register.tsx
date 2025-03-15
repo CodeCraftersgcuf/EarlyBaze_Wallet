@@ -18,6 +18,7 @@ import * as ImagePicker from "expo-image-picker";
 import { useState } from "react";
 import Button from "@/utils/Button";
 import { useRouter } from "expo-router";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 import { KeyboardAvoidingView, Platform } from "react-native"; // ✅ Import
 
@@ -106,11 +107,13 @@ const Register = () => {
     }
   };
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={{ flex: 1 }}
-    >
+ 
       <SafeAreaView style={styles.container}>
+      <KeyboardAwareScrollView
+          keyboardShouldPersistTaps="handled" // ✅ Allows tapping on inputs even when keyboard is open
+          enableOnAndroid={true} // ✅ Works for Android
+          extraScrollHeight={10} // ✅ Moves content up to avoid overlap
+        >
         <View>
           <View style={styles.imageContainer}>
             <Image
@@ -336,8 +339,8 @@ const Register = () => {
           <Toast /> {/* ✅ Add Toast Component to Render */}
 
         </View>
+        </KeyboardAwareScrollView>
       </SafeAreaView >
-    </KeyboardAvoidingView>
   );
 };
 

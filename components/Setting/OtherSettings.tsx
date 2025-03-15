@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import SettingOption from './SettingOption';
@@ -24,30 +24,30 @@ const OtherSettings: React.FC<OtherSettingsProps> = ({ isDarkMode, onToggleTheme
 
   const [selectedTheme, setSelectedTheme] = useState<'Light' | 'Dark'>(isDarkMode ? 'Dark' : 'Light');
   const [dropdownVisible, setDropdownVisible] = useState(false);
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0, width: 0 });
 
+  const themeRef = useRef<TouchableOpacity>(null);
 
   const theme = useThemeColor({ light: icons.theme_white, dark: icons.theme_black }, 'background');
   const term = useThemeColor({ light: icons.term_white, dark: icons.term_black }, 'background');
   const notification = useThemeColor({ light: icons.notification_white, dark: icons.notification_black }, 'background');
   const faq = useThemeColor({ light: icons.faq_white, dark: icons.faq_black }, 'background');
 
-
   const handleThemeChange = (theme: 'Light' | 'Dark') => {
     setSelectedTheme(theme);
-    setDropdownVisible(false);
     onToggleTheme(theme);
+    setDropdownVisible(false);
+    console.log(`🔹 Theme changed to: ${theme}`);
   };
 
-  // Conditional icon rendering based on the theme
-  const getIconForSetting = (iconName: string) => {
-    const lightIcons = {
-      'moon-outline': 'sunny-outline', // Change moon icon to sun for light mode
-      'document-text-outline': 'document-text-sharp', // Use sharp icons in light mode
-      'notifications-outline': 'notifications-circle-outline',
-      'help-circle-outline': 'help-circle-sharp',
-    };
-
-    return selectedTheme === 'Light' ? lightIcons[iconName] : iconName;
+  // Function to toggle the dropdown and measure its position
+  const toggleDropdown = () => {
+    if (themeRef.current) {
+      themeRef.current.measureInWindow((x, y, width) => {
+        setDropdownPosition({ top: y + 40, left: x, width });
+        setDropdownVisible((prev) => !prev);
+      });
+    }
   };
 
   return (
@@ -55,10 +55,14 @@ const OtherSettings: React.FC<OtherSettingsProps> = ({ isDarkMode, onToggleTheme
       <Text style={[styles.sectionTitle, { color: textColor }]}>Other Settings</Text>
 
       {/* Theme Selector */}
-      <TouchableOpacity style={styles.themeSelector} onPress={() => setDropdownVisible(!dropdownVisible)}>
+      <TouchableOpacity
+        ref={themeRef}
+        style={styles.themeSelector}
+        onPress={toggleDropdown}
+      >
         <SettingOption
           title="Theme"
-          iconName={theme} // Default icon (changes based on the theme)
+          iconName={theme}
           onPress={() => { }}
           rightContent={
             <View style={styles.dropdownToggle}>
@@ -72,7 +76,13 @@ const OtherSettings: React.FC<OtherSettingsProps> = ({ isDarkMode, onToggleTheme
 
       {/* Dropdown for theme selection */}
       {dropdownVisible && (
-        <View style={[styles.dropdown, { backgroundColor: backgroundColor, borderColor: borderColor }]}>
+        <View style={[styles.dropdown, {
+          backgroundColor: backgroundColor,
+          borderColor: borderColor,
+          top: dropdownPosition.top,
+          left: dropdownPosition.left,
+          width: dropdownPosition.width
+        }]}>
           <TouchableOpacity onPress={() => handleThemeChange('Light')} style={styles.dropdownItem}>
             <Text style={{ color: textColor }}>Light</Text>
           </TouchableOpacity>
@@ -83,24 +93,9 @@ const OtherSettings: React.FC<OtherSettingsProps> = ({ isDarkMode, onToggleTheme
       )}
 
       {/* Other Setting Options */}
-      <SettingOption
-        title="Terms of Use"
-        iconName={term}
-        onPress={() => { }}
-        textColor={textColor}
-      />
-      <SettingOption
-        title="Notifications"
-        iconName={notification}
-        onPress={() => router.push('/Notification')}
-        textColor={textColor}
-      />
-      <SettingOption
-        title="FAQ"
-        iconName={faq}
-        onPress={() => { }}
-        textColor={textColor}
-      />
+      <SettingOption title="Terms of Use" iconName={term} onPress={() => { }} textColor={textColor} />
+      <SettingOption title="Notifications" iconName={notification} onPress={() => router.push('/Notification')} textColor={textColor} />
+      <SettingOption title="FAQ" iconName={faq} onPress={() => { }} textColor={textColor} />
 
       {/* Logout Button */}
       <SettingOption
@@ -118,14 +113,10 @@ const OtherSettings: React.FC<OtherSettingsProps> = ({ isDarkMode, onToggleTheme
                 text: "Logout",
                 style: "destructive",
                 onPress: async () => {
-                  // ✅ Remove user-related data from storage
                   await removeFromStorage("authToken");
                   await removeFromStorage("user");
                   await removeFromStorage("assets");
-
                   console.log("✅ User logged out successfully");
-
-                  // ✅ Navigate to login screen and reset the navigation stack
                   router.replace("/login");
                 }
               }
@@ -164,22 +155,20 @@ const styles = StyleSheet.create({
   },
   dropdown: {
     position: 'absolute',
-    top: 55,
-    left: 15,
-    right: 15,
+    backgroundColor: 'white',
     borderWidth: 1,
     borderRadius: 8,
-    padding: 10,
-    marginVertical: 5,
+    paddingVertical: 5,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 3, // For Android shadow
-    zIndex: 1000, // Ensures it appears above other elements
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 10,
+    zIndex: 9999, // Ensures it's always on top
   },
   dropdownItem: {
-    paddingVertical: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
   },
   closeAccountButton: {
     borderRadius: 10,

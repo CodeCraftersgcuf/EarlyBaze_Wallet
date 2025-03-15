@@ -47,9 +47,7 @@ export default function TabLayout() {
             iconSource = icons.tnxs;
           } else if (route.name === 'settings') {
             iconSource = icons.settings;
-          } else if (route.name === 'bills') {
-            iconSource = icons.bills;
-          }
+          } 
 
           return (
             <View
@@ -74,7 +72,6 @@ export default function TabLayout() {
       <Tabs.Screen name="assets" options={{ title: 'Assets' }} />
       <Tabs.Screen name="transactions" options={{ title: 'Tnxs' }} />
       <Tabs.Screen name="settings" options={{ title: 'Settings' }} />
-      <Tabs.Screen name="bills" options={{ title: 'Bills' }} />
     </Tabs>
   );
 }

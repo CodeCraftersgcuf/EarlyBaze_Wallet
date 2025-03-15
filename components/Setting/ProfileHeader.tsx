@@ -178,9 +178,8 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     balanceCurrencyName: {
-        marginLeft: 50,
+        marginLeft: 4,
         fontSize: 10,
-        marginRight: 10,
     },
     separator: {
         width: 1,
