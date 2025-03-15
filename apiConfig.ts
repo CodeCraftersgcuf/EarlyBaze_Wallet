@@ -39,6 +39,7 @@ const API_ENDPOINTS = {
     BuyTransfter: API_DOMAIN + "/wallet/buy",
     CalculateExchangeRate:
       API_DOMAIN + "/exchange-rate/calculate-exchange-rate",
+      GetReferral: API_DOMAIN + "/refferal/get-all",
   },
   ACCOUNT_MANAGEMENT: {
     GetUserProfileData: API_DOMAIN + "/edit-profile-details",

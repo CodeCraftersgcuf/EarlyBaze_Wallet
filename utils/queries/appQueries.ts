@@ -76,8 +76,7 @@ export const getNetworkCurreny = async (
   );
 };
 
-export const getTransactionAll
-= async ({
+export const getTransactionAll = async ({
   token,
 }: {
   token: string;
@@ -88,6 +87,16 @@ export const getTransactionAll
     undefined,
     token
   );
+};
+
+export const getReferral = async ({
+  token,
+}: {
+  token: string;
+}): Promise<ReferralResponse> => {
+  console.log("referral api called");
+  console.log("Sending token:", token);
+  return await apiCall(API_ENDPOINTS.USER.GetReferral, "GET", undefined, token);
 };
 
 export const getBillerCategories = async ({
@@ -346,6 +355,25 @@ interface TransactionAll {
   amount_usd: string;
   created_at: string;
   updated_at: string;
+}
+
+interface ReferralResponse {
+  status: string;
+  data: {
+    earning: Array<{
+      name: string;
+      amount: number;
+      created_at: string;
+      image: string;
+    }>;
+    totalRefferals: number;
+    reffralCode: string;
+    Earning: {
+      usd: number;
+      naira: number;
+    };
+  };
+  message: string;
 }
 
 interface Slide {
