@@ -43,8 +43,14 @@ const Transactions: React.FC = () => {
     }
   );
 
-  // Ensure transactions data is set from the response
-  const transactions = transactionsResponse?.data || [];
+  const transactions = transactionsResponse?.data?.transactions || [];
+
+  console.log("🔹 Full Transactions Response:", transactionsResponse);
+  console.log("🔹 Extracted Transactions:", transactions);
+  console.log("🔹 Active Tab:", activeTab);
+  console.log("🔹 Filter Key:", filterKey);
+  console.log("🔹 Filtered Transactions:", filteredTransactions);
+
 
   console.log("🔹 Transactions:", transactions);
   // Ensure transactions data is available before filtering

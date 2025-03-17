@@ -42,7 +42,9 @@ export const createInternalTransfer = async ({
   };
   token: string;
 }) => {
+  console.log("🔹 Original Create Internal Transfer Data:", data);
   return await apiCall(
+    
     API_ENDPOINTS.USER.SendInternalTransfer,
     "POST",
     data,

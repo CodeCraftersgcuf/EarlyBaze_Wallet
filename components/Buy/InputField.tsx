@@ -7,9 +7,10 @@ interface InputFieldProps extends TextInputProps {
   label?: string;
   value?: string;
   editable?: boolean;
+  onChange?: (text: string) => void; // ✅ Added onChange prop
 }
 
-const InputField: React.FC<InputFieldProps> = ({ label = '', value = '', editable = true, ...props }) => {
+const InputField: React.FC<InputFieldProps> = ({ label = '', value = '', editable = true, onChange, ...props }) => {
   const textColor = useThemeColor({ light: '#000000', dark: '#FFFFFF' }, 'text');
   const bgColor = useThemeColor({ light: '#FFFFFF', dark: '#2D2D2D' }, 'inputBackground');
   const borderColor = useThemeColor({ light: '#C2C2C2', dark: '#3A3A3A' }, 'border');
@@ -21,6 +22,7 @@ const InputField: React.FC<InputFieldProps> = ({ label = '', value = '', editabl
         style={[styles.input, { color: textColor }]}
         value={value}
         editable={editable}
+        onChangeText={onChange} // ✅ Fixed onChange event
         {...props}
       />
     </View>

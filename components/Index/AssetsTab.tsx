@@ -1,12 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
 import AssetItem from './AssetItem';
 import { assetsData, myAssetsData, transactionsData } from '@/constants/assetsData';
 import { useThemeColor } from '@/hooks/useThemeColor';
 
-const TABS = ['Assets', 'My Assets', 'Recent Transactions'];
+const TABS = ['Assets', 'Recent Transactions'];
+
+//Code realted to the Integration
+import { useQuery } from '@tanstack/react-query';
+import { getAssestnTrans } from "@/utils/queries/appQueries"
+import { getFromStorage } from "@/utils/storage";
+
+
+
 
 const AssetsTab: React.FC = () => {
+  const [token, setToken] = useState<string | null>(null);
   const [selectedTab, setSelectedTab] = useState('Assets');
   const backgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#000000' }, 'background');
   const textColor = useThemeColor({ light: '#8A8A8A', dark: '#FFFFFF' }, 'text');
@@ -15,19 +24,37 @@ const AssetsTab: React.FC = () => {
 
   const getData = () => {
     switch (selectedTab) {
-      case 'My Assets':
-        return myAssetsData;
       case 'Recent Transactions':
-        return transactionsData;
+        return data?.data?.transactions || []; // ✅ Use API transactions data
       default:
-        return assetsData;
+        return data?.data?.assets || []; // ✅ Use API assets data
     }
   };
+
+  // Fetch the token and user data when the component mounts
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const fetchedToken = await getFromStorage("authToken");
+      setToken(fetchedToken);
+      console.log("🔹 Retrieved Token:", fetchedToken);
+    };
+
+    fetchUserData();
+  }, []);
+
+  // UseQuery with enabled based on token
+  const { isLoading, error, data } = useQuery({
+    queryKey: ["assets"],
+    queryFn: () => getAssestnTrans({ token }),
+    enabled: !!token,  // Only run the query when token is available
+  });
+
+  console.log("🔹 Datawsss:", data);
 
   return (
     <View style={[styles.container, { backgroundColor }]}>
       {/* Tabs */}
-      <View style={[styles.tabsContainer, {backgroundColor: tabBackgroundColor}]}>
+      <View style={[styles.tabsContainer, { backgroundColor: tabBackgroundColor }]}>
         {TABS.map((tab) => (
           <TouchableOpacity
             key={tab}
@@ -51,18 +78,28 @@ const AssetsTab: React.FC = () => {
         ))}
       </View>
 
-      {/* List of Assets */}
+      `{/* List of Assets */}
       <FlatList
         data={getData()}
         keyExtractor={(item) => item.id.toString()} // ✅ Ensure all keys are strings
-        renderItem={({ item }) => <AssetItem item={item} />}
+        renderItem={({ item }) => (
+          <AssetItem
+            item={{
+              ...item,
+              icon: item.symbol ? `https://earlybaze.hmstech.xyz/storage/${item.symbol}` : null, // ✅ Correct image URL
+            }}
+          />
+        )}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.flatListContainer} // Optional, ensures content is centered/has padding
         scrollEnabled={false} // ✅ Prevents nested scrolling issues
       />
+
+      `
     </View>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {

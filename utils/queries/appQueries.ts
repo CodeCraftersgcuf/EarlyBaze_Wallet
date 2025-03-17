@@ -22,6 +22,19 @@ export const getUserDetails = async ({
   );
 };
 
+export const getAssestnTrans = async ({
+  token,
+}: {
+  token: string;
+}): Promise<AssetsTransResponse> => {
+  console.log("The Request", token);
+  return await apiCall(
+    API_ENDPOINTS.USER.GetAssestnTrans,
+    "GET",
+    undefined,
+    token
+  );
+};
 export const getBanksAccounts = async ({
   token,
 }: {
@@ -70,6 +83,82 @@ export const getNetworkCurreny = async (
 ): Promise<NetworkResponse> => {
   return await apiCall(
     `${API_ENDPOINTS.USER.GetWalletNetworks}/${coinId}`, // Append ticketId dynamically
+    "GET",
+    undefined,
+    token
+  );
+};
+export const getInternalSend = async ({
+  token,
+  id,
+}: {
+  token: string;
+  id?: string; // Marked as optional to prevent TypeScript errors
+}): Promise<InternalSendResponse> => {
+  if (!id) {
+    console.warn("❌ Missing transaction ID, skipping API call.");
+    throw new Error("Transaction ID is required.");
+  }
+
+  console.log(
+    `🔹 Fetching transaction: ${id} with token: ${
+      token ? "✅ Available" : "❌ Missing"
+    }`
+  );
+
+  return apiCall(
+    `${API_ENDPOINTS.USER.GetInternalSend}/${id}`,
+    "GET",
+    undefined,
+    token
+  );
+};
+
+export const getInternalReceive = async ({
+  token,
+  id,
+}: {
+  token: string;
+  id?: string; // Marked as optional to prevent TypeScript errors
+}): Promise<InternalReceiveResponse> => {
+  if (!id) {
+    console.warn("❌ Missing transaction ID, skipping API call.");
+    throw new Error("Transaction ID is required.");
+  }
+
+  console.log(
+    `🔹 Fetching transaction: ${id} with token: ${
+      token ? "✅ Available" : "❌ Missing"
+    }`
+  );
+
+  return apiCall(
+    `${API_ENDPOINTS.USER.GetInternalSend}/${id}`,
+    "GET",
+    undefined,
+    token
+  );
+};
+export const getSwap = async ({
+  token,
+  id,
+}: {
+  token: string;
+  id?: string; // Marked as optional to prevent TypeScript errors
+}): Promise<SwapResponse> => {
+  if (!id) {
+    console.warn("❌ Missing transaction ID, skipping API call.");
+    throw new Error("Transaction ID is required.");
+  }
+
+  console.log(
+    `🔹 Fetching transaction: ${id} with token: ${
+      token ? "✅ Available" : "❌ Missing"
+    }`
+  );
+
+  return apiCall(
+    `${API_ENDPOINTS.USER.GetSwap}/${id}`,
     "GET",
     undefined,
     token
@@ -238,6 +327,96 @@ interface Asset {
   available_balance: string;
   account_balance: string;
   wallet_currency: WalletCurrency;
+}
+interface InternalSendResponse {
+  status: string;
+  data: {
+    id: number;
+    transaction_id: number;
+    transaction_type: string;
+    currency: string;
+    symbol: string;
+    tx_id: string;
+    block_hash: string | null;
+    gas_fee: number | null;
+    receiver_address: string;
+    status: string;
+    amount: string;
+    amount_usd: string;
+    created_at: string;
+  };
+  message: string;
+}
+
+interface InternalReceiveResponse {
+  status: string;
+  data: {
+    id: number;
+    transaction_id: number;
+    transaction_type: string;
+    currency: string;
+    symbol: string;
+    tx_id: string;
+    block_hash: string | null;
+    gas_fee: number | null;
+    sender_address: string;
+    status: string;
+    amount: string;
+    amount_usd: string;
+    created_at: string;
+  };
+  message: string;
+}
+interface SwapResponse {
+  status: string;
+  data: {
+    id: number;
+    user_id: number;
+    transaction_id: number;
+    currency: string;
+    network: string;
+    amount: number;
+    fee: string;
+    amount_usd: string;
+    amount_naira: string;
+    status: string;
+    fee_naira: number;
+    exchange_rate: string;
+    created_at: string;
+    updated_at: string;
+    reference: string;
+  };
+  message: string;
+}
+
+interface AssetsTransResponse {
+  status: string;
+  data: {
+    assets: Array<{
+      id: number;
+      name: string;
+      symbol: string;
+      icon: string | null;
+      balance: string;
+      account_balance: string;
+      price: string;
+    }>;
+    transactions: Array<{
+      id: number;
+      user_id: number;
+      currency: string;
+      amount: string;
+      type: string;
+      status: string;
+      network: string;
+      reference: string;
+      amount_usd: string;
+      created_at: string;
+      updated_at: string;
+      transfer_type: string;
+    }>;
+  };
+  message: string;
 }
 
 interface WalletCurrency {

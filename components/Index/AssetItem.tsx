@@ -6,10 +6,9 @@ interface AssetProps {
     item: {
         id: string;
         name: string;
-        symbol: string;
         balance: string;
         price: string;
-        icon: any;
+        icon?: string | null; // ✅ Now using `icon`, not `symbol`
     };
 }
 
@@ -20,10 +19,19 @@ const AssetItem: React.FC<AssetProps> = ({ item }) => {
 
     return (
         <View style={[styles.assetContainer, { backgroundColor }]}>
-            <Image source={item.icon} style={styles.assetIcon} />
+            {/* ✅ FIXED: Ensure Image source is properly set */}
+            {item.icon ? (
+                <Image
+                    source={{ uri: item.icon }}
+                    style={styles.assetIcon}
+                    resizeMode="contain"
+                />
+            ) : (
+                <Text style={{ color: textColor }}>No Image</Text>
+            )}
+
             <View style={styles.assetDetails}>
-                <Text style={[styles.assetName, { color: textColor }]}>{item.symbol}</Text>
-                <Text style={[styles.assetType, { color: textColor }]}>{item.name}</Text>
+                <Text style={[styles.assetName, { color: textColor }]}>{item.name}</Text>
             </View>
             <View style={styles.assetValue}>
                 <Text style={[styles.balance, { color: balanceTextColor }]}>{item.balance}</Text>
@@ -32,6 +40,7 @@ const AssetItem: React.FC<AssetProps> = ({ item }) => {
         </View>
     );
 };
+
 
 const styles = StyleSheet.create({
     assetContainer: {

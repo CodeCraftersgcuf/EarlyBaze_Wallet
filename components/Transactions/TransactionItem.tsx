@@ -10,9 +10,10 @@ interface TransactionItemProps {
   amount: string;
   created_at: string;
   status: string;
+  id: string,
 }
 
-const TransactionItem: React.FC<TransactionItemProps> = ({ type, amount, created_at, status }) => {
+const TransactionItem: React.FC<TransactionItemProps> = ({ type, amount, created_at, status, id }) => {
   const backgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#1A1A1A' }, 'background');
   const textColor = useThemeColor({ light: '#000000', dark: '#FFFFFF' }, 'text');
 
@@ -23,6 +24,7 @@ const TransactionItem: React.FC<TransactionItemProps> = ({ type, amount, created
     failed: '#E51616',
   };
   console.log("Inside ", type);
+  console.log("The Id", id);
   const statusColor = statusColors[status.toLowerCase()] || '#888';
 
   // Get icon based on transaction type
@@ -46,7 +48,8 @@ const TransactionItem: React.FC<TransactionItemProps> = ({ type, amount, created
       style={[styles.itemContainer, { backgroundColor }]}
       onPress={() => {
         if (type === 'send' || type === 'receive') {
-          router.push('/TransactionSummary');
+          router.push(`/TransactionSummary?id=${id}`);
+
         } else {
           router.push('/TransactionPage');
         }
