@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   value: {
-    fontSize: 18,
+    fontSize: 13,
     fontWeight: 'bold',
   },
   iconContainer: {
@@ -80,8 +80,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   icon: {
-    width: 45,
-    height: 45,
+    width: 35,
+    height: 35,
     marginRight: 6, // Space between icon and arrow
     marginBottom: 2, // Adjusted spacing between icon and text
   },

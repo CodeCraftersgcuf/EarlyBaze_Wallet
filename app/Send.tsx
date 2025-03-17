@@ -9,13 +9,12 @@ import { useNavigation } from '@react-navigation/native';
 import { router, useRouter } from "expo-router";
 import { useState } from 'react';
 import SendCryptoForm from '@/components/Send/SendCryptoForm';
+import Toast from "react-native-toast-message"; // ✅ Import Toast
 
 
 
 const Send: React.FC = () => {
-    const networkOptions = [
-        { id: "1", },
-    ];
+    const networkOptions = [{ id: "1" }];
     const [selectedTab, setSelectedTab] = useState<'Crypto Address' | 'Internal Transfer'>('Crypto Address');
 
     const backgroundColor = useThemeColor({ light: '#EFFEF9', dark: '#000000' }, 'background');
@@ -26,6 +25,47 @@ const Send: React.FC = () => {
 
     const [usdAmount, setUsdAmount] = useState<string>("0");
     const [scannedAddress, setScannedAddress] = useState<string>("");
+
+    // ✅ Extracted function for validation and navigation
+    const handleProceed = () => {
+        // Check for missing fields
+        if (!selectedCoin?.name) {
+            Toast.show({ type: "error", text1: "Please select a coin." });
+            return;
+        }
+
+        if (!selectedNetwork?.name) {
+            Toast.show({ type: "error", text1: "Please select a network." });
+            return;
+        }
+
+        if (!usdAmount || parseFloat(usdAmount) <= 0) {
+            Toast.show({ type: "error", text1: "Please enter a valid amount." });
+            return;
+        }
+
+        if (!scannedAddress) {
+            const missingField = selectedTab === "Internal Transfer" ? "Email" : "Crypto Address";
+            Toast.show({ type: "error", text1: `Please enter a valid ${missingField}.` });
+            return;
+        }
+
+        // Proceed if all fields are filled
+        const requestData = {
+            currency: selectedCoin.name.toLowerCase(),
+            network: selectedNetwork.name.toLowerCase(),
+            amount: usdAmount,
+            email: selectedTab === "Internal Transfer" ? scannedAddress : undefined,
+            address: selectedTab === "Crypto Address" ? scannedAddress : undefined,
+            temp: "temp",
+        };
+
+        console.log("🔹 Request Data:", requestData);
+        router.push({
+            pathname: "/TransactionSummary",
+            params: { type: "send", ...requestData },
+        });
+    };
 
     return (
         <ScrollView contentContainerStyle={[styles.container, { backgroundColor }]}>
@@ -54,27 +94,10 @@ const Send: React.FC = () => {
 
             {/* ✅ Navigate to Payment Summary on Click */}
             <View style={styles.buttonContainer}>
-                <PrimaryButton
-                    title="Proceed"
-                    onPress={() => {
-                        const requestData = {
-                            currency: selectedCoin?.name.toLowerCase(),
-                            network: selectedNetwork?.name.toLowerCase(),
-                            amount: usdAmount,
-                            email: selectedTab === "Internal Transfer" ? scannedAddress : undefined,
-                            address: selectedTab === "Crypto Address" ? scannedAddress : undefined,
-                        };
-                        console.log("🔹 Request Data:", requestData);
-                        router.push({
-                            pathname: '/TransactionSummary',
-                            params: {
-                                type: 'send',
-                                ...requestData, // ✅ Pass all request data
-                            },
-                        });
-                    }}
-                />
+                <PrimaryButton title="Proceed" onPress={handleProceed} />
             </View>
+
+            <Toast /> {/* ✅ Add Toast Component to Render */}
         </ScrollView>
     );
 };

@@ -20,10 +20,10 @@ import { getInternalSend } from "@/utils/queries/appQueries";
 import { getInternalReceive } from "@/utils/queries/appQueries";
 
 const TransactionSummary: React.FC = () => {
-  const { type, currency, network, amount, email, address } = useLocalSearchParams();
+  const { type, currency, network, amount, email, address, temp } = useLocalSearchParams();
   const { id } = useLocalSearchParams();
   console.log("Transaction ID:", id); // Debugging
-
+  console.log("The data coming from the props:", type, currency, network, amount, email, address, temp);
   console.log("The Amount:", amount);
   const [token, setToken] = useState<string | null>(null); // State to hold the token
 
@@ -69,10 +69,10 @@ const TransactionSummary: React.FC = () => {
       gas_fee: "N/A",
       status: "pending",
       created_at: "N/A",
-      amount: "N/A",
-      amount_usd: "N/A",
-      sender_address: "N/A",
-      recipient_address: "N/A",
+      amount: amount || "N/A",
+      amount_usd: amount || "N/A",
+      sender_address: email || "N/A",
+      recipient_address: email || "N/A",
     };
   }, [transactionData, type]);
 
@@ -106,15 +106,20 @@ const TransactionSummary: React.FC = () => {
         />
         <TransactionDetailItem label="Amount" value={String(transaction?.amount)} />
         <TransactionDetailItem label="Amount in USD" value={String(transaction?.amount_usd)} />
-        <TransactionDetailItem label="Network fee" value={String(transaction?.gas_fee)} />
-        <TransactionDetailItem label="Transaction Hash" value={String(transaction?.tx_id)} isCopyable />
 
-        <TransactionDetailItem
-          label="Transaction Date"
-          value={transaction?.created_at ? moment(transaction?.created_at).format("MMMM DD, YYYY h:mm A") : "N/A"}
-        />
-        <TransactionDetailItem label="Type" value={String(transaction?.transaction_type)} />
-        <TransactionDetailItem label="Status" value={String(transaction?.status)} />
+        {!temp && (
+          <>
+            <TransactionDetailItem label="Network fee" value={String(transaction?.gas_fee)} />
+            <TransactionDetailItem label="Transaction Hash" value={String(transaction?.tx_id)} isCopyable />
+
+            <TransactionDetailItem
+              label="Transaction Date"
+              value={transaction?.created_at ? moment(transaction?.created_at).format("MMMM DD, YYYY h:mm A") : "N/A"}
+            />
+            <TransactionDetailItem label="Type" value={String(transaction?.transaction_type)} />
+            <TransactionDetailItem label="Status" value={String(transaction?.status)} />
+          </>
+        )}
       </View>
 
       {/* Action Button */}

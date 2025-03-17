@@ -113,8 +113,8 @@ const SendCryptoForm: React.FC<{
                         <SelectionBox
                             label="Network"
                             id={selectedNetwork.id}
-                            value={selectedNetwork.name}
-                            icon={selectedNetwork.icon}
+                            value={selectedNetwork.name || "Select Network"}
+                            icon={selectedNetwork?.icon || images.solana}
                             onPress={coinId ? () => openModal("network") : undefined}
                             disabled={!coinId}
                             style={!coinId ? { opacity: 0.5 } : undefined}
@@ -136,6 +136,7 @@ const SendCryptoForm: React.FC<{
 
                 {/* ✅ QR Scanner Modal */}
                 <QrModal isVisible={isScannerOpen} onClose={() => setIsScannerOpen(false)} />
+                    
             </View>
         );
     };
@@ -158,6 +159,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginTop: 16,
         gap: 8,
+        paddingHorizontal: 16,
     },
     tabButton: {
         flex: 1,
@@ -240,6 +242,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         marginHorizontal: 12,
         marginTop: 16,
+        gap: 8,
     },
     selectionBox: {
         flex: 1,
