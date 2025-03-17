@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, ScrollView, StyleSheet } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import Header from '@/components/Header';
@@ -6,12 +6,86 @@ import PrimaryButton from '@/components/Buy/PrimaryButton';
 import ProfileAvatar from '@/components/Setting/Profile/ProfileAvatar';
 import ProfileInputField from '@/components/Setting/Profile/ProfileInputField';
 
+// Code related to the Integration:
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { editProfile } from '@/utils/mutations/accountMutations';
+import { getUserDetails } from '@/utils/queries/appQueries';
+import { getFromStorage } from '@/utils/storage';
+import Toast from "react-native-toast-message"; // ✅ Import Toast
+import { router } from 'expo-router';
 const EditProfile: React.FC = () => {
+  const [token, setToken] = useState<string | null>(null); // State to hold the token
   const backgroundColor = useThemeColor({ light: '#EFFEF9', dark: '#000000' }, 'background');
-  const [username, setUsername] = useState('Qamardeen');
-  const [email] = useState('Qamardeenoladimeji@gmail.com'); // Read-only
-  const [phone, setPhone] = useState('07023456789');
+
+  // Fetch the token when the component mounts
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const fetchedToken = await getFromStorage("authToken");
+      setToken(fetchedToken);
+      console.log("🔹 Retrieved Token:", fetchedToken);
+    };
+
+    fetchUserData();
+  }, []);
+
+  // Fetch user details when the token is available
+  const { data: userDetails, error: userError, isLoading: userLoading } = useQuery({
+    queryKey: ["userDetails"],
+    queryFn: () => getUserDetails({ token }),
+    enabled: !!token, // Only run the query when the token is available
+  });
+
+  console.log("🔹 User Details:", userDetails);
+
+  // Extract data from API response
+  const userData = userDetails?.data || {};
+  const [username, setUsername] = useState(userData.name || '');
+  const [email] = useState(userData.email || ''); // Read-only
+  const [phone, setPhone] = useState(userData.phone || '');
   const [password, setPassword] = useState('**********');
+
+  // Update state when userDetails changes
+  useEffect(() => {
+    if (userDetails?.data) {
+      setUsername(userDetails.data.name);
+      setPhone(userDetails.data.phone);
+    }
+  }, [userDetails]);
+
+  // Mutation for editing profile
+  const { mutate: editProfileMutation, isPending } = useMutation({
+    mutationFn: ({ data, token }: { data: { name: string; phone: string }; token: string }) =>
+      editProfile({ data, token }),
+
+    onSuccess: (response: any) => {
+      console.log("✅ Profile Updated:", response);
+
+      // ✅ Show success toast for 1.5 seconds
+      Toast.show({
+        type: "success",
+        text1: "Edit Profile Successful 🎉",
+        visibilityTime: 1500, // 1.5 seconds
+      });
+
+      // ✅ Navigate back after 1.5 seconds
+      setTimeout(() => {
+        router.back(); // Navigates back in the stack
+      }, 1500);
+    },
+
+    onError: (error: any) => {
+      console.error('❌ Error updating profile:', error);
+
+      // Handle any error here, e.g., showing error notifications
+      Toast.show({
+        type: "error",
+        text1: "Edit Profile Failed ❌",
+        text2: error.message || "Please try again.",
+        visibilityTime: 3000, // 3 seconds
+      });
+
+    },
+  });
 
   return (
     <ScrollView contentContainerStyle={[styles.container, { backgroundColor }]}>
@@ -35,8 +109,18 @@ const EditProfile: React.FC = () => {
 
       {/* Save Button */}
       <View style={styles.buttonContainer}>
-        <PrimaryButton title="Save" onPress={() => console.log('Profile Saved')} />
+        <PrimaryButton
+          title={isPending ? "Saving..." : "Save"} // Change button text dynamically
+          onPress={() => {
+            if (token) {
+              editProfileMutation({ data: { name: username, phone }, token });
+            }
+          }}
+          disabled={isPending} // Disable button when saving
+        />
       </View>
+      <Toast /> {/* ✅ Add Toast Component to Render */}
+
     </ScrollView>
   );
 };

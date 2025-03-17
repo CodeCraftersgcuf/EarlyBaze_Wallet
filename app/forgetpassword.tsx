@@ -212,14 +212,14 @@ const ForgetPassword = () => {
                           id="inputPin"
                         />
                       </View>
-                      <Text style={{ marginBottom: 0 }}>
+                      <Text style={{ marginBottom: 10 }}>
                         {isTimerActive && timer > 0 && (
                           <Text style={{ fontWeight: "bold", textAlign: 'center', color: dark ? COLORS.white : COLORS.black }}>OTP can be resent in
                             <Text style={{ color: COLORS.primary }}>{` 00 : ${timer} Sec`}</Text>
                           </Text>
                         )}
                       </Text>
-                      <View style={{ marginBottom: 20 }}>
+                      <View style={{ marginBottom: 40 }}>
                         <Button
                           title="Proceed"
                           onPress={() => {
@@ -265,8 +265,8 @@ const styles = StyleSheet.create({
     borderRadius: 50,
   },
   arrowLeft: {
-    width: 18,
-    height: 18,
+    width: 12,
+    height: 12,
     tintColor: COLORS.dark1,
     objectFit: "contain",
   },
@@ -306,8 +306,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingVertical: 20,
     zIndex: 10,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
   },
   formContainer: {
     width: "100%",
@@ -322,7 +322,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     paddingVertical: 10,
     zIndex: 1,
-    top: -50,
+    top: -40,
     backgroundColor: COLORS.primary,
     justifyContent: "center",
     borderTopLeftRadius: 20,

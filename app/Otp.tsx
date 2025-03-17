@@ -151,7 +151,7 @@ const Otp: React.FC = () => {
 
             <View style={{ paddingHorizontal: 20 }}>
                 <Text style={[styles.title, { color: titleColor, fontFamily: fontsLoaded ? 'Caprasimo-Regular' : undefined }]}>
-                    {step === 1 ? 'Input OTP' : step === 2 ? 'Enter Pin' : 'Re-enter Pin'}
+                    {step === 1 ? 'Input OTP' : step === 2 ? 'Enter Pin' : 'Re-Enter Pin'}
                 </Text>
 
                 <Text style={[styles.subtitle, { color: textColor }]}>

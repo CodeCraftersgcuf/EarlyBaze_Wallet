@@ -40,7 +40,7 @@ export interface InputValues {
 const Register = () => {
   const { dark } = useTheme();
   const { push } = useRouter();
-  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedImage, setSelectedImage] = useState<{ uri: string; name: string; type: string } | null>(null);
 
 
   const { isPending: isPendingRegister, mutate: mutateRegister } = useMutation({
@@ -54,13 +54,14 @@ const Register = () => {
       formData.append("invite_code", data.invite_code);
 
       if (data.profile_picture) {
-        const fileExtension = data.profile_picture.split('.').pop();
         formData.append("profile_picture", {
-          uri: data.profile_picture,
-          name: `profile.${fileExtension}`, // Set a file name
-          type: `image/${fileExtension}` // Set the MIME type
+          uri: data.profile_picture.uri,
+          name: data.profile_picture.name,
+          type: data.profile_picture.type,
         } as any);
+        console.log("✅ FormData Image:", data.profile_picture); // ✅ Log FormData image
       }
+
 
       return signUpUser(formData);
     },
@@ -87,33 +88,44 @@ const Register = () => {
     },
   });
 
-
   const pickImage = async () => {
-    let result = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (!result.granted) {
+    console.log("Close the keyboard");
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
       alert("Permission to access media library is required!");
       return;
     }
 
-    let resultStatus = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images, // ✅ Updated deprecated API
       allowsEditing: true,
       aspect: [1, 1],
       quality: 1,
     });
 
-    if (!resultStatus.canceled) {
-      setSelectedImage(resultStatus.assets[0].uri);
+    if (!result.canceled && result.assets?.length) {
+      const image = result.assets[0]; // Get the selected image
+      const fileExtension = image.uri.split('.').pop(); // Extract file extension
+
+      const imageObject = {
+        uri: image.uri,
+        name: `profile.${fileExtension}`, // Provide a name
+        type: `image/${fileExtension}`, // Set the MIME type
+      };
+
+      setSelectedImage(imageObject);
+      console.log("✅ Selected Image Object:", imageObject); // ✅ Console log image object
     }
   };
+
   return (
- 
-      <SafeAreaView style={styles.container}>
+
+    <SafeAreaView style={styles.container}>
       <KeyboardAwareScrollView
-          keyboardShouldPersistTaps="handled" // ✅ Allows tapping on inputs even when keyboard is open
-          enableOnAndroid={true} // ✅ Works for Android
-          extraScrollHeight={10} // ✅ Moves content up to avoid overlap
-        >
+      // keyboardShouldPersistTaps="handled" // ✅ Allows tapping on inputs even when keyboard is open
+      // enableOnAndroid={true} // ✅ Works for Android
+      // extraScrollHeight={10} // ✅ Moves content up to avoid overlap
+      >
         <View>
           <View style={styles.imageContainer}>
             <Image
@@ -339,8 +351,8 @@ const Register = () => {
           <Toast /> {/* ✅ Add Toast Component to Render */}
 
         </View>
-        </KeyboardAwareScrollView>
-      </SafeAreaView >
+      </KeyboardAwareScrollView>
+    </SafeAreaView >
   );
 };
 

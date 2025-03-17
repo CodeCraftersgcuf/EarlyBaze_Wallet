@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, FlatList, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import AssetCard from '@/components/AssetCard';
 import icons from '@/constants/icons';
 import { useThemeColor } from '@/hooks/useThemeColor';
@@ -67,6 +67,10 @@ const AssetList: React.FC<{ selectedTab: 'All Assets' | 'My Assets'; searchQuery
         <View style={[styles.mainContainer, { backgroundColor }]}>
             {userAssetsLoading ? (
                 <LoadingIndicator /> // ✅ Show the loading indicator
+            ) : filteredData.length === 0 ? (
+                <View style={styles.noDataContainer}>
+                    <Text style={styles.noDataText}>No Assets Available</Text>
+                </View>
             ) : (
                 <FlatList
                     data={filteredData}
@@ -113,6 +117,15 @@ const styles = StyleSheet.create({
         elevation: 4,
         flex: 1,
         alignSelf: 'stretch',
+    },
+    noDataContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    noDataText: {
+        fontSize: 16,
+        color: 'gray',
     },
     list: {
         paddingBottom: 20,

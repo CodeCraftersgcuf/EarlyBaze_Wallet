@@ -2,6 +2,7 @@ import { API_ENDPOINTS } from "@/apiConfig";
 // import { IClientCreation } from '@/app/fillyourprofile';
 // import { ICooperateClient } from '@/app/createcoroporateaccount';
 import { apiCall } from "../customApiCall";
+import { string } from "yup";
 
 export const changePassword = async ({
   data,
@@ -144,6 +145,19 @@ export const createReplyTicket = async ({
     data,
     token
   );
+};
+
+export const editProfile = async ({
+  data,
+  token,
+}: {
+  data: {
+    name: string;
+    phone: string;
+  };
+  token: string;
+}) => {
+  return await apiCall(API_ENDPOINTS.USER.EditProfile, "POST", data, token);
 };
 
 export const createIndividualAccount = async ({
