@@ -68,6 +68,7 @@ const API_ENDPOINTS = {
     GetSocialMediaLinks: API_DOMAIN + "/social-media-links",
     GetFaqs: API_DOMAIN + "/faq",
     GetSlides: API_DOMAIN + "/slides",
+    PaymentProof: API_DOMAIN + '/wallet/attach-slip',
   },
   BILL_MANAGEMENT: {
     CreateWithdrawal: API_DOMAIN + "/withdraw/create",

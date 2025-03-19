@@ -44,7 +44,6 @@ export const createInternalTransfer = async ({
 }) => {
   console.log("🔹 Original Create Internal Transfer Data:", data);
   return await apiCall(
-    
     API_ENDPOINTS.USER.SendInternalTransfer,
     "POST",
     data,
@@ -216,6 +215,22 @@ export const updateProfile = async ({
 }): Promise<IUpdateProfileResponse> => {
   return await apiCall(
     API_ENDPOINTS.ACCOUNT_MANAGEMENT.UpdateProfile,
+    "POST",
+    data,
+    token
+  );
+};
+
+export const paymentProof = async ({
+  data,
+  id,
+  token,
+}: {
+  data: FormData;
+  token: string;
+}) => {
+  return await apiCall(
+    `${API_ENDPOINTS.ACCOUNT_MANAGEMENT.PaymentProof}/${id}`,
     "POST",
     data,
     token

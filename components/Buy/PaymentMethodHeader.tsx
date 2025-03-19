@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import PaymentMethodModal from '@/components/Buy/PaymentMethodModal';
@@ -14,6 +14,7 @@ const PaymentMethodHeader: React.FC<{ setSelectedPaymentMethodId: (data: { id: s
   const [modalVisible, setModalVisible] = useState(false);
 
   const handleSelectPaymentMethod = (method: { id: string; account_name: string; account_number: string }) => {
+    console.log('Selected Method:', method);  // Debugging step
     // Set local state for selected account name
     setSelectedAccount({ id: method.id, account_name: method.account_name });
 
@@ -23,6 +24,10 @@ const PaymentMethodHeader: React.FC<{ setSelectedPaymentMethodId: (data: { id: s
     // Close the modal after selection
     setModalVisible(false);
   };
+
+  useEffect(() => {
+    console.log('Updated selectedAccount:', selectedAccount);  // Debugging step
+  }, [selectedAccount]);
 
   return (
     <>
@@ -42,15 +47,12 @@ const PaymentMethodHeader: React.FC<{ setSelectedPaymentMethodId: (data: { id: s
         title="Choose Account"
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
-        onSelectPaymentMethod={(method) => {
-          const { id, account_name, account_number } = method;
-          setSelectedPaymentMethodId({ id, account_name, account_number });
-          setModalVisible(false);
-        }}
+        onSelectPaymentMethod={handleSelectPaymentMethod}
       />
     </>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {

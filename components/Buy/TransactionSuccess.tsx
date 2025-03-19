@@ -7,11 +7,11 @@ import TransactionDetailItem from '@/components/Buy/TransactionDetailItem';
 // Define the props interface
 interface TransactionSuccessProps {
   title: string;
-  amount: string | undefined;
+  amount: any | undefined;
   network: string | undefined;
 }
 
-const TransactionSuccess: React.FC<TransactionSuccessProps> = ({ title, amount, network }) => {
+const TransactionSuccess: React.FC<TransactionSuccessProps> = ({ title, amount = 0, network = '0' }) => {
   // Theme colors
   const backgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#1A1A1A' }, 'background');
   const textColor = useThemeColor({ light: '#000000', dark: '#FFFFFF' }, 'text');

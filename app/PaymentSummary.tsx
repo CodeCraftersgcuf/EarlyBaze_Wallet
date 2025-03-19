@@ -10,7 +10,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 
 const PaymentSummary: React.FC = () => {
   const { push } = useRouter();
-  const { coin, network, amount_usd, amount_coin, amount_naira, transaction_id, transaction_reference, transaction_date, bank_name, account_number, account_name, status } = useLocalSearchParams();
+  const { id, coin, network, amount_usd, amount_coin, amount_naira, transaction_id, transaction_reference, transaction_date, bank_name, account_number, account_name, status } = useLocalSearchParams();
 
   const backgroundColor = useThemeColor({ light: '#EFFEF9', dark: '#000000' }, 'background');
   const cardBackgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#1A1A1A' }, 'card');
@@ -50,7 +50,7 @@ const PaymentSummary: React.FC = () => {
 
       {/* Proceed Button */}
       <View style={styles.buttonContainer}>
-        <PrimaryButton title="I have made payment" onPress={() => push('/PaymentProof')} />
+        <PrimaryButton title="I have made payment" onPress={() => push({ pathname: '/PaymentProof', params: { id } })} />
       </View>
     </ScrollView>
   );

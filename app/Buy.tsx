@@ -12,6 +12,7 @@ import { router, useRouter } from "expo-router";
 import { getFromStorage } from "@/utils/storage";
 import { createBuy } from "@/utils/mutations/accountMutations";
 import { useMutation } from '@tanstack/react-query';
+import Toast from "react-native-toast-message"; // ✅ Import Toast
 
 const Buy: React.FC = () => {
   const backgroundColor = useThemeColor({ light: '#EFFEF9', dark: '#000000' }, 'background');
@@ -46,6 +47,7 @@ const Buy: React.FC = () => {
         router.push({
           pathname: '/PaymentSummary',
           params: {
+            id:response.data.id,
             coin: response.data.currency,
             network: response.data.network,
             amount_usd: response.data.amount_usd,
@@ -72,25 +74,53 @@ const Buy: React.FC = () => {
 
   // Handle Proceed button press
   const handleProceed = () => {
-    if (selectedData) {
-      console.log("🚀 Proceeding with:", selectedData);
-
-      // Extract and prepare data for mutation
-      const buyData = {
-        currency: selectedData.selectedCoin.name.toLowerCase(),
-        network: selectedData.selectedNetwork.name.toLowerCase(),
-        amount_coin: selectedData.amount_coin,
-        amount_usd: selectedData.amount_usd,
-        amount_naira: selectedData.amount_naira,
-        bank_account_id: selectedData.selectedPaymentMethodId.id.toString(),
-      };
-
-      // Call the mutation to create a buy transaction
-      mutateBuy(buyData);
-    } else {
-      console.log("❌ No selection made.");
+    // Check for missing fields
+    if (!selectedData?.selectedCoin?.name) {
+      Toast.show({ type: "error", text1: "Please select a coin." });
+      return;
     }
+
+    if (!selectedData?.selectedNetwork?.name) {
+      Toast.show({ type: "error", text1: "Please select a network." });
+      return;
+    }
+
+    if (!selectedData?.amount_coin || parseFloat(selectedData.amount_coin) <= 0) {
+      Toast.show({ type: "error", text1: "Please enter a valid coin amount." });
+      return;
+    }
+
+    if (!selectedData?.amount_usd || parseFloat(selectedData.amount_usd) <= 0) {
+      Toast.show({ type: "error", text1: "Please enter a valid USD amount." });
+      return;
+    }
+
+    if (!selectedData?.amount_naira || parseFloat(selectedData.amount_naira) <= 0) {
+      Toast.show({ type: "error", text1: "Please enter a valid Naira amount." });
+      return;
+    }
+
+    if (!selectedData?.selectedPaymentMethodId?.id) {
+      Toast.show({ type: "error", text1: "Please select a bank account." });
+      return;
+    }
+
+    console.log("🚀 Proceeding with:", selectedData);
+
+    // Extract and prepare data for mutation
+    const buyData = {
+      currency: selectedData.selectedCoin.name.toLowerCase(),
+      network: selectedData.selectedNetwork.name.toLowerCase(),
+      amount_coin: selectedData.amount_coin,
+      amount_usd: selectedData.amount_usd,
+      amount_naira: selectedData.amount_naira,
+      bank_account_id: selectedData.selectedPaymentMethodId.id.toString(),
+    };
+
+    // Call the mutation to create a buy transaction
+    mutateBuy(buyData);
   };
+
 
   return (
     <ScrollView contentContainerStyle={[styles.container, { backgroundColor }]}>
@@ -114,6 +144,8 @@ const Buy: React.FC = () => {
           disabled={isPendingBuy} // Disable button while processing
         />
       </View>
+      <Toast /> {/* ✅ Add Toast Component to Render */}
+
     </ScrollView>
   );
 };
