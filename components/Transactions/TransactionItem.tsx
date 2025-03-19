@@ -51,7 +51,7 @@ const TransactionItem: React.FC<TransactionItemProps> = ({ type, amount, created
           router.push(`/TransactionSummary?id=${id}`);
 
         } else {
-          router.push('/TransactionPage');
+          router.push(`/TransactionPage?id=${id}&types=${type}`);
         }
       }}
     >

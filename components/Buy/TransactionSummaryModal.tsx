@@ -10,37 +10,45 @@ import {
 import { useThemeColor } from '@/hooks/useThemeColor';
 import icons from '@/constants/icons';
 import TransactionDetailItem from '@/components/Buy/TransactionDetailItem';
+import { images } from '@/constants';
+
+
 interface TransactionSummaryModalProps {
   visible: boolean;
   onClose: () => void;
+  transactionData: {
+    coin: string;
+    network: string;
+    amountBtc: string;
+    amountUsd: string;
+    amountPaid: string;
+    accountPaidTo: string;
+    transactionReference: string;
+    transactionDate: string;
+    status: string;
+    reason?: string; // Optional field
+  };
 }
-import { images } from '@/constants';
 
-const TransactionSummaryModal: React.FC<TransactionSummaryModalProps> = ({ visible, onClose }) => {
+const TransactionSummaryModal: React.FC<TransactionSummaryModalProps> = ({ visible, onClose, transactionData, }) => {
+  console.log("Transaction Data:", transactionData);
   const backgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#1A1A1A' }, 'background');
   const textColor = useThemeColor({ light: '#000000', dark: '#FFFFFF' }, 'text');
   const labelColor = useThemeColor({ light: '#808080', dark: '#A0A0A0' }, 'label');
   const borderColor = useThemeColor({ light: '#EAEAEA', dark: '#333333' }, 'border');
   const textTitleColor = useThemeColor({ light: '#25AE7A', dark: '#25AE7A' }, 'textTitle');
 
+
   const close = useThemeColor({ light: images.cross_white, dark: images.cross_black }, 'close');
 
-  // Sample JSON data for transaction
-  const transactionData = {
-    coin: "Bitcoin",
-    network: "Bitcoin",
-    amountBtc: "0.012BTC",
-    amountUsd: "$750",
-    amountPaid: "NGN10,450,445",
-    accountPaidTo: "Account 1",
-    transactionReference: "23JFJ46GKDR",
-    transactionDate: "24 Dec, 2024 - 07:22 AM",
-    status: "Rejected",
-    reason: "Network congestion timeout"
-  };
+  const statusColor =
+    transactionData && transactionData.status === "Completed"
+      ? "#25AE7A"
+      : transactionData && transactionData.status === "Rejected"
+        ? "#D32F2F"
+        : textColor;
 
-  const statusColor = transactionData.status === "Completed" ? "#25AE7A" : transactionData.status === "Rejected" ? "#D32F2F" : textColor;
-  const showReason = transactionData.status === "Rejected"; // Only show Reason if status is "Rejected"
+  const showReason = transactionData && transactionData.status === "Rejected";
 
   return (
     <Modal visible={visible} transparent animationType="slide">
@@ -57,15 +65,19 @@ const TransactionSummaryModal: React.FC<TransactionSummaryModalProps> = ({ visib
 
           {/* Transaction Details */}
           <View style={styles.detailContainer}>
-            <TransactionDetailItem label="Coin" value={transactionData.coin} />
-            <TransactionDetailItem label="Network" value={transactionData.network} />
-            <TransactionDetailItem label="Amount - BTC" value={transactionData.amountBtc} />
-            <TransactionDetailItem label="Amount - USD" value={transactionData.amountUsd} />
-            <TransactionDetailItem label="Amount Paid" value={transactionData.amountPaid} />
-            <TransactionDetailItem label="Account Paid to" value={transactionData.accountPaidTo} />
-            <TransactionDetailItem label="Transaction reference" value={transactionData.transactionReference} isCopyable />
-            <TransactionDetailItem label="Transaction Date" value={transactionData.transactionDate} />
-            <TransactionDetailItem label="Status" value={transactionData.status} valueStyle={{ color: statusColor, fontWeight: 'bold' }} />
+            {transactionData?.coin && <TransactionDetailItem label="Coin" value={transactionData.coin} />}
+            {transactionData?.network && <TransactionDetailItem label="Network" value={transactionData.network} />}
+            {transactionData?.amountBtc && <TransactionDetailItem label="Amount - BTC" value={transactionData.amountBtc} />}
+            {transactionData?.amountUsd && <TransactionDetailItem label="Amount - USD" value={transactionData.amountUsd} />}
+            {transactionData?.amountPaid && <TransactionDetailItem label="Amount Paid" value={transactionData.amountPaid} />}
+            {transactionData?.accountPaidTo && <TransactionDetailItem label="Account Paid to" value={transactionData.accountPaidTo} />}
+            {transactionData?.transactionReference && (
+              <TransactionDetailItem label="Transaction reference" value={transactionData.transactionReference} isCopyable />
+            )}
+            {transactionData?.transactionDate && <TransactionDetailItem label="Transaction Date" value={transactionData.transactionDate} />}
+            {transactionData?.status && (
+              <TransactionDetailItem label="Status" value={transactionData.status} valueStyle={{ color: statusColor, fontWeight: 'bold' }} />
+            )}
 
             {/* Conditionally render Reason */}
             {showReason && (

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, ScrollView, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import Header from '@/components/Header';
@@ -9,7 +9,15 @@ import TransactionSummaryModal from '@/components/Buy/TransactionSummaryModal';
 import { useNavigation } from 'expo-router';
 import { useRoute } from '@react-navigation/native';
 
+
+//Code related to the integration:
+import { getFromStorage } from '@/utils/storage';
+import { getSwap } from '@/utils/queries/appQueries';
+import { useQuery } from '@tanstack/react-query';
+import { useLocalSearchParams } from 'expo-router';
+
 const TransactionPage: React.FC = () => {
+  const [token, setToken] = useState<string | null>(null);
   const backgroundColor = useThemeColor({ light: '#EFFEF9', dark: '#000000' }, 'background');
   const [modalVisible, setModalVisible] = useState(false);
   const navigation = useNavigation();
@@ -18,61 +26,91 @@ const TransactionPage: React.FC = () => {
 
   const params = route.params as { type: string };
   const transactionType = params?.type;
+  const { id, types } = useLocalSearchParams();
 
-  console.log("Type from TransactionPage:", transactionType);
+  console.log("Type from TransactionPagess:", types);
 
-  // Example Transactions (Replace this with API response later)
-  const transactions = [
-    {
-      title: 'Transaction Submitted',
-      description: 'Your transaction has been submitted successfully',
-      date: '27 Dec, 2024 - 05:22 PM',
-      isCompleted: true,
-      hasButton: true,
+  // Fetch the token and user data when the component mounts
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const fetchedToken = await getFromStorage("authToken");
+      setToken(fetchedToken);
+      console.log("🔹 Retrieved Token:", fetchedToken);
+    };
+
+    fetchUserData();
+  }, []);
+
+  const { data: transactionSummary, error, isLoading } = useQuery({
+    queryKey: [types === "swap" ? "internalSend" : "internalReceive", token, id],
+    queryFn: () => {
+      if (!token || !id) return Promise.reject("No valid ID or token");
+
+      // Call the correct function based on `types`
+      return getSwap({ token, id });
     },
-    {
-      title: 'Transaction Processed',
-      description: 'Your transaction is being processed, your naira account will be credited soon.',
-      date: '27 Dec, 2024 - 05:22 PM',
-      isCompleted: true,
-      isProcessing: true,
-    },
-    {
-      title: 'Transaction Rejected',
-      description: 'Your transaction was rejected due to network congestion. Kindly try again.',
-      date: '27 Dec, 2024 - 05:22 PM',
-      isCompleted: true,
-      isProcessing: true,
-    },
-  ];
+    enabled: !!token && !!id, // Only fetch if both token and ID exist
+  });
 
-  // Function to filter transactions
-  const filterTransactions = (transactions) => {
-    const hasSubmitted = transactions.some(tx => tx.title === 'Transaction Submitted');
-    const hasProcessing = transactions.some(tx => tx.title === 'Transaction Processed');
-    const hasSuccess = transactions.some(tx => tx.title === 'Transaction Success');
-    const hasRejected = transactions.some(tx => tx.title === 'Transaction Rejected');
+  console.log("🔹 Transaction Data of Swap/Receive:", transactionSummary);
 
-    // If only "Transaction Submitted" exists, show only it
-    if (hasSubmitted && !hasProcessing && !hasSuccess && !hasRejected) {
-      return transactions.filter(tx => tx.title === 'Transaction Submitted');
+  // Extract API transaction data safely
+  const transactionData = transactionSummary?.data
+    ? {
+      coin: transactionSummary.data.currency || "Unknown",
+      network: transactionSummary.data.network || "Unknown",
+      amountBtc: `${transactionSummary.data.amount} ${transactionSummary.data.currency}`,
+      amountUsd: `$${transactionSummary.data.amount_usd}`,
+      amountPaid: `NGN${transactionSummary.data.amount_naira}`,
+      accountPaidTo: "Account 1", // You may want to update this with real data
+      transactionReference: transactionSummary.data.reference,
+      transactionDate: new Date(transactionSummary.data.created_at).toLocaleString(), // Convert to readable format
+      status: transactionSummary.data.status === "completed" ? "Success" : "Rejected",
+      reason: transactionSummary.data.status === "failed" ? "Network congestion timeout" : null,
     }
+    : null;
 
-    // If "Transaction Processed" exists, show both "Submitted" and "Processing"
-    if (hasProcessing && !hasSuccess && !hasRejected) {
-      return transactions.filter(tx => ['Transaction Submitted', 'Transaction Processed'].includes(tx.title));
-    }
-
-    // If "Transaction Success" exists (and not rejected), show only success
-    if (hasSuccess && !hasRejected) {
-      return transactions.filter(tx => tx.title === 'Transaction Success');
-    }
-
-    return transactions;
-  };
-
-  const filteredTransactions = filterTransactions(transactions);
-  const isTransactionFailed = filteredTransactions.some(tx => tx.title === 'Transaction Rejected');
+  // Set transaction steps dynamically based on status
+  const transactions = transactionData?.status === "Rejected"
+    ? [
+      {
+        title: 'Transaction Submitted',
+        description: 'Your transaction has been submitted successfully',
+        date: new Date(transactionSummary?.data?.created_at || "").toLocaleString(),
+        isCompleted: true,
+        hasButton: true,
+      },
+      {
+        title: 'Transaction Processed',
+        description: 'Your transaction is being processed, your naira account will be credited soon.',
+        date: new Date(transactionSummary?.data?.created_at || "").toLocaleString(),
+        isCompleted: true,
+        isProcessing: true,
+      },
+      {
+        title: 'Transaction Rejected',
+        description: 'Your transaction has been rejected. Please try again.',
+        date: new Date(transactionSummary?.data?.created_at || "").toLocaleString(),
+        isCompleted: false,
+        isProcessing: false,
+      },
+    ]
+    : [
+      {
+        title: 'Transaction Submitted',
+        description: 'Your transaction has been submitted successfully',
+        date: new Date(transactionSummary?.data?.created_at || "").toLocaleString(),
+        isCompleted: true,
+        hasButton: true,
+      },
+      {
+        title: 'Transaction Processed',
+        description: 'Your transaction is being processed, your naira account will be credited soon.',
+        date: new Date(transactionSummary?.data?.created_at || "").toLocaleString(),
+        isCompleted: true,
+        isProcessing: true,
+      },
+    ];
 
   return (
     <ScrollView contentContainerStyle={[styles.container, { backgroundColor }]}>
@@ -83,7 +121,7 @@ const TransactionPage: React.FC = () => {
       <View style={styles.progressContainer}>
         <View style={styles.progressLine} />
 
-        {filteredTransactions.map((tx, index) => (
+        {transactions.map((tx, index) => (
           <TransactionStep
             key={index}
             title={tx.title}
@@ -92,15 +130,15 @@ const TransactionPage: React.FC = () => {
             isCompleted={tx.isCompleted}
             isProcessing={tx.isProcessing}
             hasButton={tx.hasButton}
+            transactionData={transactionData}
           />
         ))}
 
         {/* Show success box only if the transaction is not rejected */}
-        {!isTransactionFailed && (
+        {transactionData?.status !== "Rejected" && (
           <View style={{ marginTop: 20 }}>
-            {/* If 'type' is 'withdraw', show 'Withdrawal' as the title */}
             <TransactionSuccess
-              title={transactionType === 'withdraw' ? 'Withdrawal Successful' : 'Transaction Successful'}
+              title={transactionType === 'withdraw' ? 'Withdrawal Successful' : 'Transaction Successful'} amount={transactionSummary?.data.amount} network={transactionSummary?.data.network}
             />
           </View>
         )}
@@ -108,8 +146,11 @@ const TransactionPage: React.FC = () => {
 
       {/* Buttons */}
       <View style={styles.buttonContainer}>
-        {/* Show only the Close button if the transaction is just submitted or processed */}
-        {filteredTransactions.length === 1 || (filteredTransactions.some(tx => tx.title === 'Transaction Processed') && !isTransactionFailed) ? (
+        {/* If only one step exists or transaction is still processing */}
+        {transactions.length === 1 ||
+          (transactions.some(tx => tx.title === 'Transaction Processed') &&
+            transactionData?.status !== "Rejected" &&
+            !transactions.some(tx => tx.title === 'Transaction Success')) ? (
           <TouchableOpacity style={styles.closeButton} onPress={() => navigation.goBack()}>
             <Text style={[styles.closeButtonText, { color: textColor }]}>Close</Text>
           </TouchableOpacity>
@@ -120,7 +161,7 @@ const TransactionPage: React.FC = () => {
             </View>
             <TouchableOpacity style={styles.closeButton} onPress={() => navigation.goBack()}>
               <Text style={[styles.closeButtonText, { color: textColor }]}>
-                {isTransactionFailed ? 'Support' : 'Close'}
+                {transactionData?.status === "Rejected" ? 'Support' : 'Close'}
               </Text>
             </TouchableOpacity>
           </>
@@ -128,7 +169,7 @@ const TransactionPage: React.FC = () => {
       </View>
 
       {/* Modal */}
-      <TransactionSummaryModal visible={modalVisible} onClose={() => setModalVisible(false)} />
+      <TransactionSummaryModal visible={modalVisible} onClose={() => setModalVisible(false)} transactionData={transactionData} />
     </ScrollView>
   );
 };

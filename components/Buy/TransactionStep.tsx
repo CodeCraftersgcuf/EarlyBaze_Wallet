@@ -11,6 +11,18 @@ interface TransactionStepProps {
   isCompleted?: boolean;
   isProcessing?: boolean;
   hasButton?: boolean;
+  transactionData?: {
+    coin: string;
+    network: string;
+    amountBtc: string;
+    amountUsd: string;
+    amountPaid: string;
+    accountPaidTo: string;
+    transactionReference: string;
+    transactionDate: string;
+    status: string;
+    reason?: string; // Optional field
+  };
 }
 
 const TransactionStep: React.FC<TransactionStepProps> = ({
@@ -20,6 +32,7 @@ const TransactionStep: React.FC<TransactionStepProps> = ({
   isCompleted = false,
   isProcessing = false,
   hasButton = false,
+  transactionData,
 }) => {
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -78,7 +91,7 @@ const TransactionStep: React.FC<TransactionStepProps> = ({
       </View>
 
       {/* Transaction Summary Modal */}
-      <TransactionSummaryModal visible={modalVisible} onClose={() => setModalVisible(false)} />
+      <TransactionSummaryModal visible={modalVisible} onClose={() => setModalVisible(false)} transactionData={transactionData} />
     </>
   );
 };

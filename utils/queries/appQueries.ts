@@ -156,8 +156,9 @@ export const getSwap = async ({
       token ? "✅ Available" : "❌ Missing"
     }`
   );
-
+  console.log("Sending the requesat", id);
   return apiCall(
+
     `${API_ENDPOINTS.USER.GetSwap}/${id}`,
     "GET",
     undefined,

@@ -7,9 +7,11 @@ import TransactionDetailItem from '@/components/Buy/TransactionDetailItem';
 // Define the props interface
 interface TransactionSuccessProps {
   title: string;
+  amount: string | undefined;
+  network: string | undefined;
 }
 
-const TransactionSuccess: React.FC<TransactionSuccessProps> = ({ title }) => {
+const TransactionSuccess: React.FC<TransactionSuccessProps> = ({ title, amount, network }) => {
   // Theme colors
   const backgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#1A1A1A' }, 'background');
   const textColor = useThemeColor({ light: '#000000', dark: '#FFFFFF' }, 'text');
@@ -29,14 +31,14 @@ const TransactionSuccess: React.FC<TransactionSuccessProps> = ({ title }) => {
       <View style={[styles.successBox, { backgroundColor, borderColor }]}>
         <Text style={[styles.successTitle, { color: successTextColor }]}>{title}</Text>
         <Text style={[styles.successAmount, { color: textColor }]}>
-          <Text style={styles.boldText}>0.0023 BTC</Text> has been credited to your crypto wallet
+          <Text style={styles.boldText}>{amount} {network}</Text> has been credited to your crypto wallet
         </Text>
 
         {/* Transaction Details */}
         <View style={styles.detailContainer}>
           <TransactionDetailItem label="Crypto bought" value="Bitcoin" icon={icons.bitCoin} />
           <TransactionDetailItem label="Network" value="Bitcoin" icon={icons.bitCoin} />
-          <TransactionDetailItem label="Amount Paid" value="NGN 14,000,000" />
+          <TransactionDetailItem label="Amount Paid" value={amount} />
         </View>
       </View>
     </View>
