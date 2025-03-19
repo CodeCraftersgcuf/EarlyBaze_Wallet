@@ -146,6 +146,47 @@ const Swap: React.FC = () => {
     setEnteredAmount(numericValue);
   };
 
+  // Function to handle form validation and API request
+  const handleProceed = () => {
+    // Validate required fields
+    if (!enteredAmount.trim() || parseFloat(enteredAmount) <= 0) {
+      Toast.show({ type: "error", text1: "Please enter a valid amount." });
+      return;
+    }
+
+    if (!selectedAsset?.name || selectedAsset.name === "Select Asset") {
+      Toast.show({ type: "error", text1: "Please select an asset." });
+      return;
+    }
+
+    if (!selectedNetwork?.name || selectedNetwork.name === "Select Network") {
+      Toast.show({ type: "error", text1: "Please select a network." });
+      return;
+    }
+
+    if (!token) {
+      Toast.show({ type: "error", text1: "Authentication Error", text2: "User authentication failed. Please log in again." });
+      return;
+    }
+
+    console.log("🚀 Proceeding with:", {
+      currency: selectedAsset.name,
+      network: selectedNetwork.name,
+      amount: enteredAmount,
+      exchange_rate: convertedAmount,
+    });
+
+    // Call the API mutation
+    requestSwap({
+      data: {
+        currency: selectedAsset.name,
+        network: selectedNetwork.name,
+        amount: enteredAmount,
+        exchange_rate: convertedAmount,
+      },
+      token,
+    });
+  };
 
   return (
     <View style={[styles.container, { backgroundColor }]}>
@@ -203,30 +244,12 @@ const Swap: React.FC = () => {
       {/* ✅ Proceed Button to Call Swap API */}
       <View style={styles.fixedButtonContainer}>
         <PrimaryButton
-          title={isPending ? "Processing..." : "Proceed"}  // Change title when loading
-          onPress={() => {
-            if (
-              enteredAmount.trim() !== "" &&
-              selectedAsset.name !== "Select Asset" &&
-              selectedNetwork.name !== "Select Network" &&
-              token
-            ) {
-              requestSwap({
-                data: {
-                  currency: selectedAsset.name,
-                  network: selectedNetwork.name,
-                  amount: enteredAmount,
-                  exchange_rate: convertedAmount,
-                },
-                token,
-              });
-            } else {
-              console.log("❌ Please select asset, network, and enter a valid amount before proceeding.");
-            }
-          }}
+          title={isPending ? "Processing..." : "Proceed"} // Change title when loading
+          onPress={handleProceed} // Calls the function instead of inline logic
           disabled={isPending} // Disable button while request is being sent
-          loading={isPending} // Show loading spinner when isLoading is true
+          loading={isPending} // Show loading spinner when request is in progress
         />
+
       </View>
 
       {/* ✅ Show Modal */}
