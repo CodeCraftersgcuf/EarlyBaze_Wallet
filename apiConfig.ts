@@ -23,6 +23,7 @@ const API_ENDPOINTS = {
     GetInternalReceive: API_DOMAIN + "/admin/transactions/get-single/internal-receive",
     GetSwap: API_DOMAIN + "/wallet/single-swap",
     GetWithdraw: API_DOMAIN + "/withdraw-request-status",
+    GetBuy: API_DOMAIN + "/wallet/single-buy",
     GetBalance: API_DOMAIN + "/user/balance",
     GetAssests: API_DOMAIN + "/user/assets",
     GetBankDetail: API_DOMAIN + "/get-bank-account",

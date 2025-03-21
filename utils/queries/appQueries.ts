@@ -182,6 +182,21 @@ export const getWithdraw = async ({
   );
 };
 
+export const getBuy = async ({
+  token,
+  id,
+}: {
+  token: string;
+  id?: string;
+}): Promise<BuyResponse> => {
+  console.log("The Idsss ", id);
+  return apiCall(
+    `${API_ENDPOINTS.USER.GetBuy}/${id}`,
+    "GET",
+    undefined,
+    token
+  );
+};
 export const getTransactionAll = async ({
   token,
 }: {
@@ -445,6 +460,22 @@ interface WithdrawResponse {
     created_at: string;
     updated_at: string;
     bank_account: BankAccount;
+  };
+  message: string;
+}
+
+interface BuyResponse {
+  status: string;
+  data: {
+    coin: string;
+    network: string;
+    amount_btc: string;
+    amount_usd: string;
+    amount_paid: string;
+    account_paid_to: string;
+    transaction_reference: string;
+    transaction_date: string;
+    status: string;
   };
   message: string;
 }

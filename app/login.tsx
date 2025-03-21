@@ -24,7 +24,7 @@ import { BackHandler, Alert } from 'react-native';
 
 //Related to the Integration of the Login Page
 import { useMutation } from '@tanstack/react-query';
-import Toast from "react-native-toast-message"; // ✅ Import Toast
+import Toast from "react-native-toast-message"; 
 
 export interface InputValues {
   email: string;
@@ -34,10 +34,9 @@ export interface InputValues {
 const Login = () => {
   const { dark } = useTheme();
   const { push } = useRouter();
-  const fontsLoaded = useLoadFonts(); // Load custom fonts
-  const { replace } = useRouter(); // ✅ Use replace to clear stack history
+  const fontsLoaded = useLoadFonts(); 
+  const { replace } = useRouter();
 
-  // ✅ Handle Back Press to Confirm Exit
   useEffect(() => {
     const backAction = () => {
       Alert.alert("Hold on!", "Are you sure you want to exit?", [
@@ -84,7 +83,6 @@ const Login = () => {
           visibilityTime: 3000, // 3 seconds
         });
 
-        // ✅ Delay navigation so toast is visible
         setTimeout(() => {
           replace("/(tabs)"); // ✅ Navigate after delay
         }, 800); // 1 second delay
@@ -144,7 +142,7 @@ const Login = () => {
                 <Formik
                   initialValues={{ email: "", password: "" }}
                   validationSchema={validationSignInSchema}
-                  onSubmit={(values) => mutateLogin(values)} // ✅ Calls mutateLogin on form submit
+                  onSubmit={(values) => mutateLogin(values)} 
                 >
                   {({
                     handleChange,
@@ -209,7 +207,6 @@ const Login = () => {
                         </Text>
                       </TouchableOpacity>
                       <View>
-                        {/* ✅ Login Button now triggers handleSubmit which calls mutateLogin */}
                         <Button
                           title={isPendingLogin ? "Logging in..." : "Login"}
                           onPress={handleSubmit}
@@ -243,7 +240,7 @@ const Login = () => {
             </Text>
           </View>
         </View>
-        <Toast /> {/* ✅ Add Toast Component to Render */}
+        <Toast />
 
       </ScrollView>
     </SafeAreaView>

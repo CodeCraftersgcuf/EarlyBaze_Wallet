@@ -12,7 +12,7 @@ import { useRoute } from '@react-navigation/native';
 
 //Code related to the integration:
 import { getFromStorage } from '@/utils/storage';
-import { getSwap, getWithdraw } from '@/utils/queries/appQueries';
+import { getSwap, getWithdraw, getBuy } from '@/utils/queries/appQueries';
 import { useQuery } from '@tanstack/react-query';
 import { useLocalSearchParams } from 'expo-router';
 
@@ -52,7 +52,11 @@ const TransactionPage: React.FC = () => {
       // Default to `getWithdraw`, only call `getSwap` if type is explicitly "swap"
       if (normalizedType === "swap") {
         return getSwap({ token, id });
-      } else {
+      }
+      if (normalizedType === "buy") {
+        return getBuy({ token, id });
+      }
+      else {
         return getWithdraw({ token, id });
       }
     },
@@ -62,7 +66,7 @@ const TransactionPage: React.FC = () => {
   console.log("🔹 Transaction Data of Swap/Receive:", transactionSummary);
 
   // Function to generate dynamic labels based on API response keys
-  const generateLabels = (transactionData) => {
+  const generateLabels = (transactionData, normalizedType) => {
     if (!transactionData) return {}; // Ensure no errors if data is missing
 
     return normalizedType === "swap"
@@ -78,14 +82,27 @@ const TransactionPage: React.FC = () => {
         status: transactionData?.status || "Unknown",
         reason: transactionData?.reason || null,
       }
-      : {
-        amount: transactionData?.amount || "Unknown",
-        bank_name: transactionData?.bank_name || "Unknown",
-        transactionReference: transactionData?.transactionReference || "Unknown",
-        transactionDate: transactionData?.transactionDate || "Unknown",
-        status: transactionData?.status || "Unknown",
-      };
+      : normalizedType === "buy"
+        ? {
+          coin: transactionData?.coin || "Unknown",
+          network: transactionData?.network || "Unknown",
+          amountBtc: transactionData?.amount_btc || "Unknown",
+          amountUsd: transactionData?.amount_usd || "Unknown",
+          amountPaid: transactionData?.amount_paid || "Unknown",
+          accountPaidTo: transactionData?.account_paid_to || "Unknown",
+          transactionReference: transactionData?.transaction_reference || "Unknown",
+          transactionDate: transactionData?.transaction_date || "Unknown", // FIXED: Directly using the date
+          status: transactionData?.status || "Unknown",
+        }
+        : {
+          amount: transactionData?.amount || "Unknown",
+          bank_name: transactionData?.bank_name || "Unknown",
+          transactionReference: transactionData?.transactionReference || "Unknown",
+          transactionDate: transactionData?.transactionDate || "Unknown",
+          status: transactionData?.status || "Unknown",
+        };
   };
+
   // Extract API transaction data safely
   const transactionData = transactionSummary?.data
     ? normalizedType === "swap"
@@ -115,22 +132,36 @@ const TransactionPage: React.FC = () => {
             ? "Network congestion timeout"
             : null,
       }
-      : {
-        amount: transactionSummary.data.amount || "Unknown",
-        bank_name:
-          transactionSummary.data.bank_account?.bankname || "Unknown",
-        transactionReference: transactionSummary.data.reference || "Unknown",
-        transactionDate: transactionSummary.data.created_at
-          ? new Date(transactionSummary.data.created_at).toLocaleString()
-          : "Unknown",
-        status:
-          transactionSummary.data.status === "pending"
-            ? "Pending"
-            : transactionSummary.data.status === "completed"
-              ? "Success"
-              : "Rejected",
-      }
+      : normalizedType === "buy"
+        ? {
+          coin: transactionSummary.data.coin || "Unknown",
+          network: transactionSummary.data.network || "Unknown",
+          amountBtc: transactionSummary.data.amount_btc || "Unknown",
+          amountUsd: transactionSummary.data.amount_usd || "Unknown",
+          amountPaid: transactionSummary.data.amount_paid || "Unknown",
+          accountPaidTo: transactionSummary.data.account_paid_to || "Unknown",
+          transactionReference: transactionSummary.data.transaction_reference || "Unknown",
+          transactionDate: transactionSummary.data.transaction_date || "Unknown", // FIXED: No Date conversion
+          status: transactionSummary.data.status || "Unknown",
+        }
+        : {
+          amount: transactionSummary.data.amount || "Unknown",
+          bank_name:
+            transactionSummary.data.bank_account?.bankname || "Unknown",
+          transactionReference: transactionSummary.data.reference || "Unknown",
+          transactionDate: transactionSummary.data.created_at
+            ? new Date(transactionSummary.data.created_at).toLocaleString()
+            : "Unknown",
+          status:
+            transactionSummary.data.status === "pending"
+              ? "Pending"
+              : transactionSummary.data.status === "completed"
+                ? "Success"
+                : "Rejected",
+        }
     : null;
+
+
 
 
   // Generate labels dynamically from transactionData
