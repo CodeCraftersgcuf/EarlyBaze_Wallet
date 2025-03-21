@@ -70,7 +70,7 @@ const API_ENDPOINTS = {
     GetYearlyStats: API_DOMAIN + "/yearly-stats",
     GetSocialMediaLinks: API_DOMAIN + "/social-media-links",
     GetFaqs: API_DOMAIN + "/faq",
-    GetSlides: API_DOMAIN + "/slides",
+    GetSlides: API_DOMAIN + "/admin/banners",
     PaymentProof: API_DOMAIN + '/wallet/attach-slip',
   },
   BILL_MANAGEMENT: {

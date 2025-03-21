@@ -190,12 +190,7 @@ export const getBuy = async ({
   id?: string;
 }): Promise<BuyResponse> => {
   console.log("The Idsss ", id);
-  return apiCall(
-    `${API_ENDPOINTS.USER.GetBuy}/${id}`,
-    "GET",
-    undefined,
-    token
-  );
+  return apiCall(`${API_ENDPOINTS.USER.GetBuy}/${id}`, "GET", undefined, token);
 };
 export const getTransactionAll = async ({
   token,
@@ -347,19 +342,36 @@ export const getFaqs = async (): Promise<FaqRespone> => {
     undefined
   );
 };
-export const getSlide = async (): Promise<SlideResponse> => {
+
+export const getSlide = async ({
+  token,
+}: {
+  token: string;
+}): Promise<SlideResponse> => {
   console.log("Slides called");
   return await apiCall(
     API_ENDPOINTS.ACCOUNT_MANAGEMENT.GetSlides,
     "GET",
-    undefined
+    null, // Since it's a GET request, parameters may be passed as query parameters instead of the body
+    token
   );
 };
 
 interface SlideResponse {
   status: "success" | "error";
   data: Slide[];
+  message: string; // Adding the message property from the response
 }
+
+interface Slide {
+  id: number;
+  title: string; // Adding title as it's part of the response
+  attachment: string; // Image URL (attachment in the sample response)
+  url: string; // URL of the banner, present in the response
+  created_at: string; // Timestamp of when the slide was created
+  updated_at: string; // Timestamp of when the slide was updated
+}
+
 interface AssetsResponse {
   status: string;
   data: Asset[];
@@ -677,10 +689,6 @@ interface ReferralResponse {
   message: string;
 }
 
-interface Slide {
-  id: number;
-  image: string;
-}
 interface IBillerCategoriesResponse {
   message: string;
   data: IBillerCategory[];

@@ -17,6 +17,8 @@ const TransactionItem: React.FC<TransactionItemProps> = ({ type, amount, created
   const backgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#1A1A1A' }, 'background');
   const textColor = useThemeColor({ light: '#000000', dark: '#FFFFFF' }, 'text');
 
+  const withdrawTransaction = type || undefined; // Ensure it's undefined if empty
+
   // Define colors for different statuses
   const statusColors: Record<string, string> = {
     successful: '#139B15',
@@ -28,7 +30,7 @@ const TransactionItem: React.FC<TransactionItemProps> = ({ type, amount, created
   const statusColor = statusColors[status.toLowerCase()] || '#888';
 
   // Get icon based on transaction type
-  const iconSource = icons?.[type];
+  const iconSource = (type === undefined || type === 'undefined') ? icons.withdraw : icons?.[type];
   const formattedDate = created_at.substring(0, 19); // This removes the `.000000Z` part
 
 
@@ -38,7 +40,7 @@ const TransactionItem: React.FC<TransactionItemProps> = ({ type, amount, created
     receive: '#FFCAEE', // Pink for receive
     buy: '#E0D6FF', // Purple for buy
     swap: '#FFDFDF', // Red for swap
-    withdraw: '#D9D9D9', // Gray for withdraw
+    withdrawTransaction: '#D9D9D9', // Gray for withdraw
   };
 
   const iconBackgroundColor = transactionTypeColors[type] || '#C6FFC7'; // Default to send color if no match
