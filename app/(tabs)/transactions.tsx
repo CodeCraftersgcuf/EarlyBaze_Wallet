@@ -16,7 +16,7 @@ import LoadingIndicator from '@/components/LoadingIndicator';
 import { useQuery } from '@tanstack/react-query';
 import { getFromStorage } from "@/utils/storage";
 import {
-  getTransactionAll
+  getTransactionAll, getAllWithDrawal
 } from "@/utils/queries/appQueries";
 
 
@@ -34,35 +34,6 @@ const Transactions: React.FC = () => {
 
   const bar = useThemeColor({ light: icons.bar, dark: icons.bar_black }, 'icon');
   const arrow = useThemeColor({ light: icons.arrow, dark: icons.arrow_black }, 'icon');
-
-  const { data: transactionsResponse, error: transactionsError, isLoading: transactionsLoading } = useQuery<TransactionsResponse>(
-    {
-      queryKey: ["transactions"],
-      queryFn: () => getTransactionAll({ token }),
-      enabled: !!token, // Only run the query when the token is available
-    }
-  );
-
-  const transactions = transactionsResponse?.data?.transactions || [];
-
-  console.log("🔹 Full Transactions Response:", transactionsResponse);
-  console.log("🔹 Extracted Transactions:", transactions);
-  console.log("🔹 Active Tab:", activeTab);
-  console.log("🔹 Filter Key:", filterKey);
-  console.log("🔹 Filtered Transactions:", filteredTransactions);
-
-
-  console.log("🔹 Transactions:", transactions);
-  // Ensure transactions data is available before filtering
-  const filteredTransactions = transactions.length > 0
-    ? transactions.filter(tx => {
-      const tabMatch = activeTab === 'All' || tx.type.toLowerCase() === activeTab.toLowerCase();
-      const statusMatch = filterKey === 'All' || tx.status.toLowerCase() === filterKey.toLowerCase();
-      return tabMatch && statusMatch;
-    })
-    : [];
-
-
   // Fetch the token and user data when the component mounts
   useEffect(() => {
     const fetchUserData = async () => {
@@ -75,8 +46,45 @@ const Transactions: React.FC = () => {
   }, []);
 
 
+  const { data: transactionsResponse, error: transactionsError, isLoading: transactionsLoading } = useQuery<TransactionsResponse | AllWithdrawalResponse>(
+    {
+      queryKey: ["transactions", activeTab], // Include activeTab in queryKey to refetch when it changes
+      queryFn: () => activeTab === "Withdraw" ? getAllWithDrawal({ token }) : getTransactionAll({ token }),
+      enabled: !!token, // Only run the query when the token is available
+    }
+  );
 
 
+  const transactions = activeTab === "Withdraw"
+    ? (transactionsResponse?.data as AllWithdrawalResponse["data"]) || []
+    : (transactionsResponse?.data?.transactions || []);
+
+  const filteredTransactions = transactions.length > 0
+    ? transactions.filter(tx => {
+      // Check for tab match
+      const tabMatch =
+        activeTab === 'All' ||
+        (activeTab === 'Withdraw'
+          ? !!tx.bank_account // Check if it's a withdrawal transaction based on structure
+          : tx.type?.toLowerCase() === activeTab.toLowerCase());
+
+
+      // Check for status match
+      const statusMatch = filterKey === 'All' || tx.status.toLowerCase() === filterKey.toLowerCase();
+
+      return tabMatch && statusMatch;
+    })
+    : [];
+
+  console.log("🔹 Full Transactions Response:", transactionsResponse);
+  console.log("🔹 Extracted Transactions:", transactions);
+  console.log("🔹 Active Tab:", activeTab);
+  console.log("🔹 Filter Key:", filterKey);
+  console.log("🔹 Filtered Transactions:", filteredTransactions);
+
+
+
+  console.log("🔹 Transactions:", transactions);
 
   return (
     <ThemedView style={[styles.container, { backgroundColor }]}>

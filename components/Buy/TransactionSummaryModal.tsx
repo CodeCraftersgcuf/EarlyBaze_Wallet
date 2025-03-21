@@ -26,11 +26,13 @@ interface TransactionSummaryModalProps {
     transactionReference: string;
     transactionDate: string;
     status: string;
-    reason?: string; // Optional field
+    reason?: string;
   };
+  labels: { [key: string]: string }; // Mapping field names to labels
 }
 
-const TransactionSummaryModal: React.FC<TransactionSummaryModalProps> = ({ visible, onClose, transactionData, }) => {
+
+const TransactionSummaryModal: React.FC<TransactionSummaryModalProps> = ({ visible, onClose, transactionData, labels }) => {
   console.log("Transaction Data:", transactionData);
   const backgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#1A1A1A' }, 'background');
   const textColor = useThemeColor({ light: '#000000', dark: '#FFFFFF' }, 'text');
@@ -38,6 +40,7 @@ const TransactionSummaryModal: React.FC<TransactionSummaryModalProps> = ({ visib
   const borderColor = useThemeColor({ light: '#EAEAEA', dark: '#333333' }, 'border');
   const textTitleColor = useThemeColor({ light: '#25AE7A', dark: '#25AE7A' }, 'textTitle');
 
+  console.log("The Labels", labels);
 
   const close = useThemeColor({ light: images.cross_white, dark: images.cross_black }, 'close');
 
@@ -65,23 +68,34 @@ const TransactionSummaryModal: React.FC<TransactionSummaryModalProps> = ({ visib
 
           {/* Transaction Details */}
           <View style={styles.detailContainer}>
-            {transactionData?.coin && <TransactionDetailItem label="Coin" value={transactionData.coin} />}
-            {transactionData?.network && <TransactionDetailItem label="Network" value={transactionData.network} />}
-            {transactionData?.amountBtc && <TransactionDetailItem label="Amount - BTC" value={transactionData.amountBtc} />}
-            {transactionData?.amountUsd && <TransactionDetailItem label="Amount - USD" value={transactionData.amountUsd} />}
-            {transactionData?.amountPaid && <TransactionDetailItem label="Amount Paid" value={transactionData.amountPaid} />}
-            {transactionData?.accountPaidTo && <TransactionDetailItem label="Account Paid to" value={transactionData.accountPaidTo} />}
-            {transactionData?.transactionReference && (
-              <TransactionDetailItem label="Transaction reference" value={transactionData.transactionReference} isCopyable />
-            )}
-            {transactionData?.transactionDate && <TransactionDetailItem label="Transaction Date" value={transactionData.transactionDate} />}
-            {transactionData?.status && (
-              <TransactionDetailItem label="Status" value={transactionData.status} valueStyle={{ color: statusColor, fontWeight: 'bold' }} />
-            )}
+            {Object.entries(transactionData || {}).map(([key, value]) => {
+              if (!value) return null; // Skip empty or null values
+
+              // Handle Date Fields Separately
+              if (key === "transactionDate" && typeof value === "string") {
+                return (
+                  <TransactionDetailItem
+                    key={key}
+                    label={labels?.transactionDate || "Transaction Date"}
+                    value={new Date(value).toLocaleString()} // Format the date
+                  />
+                );
+              }
+
+              return (
+                <TransactionDetailItem
+                  key={key}
+                  label={labels?.[key] || key} // Use labels if available
+                  value={value}
+                  isCopyable={key === "transactionReference"} // Enable copy for transactionReference
+                  valueStyle={key === "status" ? { color: statusColor, fontWeight: "bold" } : {}} // Apply styling for status
+                />
+              );
+            })}
 
             {/* Conditionally render Reason */}
-            {showReason && (
-              <TransactionDetailItem label="Reason" value={transactionData.reason} />
+            {showReason && transactionData?.reason && (
+              <TransactionDetailItem label={labels?.reason || "Reason"} value={transactionData.reason} />
             )}
           </View>
         </View>

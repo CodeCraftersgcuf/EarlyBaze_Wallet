@@ -12,7 +12,7 @@ import { useRoute } from '@react-navigation/native';
 
 //Code related to the integration:
 import { getFromStorage } from '@/utils/storage';
-import { getSwap } from '@/utils/queries/appQueries';
+import { getSwap, getWithdraw } from '@/utils/queries/appQueries';
 import { useQuery } from '@tanstack/react-query';
 import { useLocalSearchParams } from 'expo-router';
 
@@ -29,6 +29,9 @@ const TransactionPage: React.FC = () => {
   const { id, types } = useLocalSearchParams();
 
   console.log("Type from TransactionPagess:", types);
+  console.log("ID from TransactionPagess:", id);
+
+  const normalizedType = types || undefined; // Ensure it's undefined if empty
 
   // Fetch the token and user data when the component mounts
   useEffect(() => {
@@ -40,35 +43,98 @@ const TransactionPage: React.FC = () => {
 
     fetchUserData();
   }, []);
-
   const { data: transactionSummary, error, isLoading } = useQuery({
-    queryKey: [types === "swap" ? "internalSend" : "internalReceive", token, id],
+    queryKey: [normalizedType === "swap" ? "internalSend" : normalizedType === undefined ? "withdraw" : "internalReceive", token, id],
     queryFn: () => {
       if (!token || !id) return Promise.reject("No valid ID or token");
 
-      // Call the correct function based on `types`
-      return getSwap({ token, id });
+      // Call the correct function based on `normalizedType`
+      // Default to `getWithdraw`, only call `getSwap` if type is explicitly "swap"
+      if (normalizedType === "swap") {
+        return getSwap({ token, id });
+      } else {
+        return getWithdraw({ token, id });
+      }
     },
     enabled: !!token && !!id, // Only fetch if both token and ID exist
   });
 
   console.log("🔹 Transaction Data of Swap/Receive:", transactionSummary);
 
+  // Function to generate dynamic labels based on API response keys
+  const generateLabels = (transactionData) => {
+    if (!transactionData) return {}; // Ensure no errors if data is missing
+
+    return normalizedType === "swap"
+      ? {
+        coin: transactionData?.coin || "Unknown",
+        network: transactionData?.network || "Unknown",
+        amountBtc: transactionData?.amountBtc || "Unknown",
+        amountUsd: transactionData?.amountUsd || "Unknown",
+        amountPaid: transactionData?.amountPaid || "Unknown",
+        accountPaidTo: transactionData?.accountPaidTo || "Unknown",
+        transactionReference: transactionData?.transactionReference || "Unknown",
+        transactionDate: transactionData?.transactionDate || "Unknown",
+        status: transactionData?.status || "Unknown",
+        reason: transactionData?.reason || null,
+      }
+      : {
+        amount: transactionData?.amount || "Unknown",
+        bank_name: transactionData?.bank_name || "Unknown",
+        transactionReference: transactionData?.transactionReference || "Unknown",
+        transactionDate: transactionData?.transactionDate || "Unknown",
+        status: transactionData?.status || "Unknown",
+      };
+  };
   // Extract API transaction data safely
   const transactionData = transactionSummary?.data
-    ? {
-      coin: transactionSummary.data.currency || "Unknown",
-      network: transactionSummary.data.network || "Unknown",
-      amountBtc: `${transactionSummary.data.amount} ${transactionSummary.data.currency}`,
-      amountUsd: `$${transactionSummary.data.amount_usd}`,
-      amountPaid: `NGN${transactionSummary.data.amount_naira}`,
-      accountPaidTo: "Account 1", // You may want to update this with real data
-      transactionReference: transactionSummary.data.reference,
-      transactionDate: new Date(transactionSummary.data.created_at).toLocaleString(), // Convert to readable format
-      status: transactionSummary.data.status === "completed" ? "Success" : "Rejected",
-      reason: transactionSummary.data.status === "failed" ? "Network congestion timeout" : null,
-    }
+    ? normalizedType === "swap"
+      ? {
+        coin: transactionSummary.data.currency || "Unknown",
+        network: transactionSummary.data.network || "Unknown",
+        amountBtc: transactionSummary.data.amount
+          ? `${transactionSummary.data.amount} ${transactionSummary.data.currency}`
+          : "Unknown",
+        amountUsd: transactionSummary.data.amount_usd
+          ? `$${transactionSummary.data.amount_usd}`
+          : "Unknown",
+        amountPaid: transactionSummary.data.amount_naira
+          ? `NGN${transactionSummary.data.amount_naira}`
+          : "Unknown",
+        accountPaidTo: "Account 1", // Placeholder
+        transactionReference: transactionSummary.data.reference || "Unknown",
+        transactionDate: transactionSummary.data.created_at
+          ? new Date(transactionSummary.data.created_at).toLocaleString()
+          : "Unknown",
+        status:
+          transactionSummary.data.status === "completed"
+            ? "Success"
+            : "Rejected",
+        reason:
+          transactionSummary.data.status === "failed"
+            ? "Network congestion timeout"
+            : null,
+      }
+      : {
+        amount: transactionSummary.data.amount || "Unknown",
+        bank_name:
+          transactionSummary.data.bank_account?.bankname || "Unknown",
+        transactionReference: transactionSummary.data.reference || "Unknown",
+        transactionDate: transactionSummary.data.created_at
+          ? new Date(transactionSummary.data.created_at).toLocaleString()
+          : "Unknown",
+        status:
+          transactionSummary.data.status === "pending"
+            ? "Pending"
+            : transactionSummary.data.status === "completed"
+              ? "Success"
+              : "Rejected",
+      }
     : null;
+
+
+  // Generate labels dynamically from transactionData
+  const labels = generateLabels(transactionData);
 
   // Set transaction steps dynamically based on status
   const transactions = transactionData?.status === "Rejected"
@@ -135,10 +201,13 @@ const TransactionPage: React.FC = () => {
         ))}
 
         {/* Show success box only if the transaction is not rejected */}
-        {transactionData?.status !== "Rejected" && (
+        {/* Show success box only if the transaction is not rejected and not pending */}
+        {transactionData?.status !== "Rejected" && transactionData?.status !== "Pending" && (
           <View style={{ marginTop: 20 }}>
             <TransactionSuccess
-              title={transactionType === 'withdraw' ? 'Withdrawal Successful' : 'Transaction Successful'} amount={transactionSummary?.data.amount} network={transactionSummary?.data.network}
+              title={transactionType === 'withdraw' ? 'Withdrawal Successful' : 'Transaction Successful'}
+              amount={transactionSummary?.data.amount}
+              network={transactionSummary?.data.network}
             />
           </View>
         )}
@@ -169,7 +238,8 @@ const TransactionPage: React.FC = () => {
       </View>
 
       {/* Modal */}
-      <TransactionSummaryModal visible={modalVisible} onClose={() => setModalVisible(false)} transactionData={transactionData} />
+      <TransactionSummaryModal visible={modalVisible} onClose={() => setModalVisible(false)} transactionData={transactionData} labels={labels} />;
+      s
     </ScrollView>
   );
 };

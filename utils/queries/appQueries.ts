@@ -1,5 +1,6 @@
 import { API_ENDPOINTS } from "@/apiConfig";
 import { apiCall } from "../customApiCall";
+import { string } from "yup";
 
 export const getAssests = async ({
   token,
@@ -158,8 +159,23 @@ export const getSwap = async ({
   );
   console.log("Sending the requesat", id);
   return apiCall(
-
     `${API_ENDPOINTS.USER.GetSwap}/${id}`,
+    "GET",
+    undefined,
+    token
+  );
+};
+
+export const getWithdraw = async ({
+  token,
+  id,
+}: {
+  token: string;
+  id?: string;
+}): Promise<WithdrawResponse> => {
+  console.log("The Idsss ", id);
+  return apiCall(
+    `${API_ENDPOINTS.USER.GetWithdraw}/${id}`,
     "GET",
     undefined,
     token
@@ -173,6 +189,20 @@ export const getTransactionAll = async ({
 }): Promise<TransactionAllResponse> => {
   return await apiCall(
     API_ENDPOINTS.USER.GetWalletTransactions,
+    "GET",
+    undefined,
+    token
+  );
+};
+
+export const getAllWithDrawal = async ({
+  token,
+}: {
+  token: string;
+}): Promise<AllWithdrawalResponse> => {
+  console.log("Sending request to get all withdrawal");
+  return await apiCall(
+    API_ENDPOINTS.USER.GetAllWithdrawal,
     "GET",
     undefined,
     token
@@ -389,6 +419,35 @@ interface SwapResponse {
   };
   message: string;
 }
+interface BankAccount {
+  id: number;
+  user_id: number;
+  bank_name: string;
+  account_number: string;
+  account_name: string;
+  created_at: string;
+  updated_at: string;
+  is_default: number;
+}
+
+interface WithdrawResponse {
+  status: string;
+  data: {
+    id: number;
+    user_id: number;
+    bank_account_id: number;
+    amount: number;
+    status: string;
+    reference: string;
+    fee: number;
+    total: number;
+    asset: string;
+    created_at: string;
+    updated_at: string;
+    bank_account: BankAccount;
+  };
+  message: string;
+}
 
 interface AssetsTransResponse {
   status: string;
@@ -535,6 +594,37 @@ interface TransactionAll {
   amount_usd: string;
   created_at: string;
   updated_at: string;
+}
+interface BankAccount {
+  id: number;
+  user_id: number;
+  bank_name: string;
+  account_number: string;
+  account_name: string;
+  created_at: string;
+  updated_at: string;
+  is_default: number;
+}
+
+interface WithdrawalTransaction {
+  id: number;
+  user_id: number;
+  bank_account_id: number;
+  amount: number;
+  status: string;
+  reference: string;
+  fee: number;
+  total: number;
+  asset: string;
+  created_at: string;
+  updated_at: string;
+  bank_account: BankAccount;
+}
+
+interface AllWithdrawalResponse {
+  status: string;
+  data: WithdrawalTransaction[];
+  message: string;
 }
 
 interface ReferralResponse {
