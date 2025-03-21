@@ -357,6 +357,36 @@ export const getSlide = async ({
   );
 };
 
+export const getAllNotifications = async ({
+  token,
+}: {
+  token: string;
+}): Promise<NotificationResponse> => {
+  console.log("Slides called");
+  return await apiCall(
+    API_ENDPOINTS.ACCOUNT_MANAGEMENT.GetAllNotifications,
+    "GET",
+    null, // Since it's a GET request, parameters may be passed as query parameters instead of the body
+    token
+  );
+};
+
+interface Notification {
+  id: number;
+  title: string;
+  attachment: string;
+  message: string;
+  status: "active" | "inactive"; // Assuming status can be "active" or "inactive"
+  created_at: string;
+  updated_at: string;
+}
+
+interface NotificationResponse {
+  status: "success" | "error"; // Assuming status can either be "success" or "error"
+  data: Notification[]; // Array of notifications
+  message: string; // A message indicating the result
+}
+
 interface SlideResponse {
   status: "success" | "error";
   data: Slide[];

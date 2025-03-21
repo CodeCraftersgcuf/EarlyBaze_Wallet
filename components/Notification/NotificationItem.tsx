@@ -7,7 +7,7 @@ interface NotificationItemProps {
   message: string;
   timestamp: string;
   isUnread?: boolean;
-  imageUrl?: any;
+  imageUrl?: { uri: string } | null;
 }
 
 const NotificationItem: React.FC<NotificationItemProps> = ({ title, message, timestamp, isUnread, imageUrl }) => {
@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   image: {
-    width: 100, // Adjusted for better fit
+    width: 100,
     height: 100,
     borderRadius: 8,
     marginLeft: 10,
