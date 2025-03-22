@@ -25,7 +25,7 @@ import { getFromStorage } from "@/utils/storage";
 import { useLocalSearchParams } from 'expo-router';
 
 const PaymentProof: React.FC = () => {
-  const { id } = useLocalSearchParams(); // Ensure id is retrieved correctly
+  const { id, transaction_id } = useLocalSearchParams(); // Ensure id is retrieved correctly
   const backgroundColor = useThemeColor({ light: '#EFFEF9', dark: '#000000' }, 'background');
   const cardBackgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#1A1A1A' }, 'card');
   const textColor = useThemeColor({ light: '#000000', dark: '#FFFFFF' }, 'text');
@@ -37,8 +37,10 @@ const PaymentProof: React.FC = () => {
   const [receipt, setReceipt] = useState<string | null>(null);
   const { push } = useRouter();
   const upload = useThemeColor({ light: icons.upload, dark: icons.upload_black }, 'background');
+  const type= "buy";
 
   console.log("📌 The Id received for the Buy:", id);
+  console.log("📌 The Transaction Id received for the Buy:", transaction_id);
 
   // Fetch authentication token
   useEffect(() => {
@@ -85,7 +87,7 @@ const PaymentProof: React.FC = () => {
 
       // Wait 1 second before redirecting so the toast is visible
       setTimeout(() => {
-        push('/TransactionPage'); // Redirect after success
+         router.push(`/TransactionPage?id=${transaction_id}&types=${type}`); // Redirect after success
       }, 1000);
     },
     onError: (error) => {

@@ -15,6 +15,7 @@ import { getFromStorage } from '@/utils/storage';
 import { getSwap, getWithdraw, getBuy } from '@/utils/queries/appQueries';
 import { useQuery } from '@tanstack/react-query';
 import { useLocalSearchParams } from 'expo-router';
+import LoadingIndicator from '@/components/LoadingIndicator';
 
 const TransactionPage: React.FC = () => {
   const [token, setToken] = useState<string | null>(null);
@@ -43,7 +44,7 @@ const TransactionPage: React.FC = () => {
 
     fetchUserData();
   }, []);
-  const { data: transactionSummary, error, isLoading } = useQuery({
+  const { data: transactionSummary, error, isPending } = useQuery({
     queryKey: [normalizedType === "swap" ? "internalSend" : normalizedType === undefined ? "withdraw" : "internalReceive", token, id],
     queryFn: () => {
       if (!token || !id) return Promise.reject("No valid ID or token");
@@ -62,7 +63,9 @@ const TransactionPage: React.FC = () => {
     },
     enabled: !!token && !!id, // Only fetch if both token and ID exist
   });
-
+  if (isPending && id) {
+    return <LoadingIndicator message="Fetching Transaction Details..." />;
+  }
   console.log("🔹 Transaction Data of Swap/Receive:", transactionSummary);
 
   // Function to generate dynamic labels based on API response keys

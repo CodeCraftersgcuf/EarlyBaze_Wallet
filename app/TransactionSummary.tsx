@@ -18,12 +18,15 @@ import { getFromStorage } from "@/utils/storage";
 import { useQuery } from '@tanstack/react-query';
 import { getInternalSend } from "@/utils/queries/appQueries";
 import { getInternalReceive } from "@/utils/queries/appQueries";
+import LoadingIndicator from "@/components/LoadingIndicator";
 
 const TransactionSummary: React.FC = () => {
-  const { type, currency, network, amount, email, address, temp } = useLocalSearchParams();
+  const { type, currency, network, amount, email, address, temp, image } = useLocalSearchParams();
   const { id } = useLocalSearchParams();
   console.log("Transaction ID:", id); // Debugging
-  console.log("The data coming from the props:", type, currency, network, amount, email, address, temp);
+  console.log("The data coming from the props:", type, currency, network, amount, email, address, temp, image);
+  console.log("🧾 Image from params:", image);
+
   console.log("The Amount:", amount);
   const [token, setToken] = useState<string | null>(null); // State to hold the token
 
@@ -46,7 +49,7 @@ const TransactionSummary: React.FC = () => {
     fetchUserData();
   }, []);
 
-  const { data: transactionData, error, isLoading } = useQuery({
+  const { data: transactionData, error, isPending } = useQuery({
     queryKey: [type === "send" ? "internalSend" : "internalReceive", token, id],
     queryFn: () => {
       if (!token || !id) return Promise.reject("No valid ID or token");
@@ -62,7 +65,7 @@ const TransactionSummary: React.FC = () => {
       id: 0,
       transaction_id: 0,
       transaction_type: type || "internal",
-      currency: "BTC",
+      currency: currency,
       symbol: "default.png",
       tx_id: "N/A",
       block_hash: "N/A",
@@ -76,6 +79,12 @@ const TransactionSummary: React.FC = () => {
     };
   }, [transactionData, type]);
 
+  // ✅ Place this check AFTER all hooks are initialized
+  if (isPending && !temp) {
+    return <LoadingIndicator message="Fetching Transaction Details..." />;
+  }
+
+
   return (
     <ScrollView contentContainerStyle={[styles.container, { backgroundColor }]}>
       {/* Header */}
@@ -85,10 +94,16 @@ const TransactionSummary: React.FC = () => {
       <View style={styles.iconWrapper}>
         <View style={styles.iconContainer}>
           <Image
-            source={{ uri: `https://earlybaze.hmstech.xyz/storage/${transaction?.symbol || "default.png"}` }}
+            source={
+              image && typeof image === "string" && image.startsWith("http")
+                ? { uri: image }
+                : { uri: `https://earlybaze.hmstech.xyz/storage/${transaction?.symbol || "default.png"}` }
+            }
             style={styles.bitcoinIcon}
           />
+
         </View>
+
       </View>
 
       {/* Transaction Card */}
@@ -96,14 +111,20 @@ const TransactionSummary: React.FC = () => {
         <Text style={styles.amountText}>{transaction?.amount} </Text>
         <TransactionDetailItem
           label={type === "send" ? "Recipient Address" : "Sender Address"}
-          value={String(type === "send" ? transaction?.receiver_address : transaction?.receiver_address)}
+          value={email || String(type === "send" ? transaction?.receiver_address : transaction?.receiver_address)}
           isCopyable
         />
+
         <TransactionDetailItem
           label="Network"
           value={String(transaction?.currency)}
-          icon={{ uri: `https://earlybaze.hmstech.xyz/storage/${transaction?.symbol || "default.png"}` }}
+          icon={
+            image && typeof image === "string" && image.startsWith("http")
+              ? { uri: image }
+              : { uri: `https://earlybaze.hmstech.xyz/storage/${transaction?.symbol || "default.png"}` }
+          }
         />
+
         <TransactionDetailItem label="Amount" value={String(transaction?.amount)} />
         <TransactionDetailItem label="Amount in USD" value={String(transaction?.amount_usd)} />
 

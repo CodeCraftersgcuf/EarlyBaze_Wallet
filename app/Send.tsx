@@ -49,6 +49,7 @@ const Send: React.FC = () => {
             Toast.show({ type: "error", text1: `Please enter a valid ${missingField}.` });
             return;
         }
+        console.log("Selected Image", selectedCoin.icon);
 
         // Proceed if all fields are filled
         const requestData = {
@@ -57,6 +58,7 @@ const Send: React.FC = () => {
             amount: usdAmount,
             email: selectedTab === "Internal Transfer" ? scannedAddress : undefined,
             address: selectedTab === "Crypto Address" ? scannedAddress : undefined,
+            image: selectedCoin?.icon?.uri || "", // ✅ Only pass the image URI string
             temp: "temp",
         };
 

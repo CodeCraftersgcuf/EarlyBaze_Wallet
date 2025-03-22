@@ -50,7 +50,7 @@ const PaymentSummary: React.FC = () => {
 
       {/* Proceed Button */}
       <View style={styles.buttonContainer}>
-        <PrimaryButton title="I have made payment" onPress={() => push({ pathname: '/PaymentProof', params: { id } })} />
+        <PrimaryButton title="I have made payment" onPress={() => push({ pathname: '/PaymentProof', params: { id, transaction_id } })} />
       </View>
     </ScrollView>
   );
