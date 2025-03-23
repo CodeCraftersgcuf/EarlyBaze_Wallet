@@ -9,7 +9,7 @@ import { icons } from '@/constants';
 
 import { Alert } from "react-native";
 import { removeFromStorage } from "@/utils/storage";
-
+import { useTheme } from '@/contexts/themeContext';
 
 interface OtherSettingsProps {
   isDarkMode: boolean;
@@ -22,11 +22,13 @@ const OtherSettings: React.FC<OtherSettingsProps> = ({ isDarkMode, onToggleTheme
   const borderColor = useThemeColor({ light: '#E5E5E5', dark: '#333333' }, 'border');
   const buttonText = useThemeColor({ light: '#121212', dark: '#22A45D' }, 'buttonText');
 
-  const [selectedTheme, setSelectedTheme] = useState<'Light' | 'Dark'>(isDarkMode ? 'Dark' : 'Light');
+  const { dark, setScheme } = useTheme();
+
+  const [selectedTheme, setSelectedTheme] = useState<'Light' | 'Dark'>(dark ? 'Dark' : 'Light');
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0, width: 0 });
 
-  const themeRef = useRef<TouchableOpacity>(null);
+  const themeRef = useRef<View>(null);
 
   const theme = useThemeColor({ light: icons.theme_white, dark: icons.theme_black }, 'background');
   const term = useThemeColor({ light: icons.term_white, dark: icons.term_black }, 'background');
@@ -35,35 +37,30 @@ const OtherSettings: React.FC<OtherSettingsProps> = ({ isDarkMode, onToggleTheme
 
   const handleThemeChange = (theme: 'Light' | 'Dark') => {
     setSelectedTheme(theme);
-    onToggleTheme(theme);
+    setScheme(theme.toLowerCase() as 'light' | 'dark'); // this will update the context
     setDropdownVisible(false);
     console.log(`🔹 Theme changed to: ${theme}`);
   };
 
-  // Function to toggle the dropdown and measure its position
   const toggleDropdown = () => {
     if (themeRef.current) {
-      themeRef.current.measureInWindow((x, y, width) => {
-        setDropdownPosition({ top: y + 40, left: x, width });
+      themeRef.current.measure((fx, fy, width, height, px, py) => {
+        setDropdownPosition({ top: py + height, left: px, width });
         setDropdownVisible((prev) => !prev);
       });
     }
   };
 
   return (
-    <View style={[styles.container, { backgroundColor }]}>
+    <View style={[styles.container, { backgroundColor, position: 'relative', flex: 1 }]}>
       <Text style={[styles.sectionTitle, { color: textColor }]}>Other Settings</Text>
 
       {/* Theme Selector */}
-      <TouchableOpacity
-        ref={themeRef}
-        style={styles.themeSelector}
-        onPress={toggleDropdown}
-      >
+      <View ref={themeRef} style={styles.themeSelector}>
         <SettingOption
           title="Theme"
           iconName={theme}
-          onPress={() => { }}
+          onPress={toggleDropdown}
           rightContent={
             <View style={styles.dropdownToggle}>
               <Text style={{ color: textColor }}>{selectedTheme}</Text>
@@ -72,17 +69,25 @@ const OtherSettings: React.FC<OtherSettingsProps> = ({ isDarkMode, onToggleTheme
           }
           textColor={textColor}
         />
-      </TouchableOpacity>
+      </View>
 
-      {/* Dropdown for theme selection */}
+      {/* Theme Dropdown (Actual dropdown now positioned correctly) */}
       {dropdownVisible && (
-        <View style={[styles.dropdown, {
-          backgroundColor: backgroundColor,
-          borderColor: borderColor,
-          top: dropdownPosition.top,
-          left: dropdownPosition.left,
-          width: dropdownPosition.width
-        }]}>
+
+        <View
+          style={{
+            position: 'absolute',
+            top: 90,
+            right: 15,
+            width: 100,
+            backgroundColor: backgroundColor,
+            borderColor: borderColor,
+            borderWidth: 1,
+            borderRadius: 8,
+            paddingVertical: 8,
+            zIndex: 999,
+          }}
+        >
           <TouchableOpacity onPress={() => handleThemeChange('Light')} style={styles.dropdownItem}>
             <Text style={{ color: textColor }}>Light</Text>
           </TouchableOpacity>
@@ -132,6 +137,7 @@ const OtherSettings: React.FC<OtherSettingsProps> = ({ isDarkMode, onToggleTheme
     </View>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {

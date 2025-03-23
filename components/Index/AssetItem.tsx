@@ -55,30 +55,30 @@ const styles = StyleSheet.create({
         elevation: 3,
     },
     assetIcon: {
-        width: 40,
-        height: 40,
+        width: 30,
+        height: 30,
         marginRight: 10,
     },
     assetDetails: {
         flex: 1,
     },
     assetName: {
-        fontSize: 16,
+        fontSize: 14,
         fontWeight: 'bold',
     },
     assetType: {
-        fontSize: 12,
+        fontSize: 10,
         color: '#8A8A8A',
     },
     assetValue: {
         alignItems: 'flex-end',
     },
     balance: {
-        fontSize: 16,
+        fontSize: 14,
         fontWeight: 'bold',
     },
     price: {
-        fontSize: 12,
+        fontSize: 10,
         color: '#8A8A8A',
     },
 });

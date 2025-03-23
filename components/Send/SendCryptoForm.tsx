@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
     View,
     Text,
@@ -25,6 +25,14 @@ import networkOptions from '@/constants/networkOptions.json';
 import NetworkSelectionModal from '../Receive/NetworkSelectionModal';
 
 
+//Code realted to the integration:
+
+import { useMutation } from '@tanstack/react-query';
+import { calculateExchangeRate } from "@/utils/mutations/accountMutations";
+import { getFromStorage } from "@/utils/storage";
+
+
+
 const SendCryptoForm: React.FC<{
     selectedTab: 'Crypto Address' | 'Internal Transfer';
     setSelectedTab: React.Dispatch<React.SetStateAction<'Crypto Address' | 'Internal Transfer'>>;
@@ -36,6 +44,7 @@ const SendCryptoForm: React.FC<{
     setUsdAmount: React.Dispatch<React.SetStateAction<string>>;
     scannedAddress: string;
     setScannedAddress: React.Dispatch<React.SetStateAction<string>>;
+    assetData: { assestId: string, icon: string, assetName: string };
 }> = ({
     selectedTab,
     setSelectedTab,
@@ -46,20 +55,31 @@ const SendCryptoForm: React.FC<{
     usdAmount,
     setUsdAmount,
     scannedAddress,
-    setScannedAddress
+    setScannedAddress,
+    assetData
 }) => {
+        const [token, setToken] = useState<string | null>(null);
         const cardBackgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#1A1A1A' }, 'card');
         const textColor = useThemeColor({ light: '#222222', dark: '#FFFFFF' }, 'text');
         const borderColor = useThemeColor({ light: '#E5E5E5', dark: '#333333' }, 'border');
+
+        const { assestId, icon, assetName } = assetData;  // Access individual properties
+        console.log("The Final data receving: ", assetName, assestId, icon);
+
+        const [convertedAmount, setConvertedAmount] = useState("0.00");
+        const convertedAmountRef = useRef("0.00");
+        const ngnAmountRef = useRef("0.00");
+
 
         const [isScannerOpen, setIsScannerOpen] = useState(false);
         const [modalType, setModalType] = useState<string | null>(null);
         const [modalVisible, setModalVisible] = useState(false);
 
         const scan = useThemeColor({ light: images.scan, dark: images.scan_black }, 'scan');
+        const didMountRef = useRef(false); // ⬅️ Add this at the top of your component
 
         // Ensure selectedCoin and selectedNetwork are never null
-        const coinId = selectedCoin?.id ? selectedCoin.id.toString() : undefined;
+        const coinId = selectedCoin?.id?.toString() || assestId || undefined;
 
         const handleSelectNetwork = (network: any) => {
             if (modalType === "coin") {
@@ -70,11 +90,82 @@ const SendCryptoForm: React.FC<{
             setModalVisible(false);
         };
 
+        // Fetch the token and user data when the component mounts
+        useEffect(() => {
+            const fetchUserData = async () => {
+                const fetchedToken = await getFromStorage("authToken");
+                setToken(fetchedToken);
+                console.log("🔹 Retrieved Token:", fetchedToken);
+            };
+
+            fetchUserData();
+        }, []);
+
+        const { mutate: getExchangeRate } = useMutation({
+            mutationFn: ({
+                data,
+                token,
+            }: {
+                data: { currency: string; amount: string };
+                token: string;
+            }) => calculateExchangeRate({ data, token }),
+
+            onSuccess: (response: { data: { amount_usd: string | null; amount_naira: string | null }; message: string; status: string }) => {
+                console.log("✅ Exchange Rate Fetched:", response);
+
+                // Safely destructure and provide fallback values in case of undefined or null
+                const { amount_usd, amount_naira } = response.data;
+
+                // Default to "0.00" if either value is undefined or null
+                const usdAmount = amount_usd ?? "0.00";
+                const ngnAmount = amount_naira ?? "0.00";
+
+                console.log("The data", ngnAmount);
+
+                // ✅ Store exchange rate values in refs to persist them
+                convertedAmountRef.current = usdAmount;
+                ngnAmountRef.current = ngnAmount;
+
+                // ✅ Update state only if values have changed
+                setConvertedAmount(usdAmount);
+            },
+
+            onError: (error: any) => {
+                console.error('❌ Error fetching exchange rate:', error);
+            },
+        });
+
         const openModal = (type: string) => {
             setModalType(type);
             setModalVisible(true);
         };
-
+        useEffect(() => {
+            if (assetName && assestId && icon) {
+                setSelectedCoin({
+                    id: assestId,
+                    name: assetName,
+                    icon: icon,
+                });
+                setModalType("coin");
+                setModalVisible(true);
+            }
+        }, [assetName, assestId, icon]);
+        
+        useEffect(() => {
+            if (didMountRef.current) {
+                if (token && selectedCoin?.name && usdAmount) {
+                    getExchangeRate({
+                        data: {
+                            currency: selectedCoin.name.toLowerCase(),
+                            amount: usdAmount
+                        },
+                        token: token
+                    });
+                }
+            } else {
+                didMountRef.current = true; // ⬅️ Mark as mounted after first render
+            }
+        }, [usdAmount, selectedCoin, token]);
         return (
             <View style={styles.container}>
                 <TabSwitcher selectedTab={selectedTab} setSelectedTab={setSelectedTab} />
@@ -97,20 +188,27 @@ const SendCryptoForm: React.FC<{
 
                     {/* ✅ Amount and Currency Selection */}
                     <View style={styles.exchangeContainer}>
-                        <InputField label="USD" value={usdAmount} onChange={setUsdAmount} />
+                        <InputField label={selectedCoin?.name} value={usdAmount} onChange={setUsdAmount} />
                         <SelectionBox
                             label="Coin"
-                            id={selectedCoin?.id || ""}
-                            value={selectedCoin?.name || "Select Coin"} // ✅ Default to "Select Coin" if empty
-                            icon={selectedCoin?.icon || images.solana} // ✅ Provide a default icon
-                            onPress={() => openModal("coin")}
+                            id={selectedCoin?.id || assestId}
+                            value={selectedCoin?.name || assetName}
+                            icon={selectedCoin?.icon || icon}
+                        // onPress={() => {
+                        //     openModal("coin");
+                        // }}
                         />
+
                     </View>
 
                     {/* ✅ Network Selection */}
                     <View style={styles.selectionContainer}>
-                        <InputField label="USD" value={usdAmount} onChange={setUsdAmount} />
-                        <SelectionBox
+                        <InputField
+                            label="USD"
+                            value={convertedAmount}
+                            onChange={() => { }}
+                            editable={false} // ✅ Make it disabled
+                        />                        <SelectionBox
                             label="Network"
                             id={selectedNetwork.id}
                             value={selectedNetwork.name || "Select Network"}
@@ -130,13 +228,14 @@ const SendCryptoForm: React.FC<{
                         selectedNetwork={selectedNetwork}
                         networks={networkOptions}
                         modelType={modalType}
-                        coinId={selectedCoin.id}
+                        coinId={selectedCoin?.id || assestId}
+                        assetName={assetName}
                     />
                 )}
 
                 {/* ✅ QR Scanner Modal */}
                 <QrModal isVisible={isScannerOpen} onClose={() => setIsScannerOpen(false)} />
-                    
+
             </View>
         );
     };
@@ -184,12 +283,12 @@ const styles = StyleSheet.create({
         borderWidth: 1,
     },
     inputField: {
-        fontSize: 16,
+        fontSize: 14,
         flex: 1,
     },
     scanIcon: {
-        width: 22,
-        height: 22,
+        width: 20,
+        height: 20,
     },
     amountContainer: {
         flexDirection: 'row',

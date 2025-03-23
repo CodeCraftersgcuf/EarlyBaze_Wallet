@@ -53,7 +53,7 @@ const SettingsScreen: React.FC = () => {
   });
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} >
       <ScrollView>
         <ProfileHeader name={userDetails?.data.name} email={userDetails?.data.email} cryptoBalance={userBalance?.data.crypto_balance} nairaBalance={userBalance?.data.naira_balance} profileImage={userDetails?.data.profile_picture}/>
 
@@ -80,6 +80,7 @@ const SettingsScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    position: 'relative',
   },
   gridContainer: {
     flexDirection: 'row',

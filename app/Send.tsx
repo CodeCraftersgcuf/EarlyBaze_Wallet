@@ -10,12 +10,18 @@ import { router, useRouter } from "expo-router";
 import { useState } from 'react';
 import SendCryptoForm from '@/components/Send/SendCryptoForm';
 import Toast from "react-native-toast-message"; // ✅ Import Toast
-
+import { useRoute } from '@react-navigation/native';
 
 
 const Send: React.FC = () => {
     const networkOptions = [{ id: "1" }];
     const [selectedTab, setSelectedTab] = useState<'Crypto Address' | 'Internal Transfer'>('Crypto Address');
+    const route = useRoute();
+    const { assestId, icon, assetName,fullName } = route.params as { assestId: string, icon: string, assetName: string, fullName: string };
+
+    console.log("Received values:", { assestId, icon, assetName });
+    const assetData = { assestId, icon, assetName };
+
 
     const backgroundColor = useThemeColor({ light: '#EFFEF9', dark: '#000000' }, 'background');
 
@@ -89,6 +95,8 @@ const Send: React.FC = () => {
                     setUsdAmount={setUsdAmount}
                     scannedAddress={scannedAddress}
                     setScannedAddress={setScannedAddress}
+                    assetData={assetData}  // Passing the object as a prop
+
                 />
 
                 <NoteBox />

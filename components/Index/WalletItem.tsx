@@ -53,19 +53,19 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   label: {
-    fontSize: 14,
+    fontSize: 10,
     color: "#FFF",
     fontWeight: "600",
     marginBottom: 8,
   },
   value: {
-    fontSize: 15,
+    fontSize: 12,
     fontWeight: "bold",
     color: "#FFF",
   },
   iconWrapper: {
     position: "absolute",
-    bottom: -15, // Position the icon outside the card
+    bottom: -10, // Position the icon outside the card
     width: 36,
     height: 36,
     borderRadius: 24,

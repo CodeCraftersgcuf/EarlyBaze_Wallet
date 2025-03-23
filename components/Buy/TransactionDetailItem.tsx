@@ -53,11 +53,11 @@ const styles = StyleSheet.create({
     borderBottomColor: '#ddd',
   },
   label: {
-    fontSize: 11,
+    fontSize: 10,
     fontWeight: 'bold',
   },
   value: {
-    fontSize: 13,
+    fontSize: 9,
     fontWeight: '500',
     marginLeft: 5,
   },

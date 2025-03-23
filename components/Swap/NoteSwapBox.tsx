@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
   },
   headerText: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
   },
   content: {
@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
   },
   noteText: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: '400',
     marginBottom: 5,
   },

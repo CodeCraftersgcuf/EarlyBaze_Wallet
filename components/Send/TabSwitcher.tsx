@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
     },
     tabText: {
-        fontSize: 14,
+        fontSize: 13,
         fontWeight: '600',
     },
 });

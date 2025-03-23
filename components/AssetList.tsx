@@ -88,7 +88,7 @@ const AssetList: React.FC<{ selectedTab: 'All Assets' | 'My Assets'; searchQuery
                                 } else if (type === 'send' && Number(item.balance) > 0) {
                                     router.push({
                                         pathname: '/Send',
-                                        params: { assetName: item.name, fullName: item.fullName, icon: item.icon },
+                                        params: { assestId: item.id, assetName: item.name, fullName: item.fullName, icon: item.icon },
                                     });
                                 } else if (type === 'send' && Number(item.balance) === 0) {
                                     console.log(`❌ Cannot send ${item.name} - Balance is zero`);

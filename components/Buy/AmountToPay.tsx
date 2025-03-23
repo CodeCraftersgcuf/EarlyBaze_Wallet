@@ -35,10 +35,10 @@ const styles = StyleSheet.create({
     marginHorizontal: 'auto', // Ensures horizontal centering
   },
   label: {
-    fontSize: 12,
+    fontSize: 10,
   },
   value: {
-    fontSize: 18,
+    fontSize: 13,
     fontWeight: 'bold',
   },
 });

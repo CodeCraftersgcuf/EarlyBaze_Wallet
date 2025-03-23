@@ -31,11 +31,11 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   label: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '400',
   },
   rateText: {
-    fontSize: 16,
+    fontSize: 12,
     fontWeight: 'bold',
   },
 });

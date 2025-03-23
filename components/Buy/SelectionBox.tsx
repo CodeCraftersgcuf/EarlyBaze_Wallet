@@ -36,7 +36,10 @@ const SelectionBox: React.FC<SelectionBoxProps> = ({ label, value, icon, onPress
       <View style={styles.content}>
         <Text style={[styles.value, { color: textColor }]}>{value}</Text>
         <View style={styles.iconContainer}>
-          <Image source={icon} style={styles.icon} />
+          <Image
+            source={typeof icon === 'string' && icon.startsWith('http') ? { uri: icon } : icon}
+            style={styles.icon}
+          />
           <TouchableOpacity onPress={disabled ? undefined : onPress} activeOpacity={disabled ? 1 : 0.7}>
             <Image source={arrow} style={[styles.arrowIcon,]} />
           </TouchableOpacity>
@@ -61,7 +64,7 @@ const styles = StyleSheet.create({
     elevation: 2, // Android shadow
   },
   label: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: "500",
     marginBottom: 4,
     opacity: 0.6, // Light gray effect like in the image
@@ -72,7 +75,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   value: {
-    fontSize: 13,
+    fontSize: 10,
     fontWeight: 'bold',
   },
   iconContainer: {
@@ -80,8 +83,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   icon: {
-    width: 35,
-    height: 35,
+    width: 33,
+    height: 33,
     marginRight: 6, // Space between icon and arrow
     marginBottom: 2, // Adjusted spacing between icon and text
   },

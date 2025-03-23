@@ -19,6 +19,9 @@ const TransactionItem: React.FC<TransactionItemProps> = ({ type, amount, created
 
   const withdrawTransaction = type || undefined; // Ensure it's undefined if empty
 
+
+  console.log("The data coming....", amount);
+
   // Define colors for different statuses
   const statusColors: Record<string, string> = {
     successful: '#139B15',

@@ -65,12 +65,18 @@ const Withdraw: React.FC = () => {
                     text2: "Withdrawal Successful!",
                     visibilityTime: 3000,
                 });
+                const transactionId = response.data?.id;
 
-                // Navigate to transaction page
-                router.push({
-                    pathname: '/TransactionPage',
-                    params: { type: 'withdraw' }
-                });
+                // ✅ Navigate after a delay
+                setTimeout(() => {
+                    router.push({
+                        pathname: '/TransactionPage',
+                        params: {
+                            type: 'withdraw',
+                            id: transactionId?.toString(), // ensure it's passed as string
+                        },
+                    });
+                }, 3000);
             } catch (error) {
                 console.error("❌ Error creating withdrawal:", error);
             }
@@ -90,7 +96,7 @@ const Withdraw: React.FC = () => {
 
 
     return (
-        <View style={[styles.container, { backgroundColor }]}>
+        <ScrollView style={[styles.container, { backgroundColor }]}>
             {/* Header */}
             <Header />
 
@@ -98,45 +104,56 @@ const Withdraw: React.FC = () => {
             <BuyHead buttonText="Withdraw" />
 
             {/* Scrollable Content */}
-            <ScrollView contentContainerStyle={styles.scrollContent}>
-                <View style={styles.content}>
+            <View style={styles.content}>
 
-                    <View>
-                        {/* Form Container */}
-                        <View style={[styles.formContainer, { backgroundColor: cardBackgroundColor }]}>
-                            {/* Amount Input */}
-                            <Text style={[styles.label, { color: textColor }]}>Amount</Text>
-                            <TextInput
-                                style={[styles.input, { color: textColor, backgroundColor: cardBackgroundColor }]}
-                                placeholder="Enter amount to withdraw"
-                                placeholderTextColor={placeholderColor}
-                                keyboardType="numeric"
-                                value={amount}
-                                onChangeText={setAmount}
-                            />
+                <View>
+                    {/* Form Container */}
+                    <View style={[styles.formContainer, { backgroundColor: cardBackgroundColor }]}>
+                        {/* Amount Input */}
+                        <Text style={[styles.label, { color: textColor }]}>Amount</Text>
+                        <TextInput
+                            style={[styles.input, { color: textColor, backgroundColor: cardBackgroundColor }]}
+                            placeholder="Enter amount to withdraw"
+                            placeholderTextColor={placeholderColor}
+                            keyboardType="numeric"
+                            value={amount}
+                            onChangeText={setAmount}
+                        />
 
-                            {/* Receiving Account Dropdown */}
-                            <Text style={[styles.label, { color: textColor }]}>Receiving Account</Text>
-                            <TouchableOpacity style={[styles.dropdown, { backgroundColor: cardBackgroundColor }]} onPress={() => setModalVisible(true)}>
-                                <Text style={{ color: selectedAccount ? textColor : placeholderColor }}>
-                                    {selectedAccount?.account_name || 'Choose Receiving Account'}
-                                </Text>
-                            </TouchableOpacity>
-                        </View>
-
-                        {/* Note Box */}
-                        <View style={[styles.noteContainer, { borderColor, backgroundColor: noteBackgroundColor }]}>
-                            <Text style={[styles.noteTitle, { color: textColor }]}>Note</Text>
-                            <View style={styles.noteDivider} />
-                            <Text style={[styles.noteText, { color: textColor }]}>
-                                Withdrawals can take up to 2 days depending on the bank{'\n'}
-                                Withdrawal account must match wallet name
+                        {/* Receiving Account Dropdown */}
+                        <Text style={[styles.label, { color: textColor }]}>Receiving Account</Text>
+                        <TouchableOpacity style={[styles.dropdown, { backgroundColor: cardBackgroundColor }]} onPress={() => setModalVisible(true)}>
+                            <Text style={{ color: selectedAccount ? textColor : placeholderColor }}>
+                                {selectedAccount?.account_name || 'Choose Receiving Account'}
                             </Text>
-                        </View>
+                        </TouchableOpacity>
+                    </View>
+
+                    {/* Note Box */}
+                    <View style={[styles.noteContainer, { borderColor, backgroundColor: noteBackgroundColor }]}>
+                        <Text style={[styles.noteTitle, { color: textColor }]}>Note</Text>
+                        <View style={styles.noteDivider} />
+                        <Text style={[styles.noteText, { color: textColor }]}>
+                            Withdrawals can take up to 2 days depending on the bank{'\n'}
+                            Withdrawal account must match wallet name
+                        </Text>
                     </View>
                 </View>
-            </ScrollView>
+            </View>
 
+
+            <PaymentMethodModal
+                title="Choose Account"
+                visible={modalVisible}
+                onClose={() => setModalVisible(false)}
+                onSelectPaymentMethod={(method) => {
+                    const { id, account_name } = method; // Destructure the passed object
+                    setSelectedAccount({ id, account_name }); // Set both id and account_name
+                    setModalVisible(false);
+                }}
+            />
+
+            <Toast /> {/* ✅ Add Toast Component to Render */}
             {/* Proceed Button Fixed at Bottom */}
             <View style={styles.fixedButtonContainer}>
                 <PrimaryButton
@@ -157,34 +174,23 @@ const Withdraw: React.FC = () => {
                 />
 
             </View>
-            <PaymentMethodModal
-                title="Choose Account"
-                visible={modalVisible}
-                onClose={() => setModalVisible(false)}
-                onSelectPaymentMethod={(method) => {
-                    const { id, account_name } = method; // Destructure the passed object
-                    setSelectedAccount({ id, account_name }); // Set both id and account_name
-                    setModalVisible(false);
-                }}
-            />
-
-            <Toast /> {/* ✅ Add Toast Component to Render */}
-        </View>
+        </ScrollView>
 
     );
 };
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1, // Ensures full height for absolute positioning
+        flex: 100, // Ensures full height for absolute positioning
         marginTop: 25,
 
     },
     scrollContent: {
-        paddingBottom: 140, // Ensures space above fixed button
+
     },
     content: {
         justifyContent: 'space-between',
+        marginTop: 20,
     },
     formContainer: {
         flexGrow: 1, // Expands to fill space
@@ -238,14 +244,15 @@ const styles = StyleSheet.create({
         marginBottom: 8,
     },
     noteText: {
-        fontSize: 13,
-        paddingVertical: 12,
+        fontSize: 11,
+        paddingVertical: 4,
         paddingLeft: 8,
+        marginBottom: 2,
     },
 
     fixedButtonContainer: {
         position: 'absolute',
-        bottom: 20,
+        bottom: -330,
         width: '90%',
         alignSelf: 'center', // Centers the button horizontally
     }

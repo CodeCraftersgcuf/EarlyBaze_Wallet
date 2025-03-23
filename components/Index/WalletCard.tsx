@@ -173,7 +173,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
     position: 'relative',
-    height: 243, // Fixed height as per design
+    height: 230, // Fixed height as per design
     overflow: 'hidden', // Ensures rounded corners work with ImageBackground
     zIndex: 1, // Ensure the card is above the Switch Button
   },
@@ -208,7 +208,7 @@ const styles = StyleSheet.create({
   // Card Balance
   cardBalance: {
     color: '#FFF',
-    fontSize: 48,
+    fontSize: 30,
     fontWeight: 'bold',
     marginTop: 8,
   },
@@ -252,7 +252,7 @@ const styles = StyleSheet.create({
   },
   withdrawText: {
     color: '#4C4C6D',
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: 'bold',
     textAlign: 'center',
   },
@@ -301,7 +301,7 @@ const styles = StyleSheet.create({
   switchText: {
     position: 'relative',
     color: '#FFF',
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '600',
   },
 
@@ -311,6 +311,6 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     textShadowOffset: { width: 0, height: 0 },
     textShadowRadius: 10,
-    fontSize: 18,
+    fontSize: 16,
   },
 });

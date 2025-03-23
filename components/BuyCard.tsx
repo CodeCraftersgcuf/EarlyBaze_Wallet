@@ -26,8 +26,8 @@ interface BuyCardProps {
 const BuyCard = ({ setSelectedData }) => {
   const [token, setToken] = useState<string | null>(null);
   const [usdAmount, setUsdAmount] = useState<string>('');  // For USD input
-  const [btcAmount, setBtcAmount] = useState<string>('0.000234');  // For BTC input
-  const [ngnAmount, setNgnAmount] = useState<string>('NGN 25,000,000');  // For NGN input
+  const [btcAmount, setBtcAmount] = useState<string>('0');  // For BTC input
+  const [ngnAmount, setNgnAmount] = useState<string>('NGN 0');  // For NGN input
   const [isUsdEditable, setIsUsdEditable] = useState<boolean>(false);  // Control USD input editability
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedCoin, setSelectedCoin] = useState(networkOptions[0]);
@@ -120,7 +120,7 @@ const BuyCard = ({ setSelectedData }) => {
       {/* Coin Selection */}
       <View style={styles.exchangeContainer}>
         <InputField
-          label="USD"
+          label={selectedCoin.name}
           value={usdAmount}
           editable={isUsdEditable}
           onChangeText={handleUsdChange}
@@ -142,7 +142,7 @@ const BuyCard = ({ setSelectedData }) => {
 
       {/* Network Selection */}
       <View style={styles.selectionContainer}>
-        <InputField label="BTC" value={btcAmount} editable={false} />
+        <InputField label="USD" value={btcAmount} editable={false} />
         <SelectionBox
           label="Network"
           id={selectedNetwork.id}

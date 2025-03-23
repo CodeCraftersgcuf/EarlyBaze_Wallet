@@ -37,6 +37,7 @@ interface NetworkSelectionModalProps {
     networks: NetworkOption[];
     modelType: string | null;
     coinId?: string;
+    assetName?: string
 }
 
 const NetworkSelectionModal: React.FC<NetworkSelectionModalProps> = ({
@@ -46,7 +47,8 @@ const NetworkSelectionModal: React.FC<NetworkSelectionModalProps> = ({
     selectedNetwork,
     networks,
     modelType,
-    coinId
+    coinId,
+    assetName
 }) => {
     const [token, setToken] = useState<string | null>(null); // State to hold the token
     const backgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#000000' }, 'background');
@@ -55,7 +57,7 @@ const NetworkSelectionModal: React.FC<NetworkSelectionModalProps> = ({
     const itemBackgroundColor = useThemeColor({ light: '#F6FBFF', dark: '#181818' }, 'background');
     const titleTextColor = useThemeColor({ light: '#25AE7A', dark: '#25AE7A' }, 'text');
     const close = useThemeColor({ light: images.cross_white, dark: images.cross_black }, 'close');
-
+    
 
     // Fetch the token when the component mounts
     useEffect(() => {
@@ -91,7 +93,29 @@ const NetworkSelectionModal: React.FC<NetworkSelectionModalProps> = ({
     console.log("🔹 Network Currencyss:", networkCurrency);
 
     console.log("The Model Type is:", modelType);
-    return (
+    useEffect(() => {
+        if (
+          modelType === "coin" &&
+          walletCurrency?.data?.length &&
+          coinId &&
+          onSelectNetwork
+        ) {
+          const matchingCoin = walletCurrency.data.find(
+            (item) => item.currency.id.toString() === coinId || item.currency.currency === assetName
+          );
+      
+          if (matchingCoin) {
+            onSelectNetwork({
+              id: matchingCoin.currency.id.toString(),
+              name: matchingCoin.currency.currency,
+              icon: { uri: `https://earlybaze.hmstech.xyz/storage/${matchingCoin.currency.symbol}` },
+              color: "#DCDCDC",
+            });
+          }
+        }
+      }, [walletCurrency, coinId, assetName, modelType]);
+      
+      return (
         <Modal visible={visible} animationType="slide" transparent>
             <View style={styles.modalContainer}>
                 <View style={[styles.modalContent, { backgroundColor, borderColor }]}>

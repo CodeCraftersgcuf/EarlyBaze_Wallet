@@ -84,7 +84,7 @@ export function Header({ username, greeting }: HeaderProps) {
 
 const styles = StyleSheet.create({
   title: {
-    fontSize: 20,
+    fontSize: 18,
   },
   headerContainer: {
     flexDirection: 'row',

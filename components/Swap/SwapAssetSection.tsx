@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 5 },
   },
   label: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: '600',
     marginBottom: 10,
   },
@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
     marginLeft: 8, // Adjust spacing between icon and text
   },
   assetSubText: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '500',
     opacity: 0.6, // Light gray effect
   },
@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
     height: 42,
   },
   assetText: {
-    fontSize: 13,
+    fontSize: 10,
     fontWeight: 'bold',
   },
   arrowIcon: {
@@ -191,12 +191,12 @@ const styles = StyleSheet.create({
     borderColor: '#E5E5E5',
   },
   amountCurrency: {
-    fontSize: 12,
+    fontSize: 10,
     fontWeight: '500',
     opacity: 0.6, // Light gray effect
   },
   amountText: {
-    fontSize: 14,
+    fontSize: 11,
     fontWeight: 'bold',
   },
 });
