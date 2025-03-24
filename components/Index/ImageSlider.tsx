@@ -104,8 +104,8 @@ const ImageSlider: React.FC = () => {
         renderItem={({ item }) => (
           <View style={styles.slide}>
             <Image source={item.image} style={styles.image} resizeMode="cover" />
-            <Text style={styles.heading}>{item.heading}</Text>
-            <Text style={styles.subheading}>{item.subheading}</Text>
+            {/* <Text style={styles.heading}>{item.heading}</Text> */}
+            {/* <Text style={styles.subheading}>{item.subheading}</Text> */}
           </View>
         )}
         onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } } }], {

@@ -4,43 +4,72 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 import icons from '@/constants/icons';
 import TransactionDetailItem from '@/components/Buy/TransactionDetailItem';
 import { images } from '@/constants';
-const SwapSummaryDetails: React.FC = () => {
+
+interface SwapSummaryDetailsProps {
+  currency: string;
+  network: string;
+  amount: string;
+  exchange_rate: string;
+  amount_usd: string;
+  amount_naira: string;
+  fee_naira: string;
+  fee: string;
+  status: string;
+  transaction_id: string;
+  reference: string;
+  icon: any; // Add the icon prop here
+}
+
+const SwapSummaryDetails: React.FC<SwapSummaryDetailsProps> = ({
+  currency,
+  network,
+  amount,
+  exchange_rate,
+  amount_usd,
+  amount_naira,
+  fee_naira,
+  fee,
+  status,
+  transaction_id,
+  reference,
+  icon, // Destructure icon here
+
+}) => {
   // Theme Colors
   const backgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#1A1A1A' }, 'background');
   const textColor = useThemeColor({ light: '#0C5E3F', dark: '#0C5E3F' }, 'text');
   const borderColor = useThemeColor({ light: '#22A45D', dark: '#157347' }, 'border');
   const highlightTextColor = useThemeColor({ light: '#0C5E3F', dark: '#22A45D' }, 'highlightText');
   const swapIcon = useThemeColor({ light: images.double_side_white, dark: images.double_side_black }, 'swapIcon');
+
   return (
     <>
       <View style={styles.swapHeader}>
         <View style={styles.assetContainer}>
-          <Image source={icons.bitCoin} style={styles.assetIcon} />
-          <Text style={[styles.amountText, { color: textColor }]}>12,500</Text>
+          {/* Use dynamic icon from the URL */}
+          <Image source={{ uri: icon }} style={styles.assetIcon} /> {/* Use dynamic icon here */}
+          <Text style={[styles.amountText, { color: textColor }]}>{amount}</Text>
         </View>
         <Image source={swapIcon} style={[styles.swapIcon]} />
         <View style={styles.assetContainer}>
-          <Image source={icons.bitCoin} style={styles.assetIcon} />
-          <Text style={[styles.amountText, { color: textColor }]}>54,000,000</Text>
+          {/* Use dynamic icon from the URL */}
+          <Image source={{ uri: icon }} style={styles.assetIcon} /> {/* Use dynamic icon here */}
+          <Text style={[styles.amountText, { color: textColor }]}>{amount_naira}</Text>
         </View>
       </View>
-
-
+  
       <View style={[styles.summaryBox, { backgroundColor, borderColor }]}>
-        {/* Swap Header */}
-
-
         {/* Transaction Details */}
         <View style={styles.transactionDetails}>
-          <TransactionDetailItem label="Coin Sent" value="Tether USD" icon={icons.bitCoin} />
-          <TransactionDetailItem label="Network" value="Tron" icon={icons.bitCoin} />
-          <TransactionDetailItem label="Asset Received" value="Naira" icon={icons.bitCoin} />
-          <TransactionDetailItem label="Amount paid in BTC" value="12,500" />
-          <TransactionDetailItem label="Amount paid in USD" value="12,500" />
-          <TransactionDetailItem label="Amount to receive in NGN" value="54,000,000" />
-          <TransactionDetailItem label="Amount to receive in USD" value="12,500" />
-          <TransactionDetailItem label="Exchange Rate" value="1$ = 1,750NGN" />
-          <TransactionDetailItem label="Transaction ID" value="DF0GJFBGH34HNVFNJ4NOJ" />
+          {/* Use dynamic icon here */}
+          <TransactionDetailItem label="Coin Sent" value={currency} icon={{ uri: icon }} />
+          <TransactionDetailItem label="Network" value={network} icon={{ uri: icon }} />
+          <TransactionDetailItem label="Asset Received" value="Naira" icon={{ uri: icon }} />
+          <TransactionDetailItem label="Amount paid in USD" value={amount_usd} />
+          <TransactionDetailItem label="Amount to receive in NGN" value={amount_naira} />
+          <TransactionDetailItem label="Amount to receive in USD" value={amount_usd} />
+          <TransactionDetailItem label="Exchange Rate" value={exchange_rate} />
+          <TransactionDetailItem label="Transaction ID" value={transaction_id} />
         </View>
       </View>
     </>
@@ -80,8 +109,9 @@ const styles = StyleSheet.create({
 
   },
   assetIcon: {
-    width: 50,
-    height: 50,
+    marginTop:10,
+    width: 40,
+    height: 40,
   },
   amountText: {
     fontSize: 16,

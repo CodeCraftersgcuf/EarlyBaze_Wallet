@@ -110,8 +110,52 @@ const Swap: React.FC = () => {
 
     onSuccess: (data) => {
       console.log("✅ Swap Request Created:", data);
-      router.push('/SwapSummary'); // ✅ Redirect after success
+
+      // Extract the transaction data
+      const {
+        transaction_id,
+        currency,
+        network,
+        amount,
+        exchange_rate,
+        amount_usd,
+        amount_naira,
+        fee_naira,
+        fee,
+        status,
+        user_id,
+        reference,
+        updated_at,
+        created_at,
+        id
+      } = data.data;
+
+      console.log("Swap Id", transaction_id);
+
+      // Redirect to SwapSummary with all relevant data as params
+      router.push({
+        pathname: '/SwapSummary',
+        params: { // Use query instead of params to pass data via URL
+          id: transaction_id,
+          currency,
+          network,
+          amount,
+          exchange_rate,
+          amount_usd,
+          amount_naira,
+          fee_naira,
+          fee,
+          status,
+          user_id,
+          reference,
+          updated_at,
+          created_at,
+          transaction_id: id, // id is the transaction ID from the response data,
+          icon: selectedAsset.icon.uri || selectedAsset.icon // Ensure it's a string
+        },
+      }); // ✅ Redirect after success
     },
+
 
     onError: (error) => {
       console.error("❌ Swap Failed:", error);
