@@ -11,9 +11,10 @@ const ScreenStacks = () => {
   //   console.log('Stack: ', token);
   return (
     <>
-    <Stack>
+      <Stack>
         <Stack.Screen name="Buy" options={{ headerShown: false }} />
         <Stack.Screen name="SendReceive" options={{ headerShown: false }} />
+        <Stack.Screen name="MyAssest" options={{ headerShown: false }} />
         <Stack.Screen name="Swap" options={{ headerShown: false }} />
         <Stack.Screen name='PaymentSummary' options={{ headerShown: false }} />
         <Stack.Screen name="PaymentProof" options={{ headerShown: false }} />

@@ -9,9 +9,9 @@ interface AddressTabsProps {
 
 const AddressTabs: React.FC<AddressTabsProps> = ({ selectedTab, setSelectedTab }) => {
     const backgroundColor = useThemeColor({ light: '#F0F0F0', dark: '#1A1A1A' }, 'tabBackground');
-    const activeColor = useThemeColor({ light: '#25AE7A', dark: '#007C57' }, 'activeTab');
+    const activeColor = useThemeColor({ light: '#25AE7A', dark: '#25AE7A' }, 'activeTab');
     const textColor = useThemeColor({ light: '#8A8A8A', dark: '#FFFFFF' }, 'text');
-    const activeTextColor = useThemeColor({ light: '#FFFFFF', dark: '#000000' }, 'activeText');
+    const activeTextColor = useThemeColor({ light: '#FFFFFF', dark: '#FFFFFF' }, 'activeText');
 
     return (
         <View style={[styles.tabContainer, { backgroundColor }]}>
@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
     },
     tabText: {
-        fontSize: 14,
+        fontSize: 12,
     },
 });
 

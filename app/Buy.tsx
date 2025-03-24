@@ -47,7 +47,7 @@ const Buy: React.FC = () => {
         router.push({
           pathname: '/PaymentSummary',
           params: {
-            id:response.data.id,
+            id: response.data.id,
             coin: response.data.currency,
             network: response.data.network,
             amount_usd: response.data.amount_usd,
@@ -121,7 +121,9 @@ const Buy: React.FC = () => {
     mutateBuy(buyData);
   };
 
-
+  const showToastMessage = (message: string) => {
+    Toast.show({ type: "error", text1: message });
+  };
   return (
     <ScrollView contentContainerStyle={[styles.container, { backgroundColor }]}>
       <View style={styles.horPadding}>
@@ -131,7 +133,7 @@ const Buy: React.FC = () => {
         <BuyHead buttonText="Buy Bitcoin" topLabel="Exchange Rate" exchangeRate="$1 = NGN1,750" />
 
         {/* BuyCard will update selected data in the parent state */}
-        <BuyCard setSelectedData={setSelectedData} />
+        <BuyCard setSelectedData={setSelectedData} showToast={showToastMessage} />
 
         <NoteBox />
       </View>

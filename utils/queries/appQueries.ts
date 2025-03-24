@@ -2,6 +2,19 @@ import { API_ENDPOINTS } from "@/apiConfig";
 import { apiCall } from "../customApiCall";
 import { string } from "yup";
 
+export const getMarketData = async ({
+  token,
+}: {
+  token: string;
+}): Promise<MarketResponse> => {
+  return await apiCall(
+    API_ENDPOINTS.USER.GetMarketData,
+    "GET",
+    undefined,
+    token
+  );
+};
+
 export const getAssests = async ({
   token,
 }: {
@@ -84,6 +97,30 @@ export const getNetworkCurreny = async (
 ): Promise<NetworkResponse> => {
   return await apiCall(
     `${API_ENDPOINTS.USER.GetWalletNetworks}/${coinId}`, // Append ticketId dynamically
+    "GET",
+    undefined,
+    token
+  );
+};
+export const getTransactionCurrency = async (
+  token: string,
+  networkName: any
+): Promise<CurrencyTransactionResponse> => {
+  return await apiCall(
+    `${API_ENDPOINTS.USER.GetTransactionCurrency}/${networkName}`, // Append ticketId dynamically
+    "GET",
+    undefined,
+    token
+  );
+};
+
+export const getReceiveAddress = async (
+  token: string,
+  coinName: string,
+  netwrokName: any
+): Promise<ReceiveAddressResponse> => {
+  return await apiCall(
+    `${API_ENDPOINTS.USER.GetReceiveAddress}/${coinName}/${netwrokName}`, // Append ticketId dynamically
     "GET",
     undefined,
     token
@@ -371,6 +408,38 @@ export const getAllNotifications = async ({
   );
 };
 
+interface MarketResponse {
+  id: string;
+  symbol: string;
+  name: string;
+  image: string;
+  current_price: number;
+  market_cap: number;
+  market_cap_rank: number;
+  fully_diluted_valuation: number;
+  total_volume: number;
+  high_24h: number;
+  low_24h: number;
+  price_change_24h: number;
+  price_change_percentage_24h: number;
+  market_cap_change_24h: number;
+  market_cap_change_percentage_24h: number;
+  circulating_supply: number;
+  total_supply: number;
+  max_supply: number;
+  ath: number;
+  ath_change_percentage: number;
+  ath_date: string; // ISO 8601 format
+  atl: number;
+  atl_change_percentage: number;
+  atl_date: string; // ISO 8601 format
+  roi: null | { times: number; currency: string; percentage: number }; // assuming roi can be null or an object with values
+  last_updated: string; // ISO 8601 format
+  price_change_percentage_1h_in_currency: number;
+  price_change_percentage_24h_in_currency: number;
+  price_change_percentage_7d_in_currency: number;
+}
+
 interface Notification {
   id: number;
   title: string;
@@ -647,6 +716,61 @@ interface NetworkResponse {
     network: string;
     symbol: string;
   }>;
+  message: string;
+}
+interface ReceiveAddressResponse {
+  status: string; // "success" or "failure" or other status values
+  data: {
+    id: number; // ID of the address
+    virtual_account_id: number; // ID of the virtual account
+    blockchain: string; // Name of the blockchain (e.g., "tron")
+    currency: string; // Currency (e.g., "TRON")
+    address: string; // Deposit address for the cryptocurrency
+    created_at: string; // Timestamp when the address was created (ISO 8601 format)
+    updated_at: string; // Timestamp when the address was last updated (ISO 8601 format)
+  };
+  message: string; // Message describing the success or failure of the request
+}
+interface User {
+  id: number;
+  name: string;
+  email: string | null;
+  email_verified_at: string | null;
+  created_at: string;
+  updated_at: string;
+  user_code: string;
+  invite_code: string | null;
+  otp: string | null;
+  otp_verified: number;
+  is_active: number;
+  pin: string;
+  phone: string;
+  profile_picture: string;
+  refferal_earning: number | null;
+  role: string;
+}
+
+interface Transaction {
+  id: number;
+  user_id: number;
+  currency: string;
+  amount: string;
+  type: string;
+  status: string;
+  network: string;
+  reference: string;
+  amount_usd: string | null;
+  created_at: string;
+  updated_at: string;
+  transfer_type: string;
+  user: User;
+}
+
+interface CurrencyTransactionResponse {
+  status: string;
+  data: {
+    transactions: Transaction[];
+  };
   message: string;
 }
 

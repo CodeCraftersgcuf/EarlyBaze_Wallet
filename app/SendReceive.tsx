@@ -6,6 +6,9 @@ import Tabs from '@/components/Tabs';
 import AssetList from '@/components/AssetList';
 import Header from '@/components/Header';
 import { useLocalSearchParams } from 'expo-router';
+import { useRouter } from 'expo-router';
+
+
 
 const SendReceive: React.FC = () => {
   const backgroundColor = useThemeColor({ light: '#EFFEF9', dark: '#000000' }, 'background');
@@ -13,6 +16,9 @@ const SendReceive: React.FC = () => {
   // Retrieve the passed parameter
   const { type } = useLocalSearchParams();
 
+  const {fromMarket} = useLocalSearchParams();
+
+  console.log("The Data from the Market", fromMarket);
   // Log the received parameter
   console.log('Received type from navigation:', type);
 
@@ -47,7 +53,7 @@ const SendReceive: React.FC = () => {
 
         {/* Asset List */}
 
-        <AssetList selectedTab={selectedTab} searchQuery={searchQuery} type={type}  showPrice={showPrice}/>
+        <AssetList selectedTab={selectedTab} searchQuery={searchQuery} type={type}  showPrice={showPrice} fromMarket={fromMarket} />
       </View>
     </View>
   );

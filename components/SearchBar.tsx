@@ -15,7 +15,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ placeholder, value, onChangeText 
 
   return (
     <View style={[styles.container, { backgroundColor }]}>
-      <Icon name="search" size={22} color={textColor} style={styles.icon} />
+      <Icon name="search" size={20} color={textColor} style={styles.icon} />
       <TextInput
         placeholder={placeholder}
         placeholderTextColor={textColor}
@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    fontSize: 16,
+    fontSize: 14,
   },
 });
 

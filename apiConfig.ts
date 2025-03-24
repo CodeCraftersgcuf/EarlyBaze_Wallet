@@ -37,6 +37,8 @@ const API_ENDPOINTS = {
     GetAssets: API_DOMAIN + "/user/assets",
     GetWalletCurrency: API_DOMAIN + "/user/wallet-currencies",
     GetWalletNetworks: API_DOMAIN + "/user/networks",
+    GetTransactionCurrency: API_DOMAIN + "/transaction/currency",
+    GetReceiveAddress: API_DOMAIN + "/user/deposit-address",
     GetWalletTransactions: API_DOMAIN + "/transaction/get-all",
     CreateReplyTicket: API_DOMAIN + "/support/send-reply",
     StoreBankDetails: API_DOMAIN + "/create-bank-account",
@@ -49,6 +51,7 @@ const API_ENDPOINTS = {
       GetReferral: API_DOMAIN + "/refferal/get-all",
       SwapTransfter: API_DOMAIN + "/wallet/swap",
       EditProfile: API_DOMAIN + "/user/update-profile",
+      GetMarketData: API_DOMAIN + "/admin/market-data",
   },
   ACCOUNT_MANAGEMENT: {
     GetUserProfileData: API_DOMAIN + "/edit-profile-details",

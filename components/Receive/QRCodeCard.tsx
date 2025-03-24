@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Image, Text, TouchableOpacity, StyleSheet, ToastAndroid, Platform, Alert } from 'react-native';
 import * as MediaLibrary from 'expo-media-library';
 import * as FileSystem from 'expo-file-system';
@@ -6,12 +6,22 @@ import { Ionicons } from '@expo/vector-icons';
 import { images } from '@/constants';
 import { useThemeColor } from '@/hooks/useThemeColor';
 
+
+//Code related to the integration:
+import { getFromStorage } from "@/utils/storage";
+import { getReceiveAddress } from "@/utils/queries/appQueries";
+import { useQuery } from '@tanstack/react-query';
+
 interface QRCodeCardProps {
     cardBackgroundColor: string;
     selectedTab: 'Crypto Address' | 'Email Address';
+    selectedNetworkName: string;
+    selectedCoinName: string;
 }
 
-const QRCodeCard: React.FC<QRCodeCardProps> = ({ cardBackgroundColor, selectedTab }) => {
+const QRCodeCard: React.FC<QRCodeCardProps> = ({ cardBackgroundColor, selectedTab, selectedNetworkName, selectedCoinName }) => {
+    const [email, setEmail] = useState<string | null>(null); // State to hold the token
+    const [token, setToken] = useState<string | null>(null);
     const cryptoAddress = "0xednfvdnkdwj43rnggnfner43itjfkmfltr...";
     const randomEmails = [
         "example1@email.com",
@@ -23,6 +33,30 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ cardBackgroundColor, selectedTa
     const save = useThemeColor({ light: images.save_white, dark: images.save_black }, 'save');
     const share = useThemeColor({ light: images.share_white, dark: images.share_black }, 'share');
     const iconBackground = useThemeColor({ light: '#E9E9E9', dark: '#000000' }, 'iconBackground');
+
+    // Fetch the token and user data when the component mounts
+    useEffect(() => {
+        const fetchUserData = async () => {
+            const user = await getFromStorage("user");
+            const fetchedToken = await getFromStorage("authToken");
+            setToken(fetchedToken);
+
+            const fetchedEmail = user.email;
+            setEmail(fetchedEmail);
+            console.log("🔹 Retrieved Email:", fetchedEmail);
+        };
+
+        fetchUserData();
+    }, []);
+
+
+    const { data: receiveAddress, error: receiveAddressError, isLoading: receiveAddressLoading } = useQuery(
+        {
+            queryKey: ["receiveAddress", selectedCoinName, selectedNetworkName], // Include coin and network in queryKey
+            queryFn: () => getReceiveAddress(token as string, selectedCoinName, selectedNetworkName), // Pass both parameters
+            enabled: !!token && !!selectedCoinName && !!selectedNetworkName, // Ensure both are defined
+        }
+    );
     const handleSaveImage = async () => {
         try {
             // Request permission for storage
@@ -59,13 +93,13 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ cardBackgroundColor, selectedTa
             <View style={styles.iconRow}>
                 <TouchableOpacity style={styles.iconButton} onPress={handleSaveImage}>
                     <View style={[styles.iconBackground, { backgroundColor: iconBackground }]}>
-                        <Image source={save}/>
+                        <Image source={save} />
                     </View>
                     <Text style={styles.iconText}>Save</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.iconButton}>
                     <View style={[styles.iconBackground, { backgroundColor: iconBackground }]}>
-                        <Image source={share}/>
+                        <Image source={share} />
                     </View>
                     <Text style={styles.iconText}>Share</Text>
                 </TouchableOpacity>
@@ -73,7 +107,7 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ cardBackgroundColor, selectedTa
 
             <View style={[styles.inputContainer, { backgroundColor: selectedTab === 'Crypto Address' ? '#25AE7A' : '#25AE7A' }]}>
                 <Text style={styles.cryptoAddress}>
-                    {selectedTab === 'Crypto Address' ? cryptoAddress : randomEmail}
+                    {selectedTab === 'Crypto Address' ? receiveAddress?.data?.address || "Please Select the Network..." : email}
                 </Text>
                 <TouchableOpacity>
                     <Ionicons name="copy-outline" size={20} color="white" />
@@ -113,7 +147,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     iconText: {
-        fontSize: 12,
+        fontSize: 10,
         color: '#000000B2',
         marginTop: 5,
         fontWeight: '500',
@@ -129,7 +163,7 @@ const styles = StyleSheet.create({
     },
     cryptoAddress: {
         color: 'white',
-        fontSize: 14,
+        fontSize: 12,
         flex: 1,
     },
 });

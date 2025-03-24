@@ -154,14 +154,18 @@ const Withdraw: React.FC = () => {
             />
 
             <Toast /> {/* ✅ Add Toast Component to Render */}
-            {/* Proceed Button Fixed at Bottom */}
             <View style={styles.fixedButtonContainer}>
+            // Inside JSX:
                 <PrimaryButton
                     title={isPendingWithdrawal ? "Processing..." : "Proceed"}
                     disabled={isPendingWithdrawal}
                     onPress={() => {
                         if (!amount || !selectedAccount) {
-                            console.log("❌ Please enter amount and select an account.");
+                            Toast.show({
+                                type: "error",
+                                text1: "Error",
+                                text2: "Please enter an amount and select an account.",
+                            });
                             return;
                         }
 

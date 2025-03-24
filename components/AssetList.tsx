@@ -12,12 +12,13 @@ import { getUserAssets } from "@/utils/queries/appQueries";
 import LoadingIndicator from "@/components/LoadingIndicator";
 
 const AssetList: React.FC<{
-    selectedTab: 'All Assets' | 'My Assets'; searchQuery: string; type: string, showPrice: boolean; // ✅ Add this
+    selectedTab: 'All Assets' | 'My Assets'; searchQuery: string; type: string, showPrice: boolean; fromMarket: string // ✅ Add this
 }> = ({
     selectedTab,
     searchQuery,
     type,
     showPrice,
+    fromMarket
 }) => {
         console.log("Type from SendReceive:", type);
         const backgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#000000' }, 'background');
@@ -83,10 +84,16 @@ const AssetList: React.FC<{
                             <TouchableOpacity
                                 style={styles.cardContainer}
                                 onPress={() => {
+                                    if (fromMarket == 'market') {
+                                        router.push({
+                                            pathname: '/MyAssest',
+                                            params: { balance: item.balance, assestId: item.id, assetName: item.name, fullName: item.fullName, icon: item.icon },
+                                        });
+                                    }
                                     if (type === 'receive') {
                                         router.push({
                                             pathname: '/Receive',
-                                            params: { assetName: item.name, fullName: item.fullName, icon: item.icon },
+                                            params: { assestId: item.id, assetName: item.name, fullName: item.fullName, icon: item.icon },
                                         });
                                     } else if (type === 'send' && Number(item.balance) > 0) {
                                         router.push({
@@ -98,7 +105,8 @@ const AssetList: React.FC<{
                                     } else {
                                         console.log(`Normal action for ${item.name}`);
                                     }
-                                }}
+                                }
+                                }
                             >
                                 <AssetCard {...item} />
                             </TouchableOpacity>

@@ -23,7 +23,8 @@ interface BuyCardProps {
 
 
 
-const BuyCard = ({ setSelectedData }) => {
+
+const BuyCard = ({ setSelectedData, showToast }) => {  // Add showToast prop
   const [token, setToken] = useState<string | null>(null);
   const [usdAmount, setUsdAmount] = useState<string>('');  // For USD input
   const [btcAmount, setBtcAmount] = useState<string>('0');  // For BTC input
@@ -36,6 +37,9 @@ const BuyCard = ({ setSelectedData }) => {
 
   const [modalType, setModalType] = useState<string | null>(null);
   const doublearrow = useThemeColor({ light: images.double_arrow_white, dark: images.double_arrow_black }, 'doublearrow');
+
+  const [hasUserSelectedCoin, setHasUserSelectedCoin] = useState(false);
+
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -75,15 +79,7 @@ const BuyCard = ({ setSelectedData }) => {
   };
 
 
-  const handleSelectNetwork = (network: any) => {
-    if (modalType === 'coin') {
-      setSelectedCoin(network);
-      setIsUsdEditable(true);  // Enable USD input when coin is selected
-    } else if (modalType === 'network') {
-      setSelectedNetwork(network);
-    }
-    setModalVisible(false);
-  };
+
 
   const coinId = selectedCoin?.id ? selectedCoin.id.toString() : null;
 
@@ -112,6 +108,22 @@ const BuyCard = ({ setSelectedData }) => {
     });
   }, [selectedCoin, selectedNetwork, selectedPaymentMethodId, btcAmount, usdAmount, ngnAmount]);
 
+  useEffect(() => {
+    if (hasUserSelectedCoin) {
+      setIsUsdEditable(selectedCoin && selectedCoin.name ? true : false);
+    }
+  }, [selectedCoin, hasUserSelectedCoin]);
+
+  const handleSelectNetwork = (network: any) => {
+    if (modalType === 'coin') {
+      setSelectedCoin(network);
+      setHasUserSelectedCoin(true); // Mark that the user has selected a coin
+      setIsUsdEditable(true);
+    } else if (modalType === 'network') {
+      setSelectedNetwork(network);
+    }
+    setModalVisible(false);
+  };
 
   return (
     <View style={[styles.card, { backgroundColor: useThemeColor({ light: '#FFFFFF', dark: '#161616' }, 'cardBackground') }]}>
@@ -125,7 +137,9 @@ const BuyCard = ({ setSelectedData }) => {
           editable={isUsdEditable}
           onChangeText={handleUsdChange}
           keyboardType="numeric"
+          onPressDisabled={() => showToast("Please select a coin first.")} // Show toast when input is disabled
         />
+
         <SelectionBox
           label="Coin"
           id={selectedCoin.id}

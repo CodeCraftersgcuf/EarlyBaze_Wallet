@@ -1,31 +1,54 @@
-// components/common/InputField.tsx
-import React from 'react';
-import { View, Text, TextInput, StyleSheet, TextInputProps } from 'react-native';
+import React, { useRef } from 'react';
+import { View, Text, TextInput, StyleSheet, TextInputProps, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
 
 interface InputFieldProps extends TextInputProps {
   label?: string;
   value?: string;
   editable?: boolean;
-  onChange?: (text: string) => void; // ✅ Added onChange prop
+  onChange?: (text: string) => void;
+  onPressDisabled?: () => void;  // Callback for when input is disabled
 }
 
-const InputField: React.FC<InputFieldProps> = ({ label = '', value = '', editable = true, onChange, ...props }) => {
+const InputField: React.FC<InputFieldProps> = ({ 
+  label = '', 
+  value = '', 
+  editable = true, 
+  onChange, 
+  onPressDisabled, 
+  ...props 
+}) => {
   const textColor = useThemeColor({ light: '#000000', dark: '#FFFFFF' }, 'text');
   const bgColor = useThemeColor({ light: '#FFFFFF', dark: '#2D2D2D' }, 'inputBackground');
   const borderColor = useThemeColor({ light: '#C2C2C2', dark: '#3A3A3A' }, 'border');
 
+  const inputRef = useRef<TextInput>(null);
+
   return (
-    <View style={[styles.container, { backgroundColor: bgColor, borderColor }]}>
-      {label ? <Text style={[styles.label, { color: textColor }]}>{label}</Text> : null}
-      <TextInput
-        style={[styles.input, { color: textColor }]}
-        value={value}
-        editable={editable}
-        onChangeText={onChange} // ✅ Fixed onChange event
-        {...props}
-      />
-    </View>
+    <TouchableWithoutFeedback 
+      onPress={() => {
+        console.log("the Input field Tap");
+        if (editable) {
+          inputRef.current?.focus();
+        } else {
+          onPressDisabled?.(); // Trigger toast if input is not editable
+        }
+      }} 
+      accessible={false}
+    >
+      <View style={[styles.container, { backgroundColor: bgColor, borderColor }]}>
+        {label ? <Text style={[styles.label, { color: textColor }]}>{label}</Text> : null}
+        <TextInput
+          ref={inputRef}
+          style={[styles.input, { color: textColor }]}
+          value={value}
+          editable={editable}
+          onChangeText={onChange}
+          keyboardType="numeric" // Ensure numeric keyboard
+          {...props}
+        />
+      </View>
+    </TouchableWithoutFeedback>
   );
 };
 

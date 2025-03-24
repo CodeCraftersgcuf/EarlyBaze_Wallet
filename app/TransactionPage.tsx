@@ -34,6 +34,7 @@ const TransactionPage: React.FC = () => {
 
   const normalizedType = types || undefined; // Ensure it's undefined if empty
 
+
   // Fetch the token and user data when the component mounts
   useEffect(() => {
     const fetchUserData = async () => {
@@ -68,7 +69,12 @@ const TransactionPage: React.FC = () => {
   }
   console.log("🔹 Transaction Data of Swap/Receive:", transactionSummary);
 
+  const normalizedStatus = transactionSummary.data.status
+    ? transactionSummary.data.status.toLowerCase()
+    : "unknown";
   // Function to generate dynamic labels based on API response keys
+
+  console.log("the Status....", normalizedStatus);
   const generateLabels = (transactionData, normalizedType) => {
     if (!transactionData) return {}; // Ensure no errors if data is missing
 
@@ -112,7 +118,7 @@ const TransactionPage: React.FC = () => {
       ? {
         coin: transactionSummary.data.currency || "Unknown",
         network: transactionSummary.data.network || "Unknown",
-        amountBtc: transactionSummary.data.amount
+        amountBtc: transactionSummary.data.amount || "Unknown"
           ? `${transactionSummary.data.amount} ${transactionSummary.data.currency}`
           : "Unknown",
         amountUsd: transactionSummary.data.amount_usd
@@ -126,12 +132,13 @@ const TransactionPage: React.FC = () => {
         transactionDate: transactionSummary.data.created_at
           ? new Date(transactionSummary.data.created_at).toLocaleString()
           : "Unknown",
-        status:
-          transactionSummary.data.status === "approved"
-            ? "Success"
-            : "Rejected",
+        status: ["approved", "completed", "success"].includes(normalizedStatus)
+          ? "Success"
+          : ["rejected", "failed"].includes(normalizedStatus)
+            ? "Rejected"
+            : "Pending",
         reason:
-          transactionSummary.data.status === "failed"
+          transactionSummary.data.status === "failed" || 'rejected'
             ? "Network congestion timeout"
             : null,
       }
@@ -156,11 +163,11 @@ const TransactionPage: React.FC = () => {
             ? new Date(transactionSummary.data.created_at).toLocaleString()
             : "Unknown",
           status:
-            transactionSummary.data.status === "pending"
-              ? "Pending"
-              : transactionSummary.data.status === "approved"
-                ? "Success"
-                : "Rejected",
+            ["approved", "completed", "success"].includes(transactionSummary.data.status)
+              ? "Success"
+              : ["rejected", "failed"].includes(transactionSummary.data.status)
+                ? "Rejected"
+                : "Pending",
         }
     : null;
 
@@ -168,49 +175,54 @@ const TransactionPage: React.FC = () => {
 
 
   // Generate labels dynamically from transactionData
-  const labels = generateLabels(transactionData);
+  const labels = generateLabels(transactionData, normalizedType);
 
-  // Set transaction steps dynamically based on status
-  const transactions = transactionData?.status === "Rejected"
-    ? [
-      {
-        title: 'Transaction Submitted',
-        description: 'Your transaction has been submitted successfully',
-        date: new Date(transactionSummary?.data?.created_at || "").toLocaleString(),
-        isCompleted: true,
-        hasButton: true,
-      },
-      {
-        title: 'Transaction Processed',
-        description: 'Your transaction is being processed, your naira account will be credited soon.',
-        date: new Date(transactionSummary?.data?.created_at || "").toLocaleString(),
-        isCompleted: true,
-        isProcessing: true,
-      },
-      {
-        title: 'Transaction Rejected',
-        description: 'Your transaction has been rejected. Please try again.',
-        date: new Date(transactionSummary?.data?.created_at || "").toLocaleString(),
-        isCompleted: false,
-        isProcessing: false,
-      },
-    ]
-    : [
-      {
-        title: 'Transaction Submitted',
-        description: 'Your transaction has been submitted successfully',
-        date: new Date(transactionSummary?.data?.created_at || "").toLocaleString(),
-        isCompleted: true,
-        hasButton: true,
-      },
-      {
-        title: 'Transaction Processed',
-        description: 'Your transaction is being processed, your naira account will be credited soon.',
-        date: new Date(transactionSummary?.data?.created_at || "").toLocaleString(),
-        isCompleted: true,
-        isProcessing: true,
-      },
-    ];
+  // Base transaction steps
+  const baseTransactions = [
+    {
+      title: 'Transaction Submitted',
+      description: 'Your transaction has been submitted successfully.',
+      date: new Date(transactionSummary?.data?.created_at || "").toLocaleString(),
+      isCompleted: true,
+      hasButton: true,
+    },
+    {
+      title: 'Transaction Processed',
+      description: 'Your transaction is being processed, your naira account will be credited soon.',
+      date: new Date(transactionSummary?.data?.created_at || "").toLocaleString(),
+      isCompleted: normalizedStatus !== "pending" && normalizedStatus !== "rejected",
+      isProcessing: normalizedStatus === "pending",
+    },
+  ];
+
+  // Additional steps based on status
+  const statusSteps = {
+    rejected: {
+      title: 'Transaction Rejected',
+      description: 'Your transaction has been rejected. Please try again.',
+      isCompleted: false,
+      isProcessing: false,
+    },
+    failed: {
+      title: 'Transaction Failed',
+      description: 'Your transaction failed. Please contact support.',
+      isCompleted: false,
+      isProcessing: false,
+    },
+  };
+
+  // Check if the current status requires adding an extra step
+  const extraStep = statusSteps[normalizedStatus]
+    ? {
+      ...statusSteps[normalizedStatus],
+      date: new Date(transactionSummary?.data?.updated_at || "").toLocaleString(),
+    }
+    : null;
+
+  // Construct final transactions array
+  const transactions = extraStep ? [...baseTransactions, extraStep] : baseTransactions;
+
+  console.log(transactions);
 
   return (
     <ScrollView contentContainerStyle={[styles.container, { backgroundColor }]}>
@@ -234,17 +246,16 @@ const TransactionPage: React.FC = () => {
           />
         ))}
 
-        {/* Show success box only if the transaction is not rejected */}
-        {/* Show success box only if the transaction is not rejected and not pending */}
-        {transactionData?.status !== "Rejected" && transactionData?.status !== "Pending" && (
+        {(normalizedStatus === "approved" || normalizedStatus === "completed") && (
           <View style={{ marginTop: 20 }}>
             <TransactionSuccess
-              title={transactionType === 'withdraw' ? 'Withdrawal Successful' : 'Transaction Successful'}
-              amount={transactionSummary?.data.amount}
-              network={transactionSummary?.data.network}
+              title={transactionType === "withdraw" ? "Withdrawal Successful" : "Transaction Successful"}
+              amount={transactionSummary?.data?.amount}
+              network={transactionSummary?.data?.network}
             />
           </View>
         )}
+
       </View>
 
       {/* Buttons */}
@@ -252,7 +263,7 @@ const TransactionPage: React.FC = () => {
         {/* If only one step exists or transaction is still processing */}
         {transactions.length === 1 ||
           (transactions.some(tx => tx.title === 'Transaction Processed') &&
-            transactionData?.status !== "Rejected" &&
+            transactionData?.status !== "rejected" &&
             !transactions.some(tx => tx.title === 'Transaction Success')) ? (
           <TouchableOpacity style={styles.closeButton} onPress={() => navigation.goBack()}>
             <Text style={[styles.closeButtonText, { color: textColor }]}>Close</Text>

@@ -167,7 +167,7 @@ const PaymentProof: React.FC = () => {
           {/* Amount Paid */}
           <Text style={[styles.label, { color: textColor }]}>Amount Paid</Text>
           <TextInput
-            style={[styles.input]}
+            style={[styles.input, { color: textColor, backgroundColor: cardBackgroundColor }]}
             placeholder="Amount Paid"
             keyboardType="numeric"
             value={amountPaid}
