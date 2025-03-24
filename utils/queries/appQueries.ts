@@ -173,7 +173,7 @@ export const getWithdraw = async ({
   token: string;
   id?: string;
 }): Promise<WithdrawResponse> => {
-  console.log("The Idsss ", id);
+  console.log("The ID for the withDraw ", id);
   return apiCall(
     `${API_ENDPOINTS.USER.GetWithdraw}/${id}`,
     "GET",
@@ -189,7 +189,7 @@ export const getBuy = async ({
   token: string;
   id?: string;
 }): Promise<BuyResponse> => {
-  console.log("The Idsss ", id);
+  console.log("The Id for the buy ", id);
   return apiCall(`${API_ENDPOINTS.USER.GetBuy}/${id}`, "GET", undefined, token);
 };
 export const getTransactionAll = async ({

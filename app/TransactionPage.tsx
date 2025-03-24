@@ -127,7 +127,7 @@ const TransactionPage: React.FC = () => {
           ? new Date(transactionSummary.data.created_at).toLocaleString()
           : "Unknown",
         status:
-          transactionSummary.data.status === "completed"
+          transactionSummary.data.status === "approved"
             ? "Success"
             : "Rejected",
         reason:
@@ -158,7 +158,7 @@ const TransactionPage: React.FC = () => {
           status:
             transactionSummary.data.status === "pending"
               ? "Pending"
-              : transactionSummary.data.status === "completed"
+              : transactionSummary.data.status === "approved"
                 ? "Success"
                 : "Rejected",
         }
