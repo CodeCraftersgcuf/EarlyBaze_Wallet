@@ -25,7 +25,7 @@ interface VerificationModalProps {
     onFail: () => void; // New prop to handle failure
 }
 
-const VerificationModal: React.FC<VerificationModalProps & { requestData: any; onSuccess: ({ reference, amount , currency}: { reference: string, amount: string, currency: string }) => void }> = ({ visible, onClose, onFail, requestData, onSuccess }) => {
+const VerificationModal: React.FC<VerificationModalProps & { requestData: any; onSuccess: ({ reference, amount , currency}: { reference: string, amount: string, currency: string, transaction_id: string }) => void }> = ({ visible, onClose, onFail, requestData, onSuccess }) => {
 
     const cardBackgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#1A1A1A' }, 'card');
     const textTitleColor = useThemeColor({ light: '#25AE7A', dark: '#25AE7A' }, 'textTitle');
@@ -206,12 +206,12 @@ const VerificationModal: React.FC<VerificationModalProps & { requestData: any; o
                                                         console.log("✅ Transfer Successful:", response);
 
                                                         // Extract transaction reference and amount
-                                                        const reference = response?.data?.reference || "N/A";
+                                                        const reference = response?.data.reference || "N/A";
                                                         const amount = requestData.amount; // Assuming `amount` is available in `requestData`
                                                         const currency= requestData.currency;
-
+                                                        const transaction_id= response?.data.transaction_id || "N/A";
                                                         // Pass both reference and amount to onSuccess as an object
-                                                        onSuccess({ reference, amount , currency});
+                                                        onSuccess({ reference, amount , currency, transaction_id});
 
                                                         onClose(); // ✅ Close verification modal
                                                     },

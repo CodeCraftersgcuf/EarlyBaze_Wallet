@@ -3,6 +3,8 @@ import { View, Text, StyleSheet, TouchableOpacity, Modal, Image } from 'react-na
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { Ionicons } from '@expo/vector-icons';
 import { images } from '@/constants';
+import { router } from 'expo-router';
+
 // Success Icon Component
 
 const SuccessIcon: React.FC = () => (
@@ -32,31 +34,60 @@ const TransactionButton: React.FC<{ onPress: () => void }> = ({ onPress }) => (
   </TouchableOpacity>
 );
 
-const TransactionSuccessfulModal: React.FC<{ visible: boolean; onClose: () => void, transactionReference: string, transactionAmont: string, transactionCurrency: string }> = ({ visible, onClose, transactionAmont, transactionReference, transactionCurrency }) => {
+// TransactionSuccessfulModal component
+const TransactionSuccessfulModal: React.FC<{
+  visible: boolean;
+  onClose: () => void;
+  transactionReference: string;
+  transactionAmont: string;
+  transactionCurrency: string;
+  transactionId: string;
+}> = ({ visible, onClose, transactionAmont, transactionReference, transactionCurrency, transactionId }) => {
+
   const close = useThemeColor({ light: images.cross_white, dark: images.cross_white }, 'close');
   const backgroundColorClose = useThemeColor({ light: '#FFFFFF', dark: '#FFFFFF' }, 'background');
-
   const backgroundColor = useThemeColor({ light: '#22A45D', dark: '#22A45D' }, 'background');
+
   console.log("the last data", transactionAmont, transactionReference, transactionCurrency);
 
   return (
     <Modal visible={visible} transparent animationType="slide">
       <View style={[styles.modalContainer, { backgroundColor }]}>
+
+        {/* Close Button */}
         <TouchableOpacity style={styles.closeButton} onPress={onClose}>
           <TouchableOpacity onPress={onClose} style={[styles.closeButton, { backgroundColor: backgroundColorClose }]}>
             <Image source={close} style={styles.closeIcon} />
           </TouchableOpacity>
         </TouchableOpacity>
 
+        {/* Success Icon */}
         <SuccessIcon />
-        <TransactionMessage transactionReference={transactionReference} transactionAmont={transactionAmont} transactionCurrency={transactionCurrency} />
+
+        {/* Transaction Message */}
+        <TransactionMessage
+          transactionReference={transactionReference}
+          transactionAmont={transactionAmont}
+          transactionCurrency={transactionCurrency}
+        />
+
+        {/* Button Container */}
         <View style={styles.buttonContainer}>
-          <TransactionButton onPress={() => console.log('View Transaction')} />
+          <TransactionButton
+            onPress={() => {
+              onClose();  // Close the modal
+              router.push({
+                pathname: '/TransactionSummary',
+                params: { transType: 'send', id: transactionId },
+              });  // Navigate to TransactionSummary
+            }}
+          />
         </View>
       </View>
     </Modal>
   );
 };
+
 
 const styles = StyleSheet.create({
   modalContainer: {

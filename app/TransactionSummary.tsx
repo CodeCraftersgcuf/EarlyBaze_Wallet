@@ -22,6 +22,7 @@ import LoadingIndicator from "@/components/LoadingIndicator";
 
 const TransactionSummary: React.FC = () => {
   const { type, currency, network, amount, email, address, temp, image } = useLocalSearchParams();
+  const { transType } = useLocalSearchParams();
   const { id } = useLocalSearchParams();
   console.log("Transaction ID:", id); // Debugging
   console.log("The data coming from the props:", type, currency, network, amount, email, address, temp, image);
@@ -40,6 +41,7 @@ const TransactionSummary: React.FC = () => {
   const [isSuccessModalVisible, setSuccessModalVisible] = useState(false);
   const [transactionAmount, setTransactionAmount] = useState<string | null>(null);
   const [transactionCurrency, setTransactionCurrency] = useState<string | null>(null);
+  const [transactionId, setTransactionId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -52,10 +54,20 @@ const TransactionSummary: React.FC = () => {
   }, []);
 
   const { data: transactionData, error, isPending } = useQuery({
-    queryKey: [type === "send" ? "internalSend" : "internalReceive", token, id],
+    queryKey: [
+      transType === "send" || type === "send" ? "internalSend" : "internalReceive",
+      token,
+      id
+    ],
     queryFn: () => {
       if (!token || !id) return Promise.reject("No valid ID or token");
-      return type === "send" ? getInternalSend({ token, id }) : getInternalReceive({ token, id });
+
+      // Check if transType exists, otherwise fallback to type
+      if (transType === "send" || type === "send") {
+        return getInternalSend({ token, id });
+      } else {
+        return getInternalReceive({ token, id });
+      }
     },
     enabled: !!token && !!id, // Only fetch if both token and ID exist
   });
@@ -166,12 +178,13 @@ const TransactionSummary: React.FC = () => {
           setTransactionAmount(data.amount);
           setTransactionCurrency(data.currency)
           setSuccessModalVisible(true); // ✅ Show success modal on transfer success
-      }}
-      
+          setTransactionId(data.transaction_id)
+        }}
+
         requestData={{ currency, network, amount, email, token }}
       />
 
-      <TransactionSuccessfulModal visible={isSuccessModalVisible} onClose={() => setSuccessModalVisible(false)} transactionReference={transactionReference} transactionAmont={transactionAmount} transactionCurrency={transactionCurrency} />
+      <TransactionSuccessfulModal visible={isSuccessModalVisible} onClose={() => setSuccessModalVisible(false)} transactionReference={transactionReference} transactionAmont={transactionAmount} transactionCurrency={transactionCurrency} transactionId={transactionId} />
     </ScrollView>
   );
 };
