@@ -77,11 +77,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   title: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: 'bold',
   },
   date: {
-    fontSize: 12,
+    fontSize: 10,
     marginTop: 4,
   },
   statusBadge: {
@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   statusText: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: 'bold',
   },
   notificationBadge: {
@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   notificationText: {
-    fontSize: 10,
+    fontSize: 9,
     fontWeight: 'bold',
     color: '#FFFFFF',
   },

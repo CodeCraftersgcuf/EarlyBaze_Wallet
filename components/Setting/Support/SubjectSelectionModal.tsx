@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
         marginBottom: 6,
     },
     modalTitle: {
-        fontSize: 18,
+        fontSize: 16,
         marginLeft: 16,
         fontWeight: 'bold',
     },
@@ -167,8 +167,8 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     radioContainer: {
-        width: 20,
-        height: 20,
+        width: 16,
+        height: 16,
         borderRadius: 10,
         borderWidth: 2,
         alignItems: 'center',

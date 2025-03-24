@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
     marginRight: 5,
   },
   filterText: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: 'bold',
     color: '#000000',
     marginRight: 5,

@@ -87,13 +87,13 @@ const styles = StyleSheet.create({
     paddingTop: 40, // Space for badge overlap
   },
   successTitle: {
-    fontSize: 20,
+    fontSize: 16,
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 5,
   },
   successAmount: {
-    fontSize: 14,
+    fontSize: 12,
     textAlign: 'center',
     marginBottom: 15,
   },

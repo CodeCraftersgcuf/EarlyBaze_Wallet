@@ -57,11 +57,11 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   label: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: 'bold',
   },
   value: {
-    fontSize: 14,
+    fontSize: 12,
   },
   statusBadge: {
     backgroundColor: '#25AE7A',

@@ -51,12 +51,13 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
   icon: {
-    width: 40,
-    height: 40,
+    width: 32,
+    height: 32,
     marginBottom: 5,
   },
   title: {
-    fontSize: 14,
+    marginTop:2,
+    fontSize: 12,
     fontWeight: 'bold',
   },
 });

@@ -25,7 +25,23 @@ interface VerificationModalProps {
     onFail: () => void; // New prop to handle failure
 }
 
-const VerificationModal: React.FC<VerificationModalProps & { requestData: any; onSuccess: (reference: string) => void }> = ({ visible, onClose, onFail, requestData, onSuccess }) => {
+const VerificationModal: React.FC<VerificationModalProps & { requestData: any; onSuccess: ({ reference, amount , currency}: { reference: string, amount: string, currency: string }) => void }> = ({ visible, onClose, onFail, requestData, onSuccess }) => {
+
+    const cardBackgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#1A1A1A' }, 'card');
+    const textTitleColor = useThemeColor({ light: '#25AE7A', dark: '#25AE7A' }, 'textTitle');
+    const textColor = useThemeColor({ light: '#222222', dark: '#FFFFFF' }, 'text');
+    const backgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#2A2A2A' }, 'background');
+    const borderColor = useThemeColor({ light: '#E5E5E5', dark: '#444' }, 'border');
+
+    const close = useThemeColor({ light: images.cross_white, dark: images.cross_black }, 'close');
+
+    const [otp, setOtp] = useState('');
+    const [pin, setPin] = useState('');
+    const [timer, setTimer] = useState(0);
+    const [isOtpFocused, setIsOtpFocused] = useState(false);
+    const [isPinFocused, setIsPinFocused] = useState(false);
+    const [email, setEmail] = useState('');
+
     // ✅ First mutation - Verify PIN
     const { isPending: isPendingPin, mutate: mutatePin } = useMutation({
         mutationFn: (data: { email: string; pin: string }) => verifyPin(data),
@@ -39,7 +55,7 @@ const VerificationModal: React.FC<VerificationModalProps & { requestData: any; o
                         currency: requestData.currency,
                         network: requestData.network,
                         amount: requestData.amount,
-                        email: requestData.email,
+                        email: email,
                     },
                     token: requestData.token,
                 },
@@ -49,7 +65,9 @@ const VerificationModal: React.FC<VerificationModalProps & { requestData: any; o
 
                         // Extract transaction reference
                         const reference = response?.data?.reference || "N/A";
-                        onSuccess(reference);
+                        const amount = requestData.amount; // Assuming `amount` is available in `requestData`
+
+                        onSuccess(reference, amount);
 
                         onClose(); // ✅ Close verification modal
                     },
@@ -71,24 +89,11 @@ const VerificationModal: React.FC<VerificationModalProps & { requestData: any; o
         mutationFn: (data: { data: any; token: string }) => createInternalTransfer(data),
     });
 
-    const cardBackgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#1A1A1A' }, 'card');
-    const textTitleColor = useThemeColor({ light: '#25AE7A', dark: '#25AE7A' }, 'textTitle');
-    const textColor = useThemeColor({ light: '#222222', dark: '#FFFFFF' }, 'text');
-    const backgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#2A2A2A' }, 'background');
-    const borderColor = useThemeColor({ light: '#E5E5E5', dark: '#444' }, 'border');
-
-    const close = useThemeColor({ light: images.cross_white, dark: images.cross_black }, 'close');
-
-    const [otp, setOtp] = useState('');
-    const [pin, setPin] = useState('');
-    const [timer, setTimer] = useState(0);
-    const [isOtpFocused, setIsOtpFocused] = useState(false);
-    const [isPinFocused, setIsPinFocused] = useState(false);
 
     // ✅ Disable Proceed button if email or PIN is missing
-    const isProceedDisabled = 
-    !requestData.email || 
-    !pin.trim() ;
+    const isProceedDisabled =
+        !email ||
+        !pin.trim();
 
     // Start countdown when timer > 0
     useEffect(() => {
@@ -126,8 +131,8 @@ const VerificationModal: React.FC<VerificationModalProps & { requestData: any; o
                                 placeholder="Email"
                                 placeholderTextColor="#A1A1A1"
                                 style={[styles.inputField, { color: textColor }]}
-                                value={otp}
-                                onChangeText={setOtp}
+                                value={email}
+                                onChangeText={setEmail}
                                 onFocus={() => setIsOtpFocused(true)}
                                 onBlur={() => setIsOtpFocused(false)}
                             />
@@ -178,10 +183,10 @@ const VerificationModal: React.FC<VerificationModalProps & { requestData: any; o
                         <PrimaryButton
                             title={isPendingTransfer || isPendingPin ? "Processing..." : "Proceed"}
                             onPress={() => {
-                                console.log("🔹 Verifying PIN for:", requestData.email);
+                                console.log("🔹 Verifying PIN for:", email);
 
                                 mutatePin(
-                                    { email: requestData.email, pin }, // ✅ Verify PIN first
+                                    { email: email, pin }, // ✅ Verify PIN first
                                     {
                                         onSuccess: () => {
                                             console.log("✅ PIN Verified! Proceeding with Transfer...");
@@ -192,7 +197,7 @@ const VerificationModal: React.FC<VerificationModalProps & { requestData: any; o
                                                         currency: requestData.currency,
                                                         network: requestData.network,
                                                         amount: requestData.amount,
-                                                        email: requestData.email,
+                                                        email: email,
                                                     },
                                                     token: requestData.token,
                                                 },
@@ -200,9 +205,13 @@ const VerificationModal: React.FC<VerificationModalProps & { requestData: any; o
                                                     onSuccess: (response) => {
                                                         console.log("✅ Transfer Successful:", response);
 
-                                                        // Extract transaction reference
+                                                        // Extract transaction reference and amount
                                                         const reference = response?.data?.reference || "N/A";
-                                                        onSuccess(reference);
+                                                        const amount = requestData.amount; // Assuming `amount` is available in `requestData`
+                                                        const currency= requestData.currency;
+
+                                                        // Pass both reference and amount to onSuccess as an object
+                                                        onSuccess({ reference, amount , currency});
 
                                                         onClose(); // ✅ Close verification modal
                                                     },
@@ -212,6 +221,7 @@ const VerificationModal: React.FC<VerificationModalProps & { requestData: any; o
                                                     },
                                                 }
                                             );
+
                                         },
                                         onError: (error) => {
                                             console.error("❌ PIN Verification Failed:", error);

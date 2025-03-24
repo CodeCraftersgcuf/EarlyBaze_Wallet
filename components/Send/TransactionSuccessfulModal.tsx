@@ -15,17 +15,15 @@ const SuccessIcon: React.FC = () => (
 );
 
 // Transaction Message Component
-const TransactionMessage: React.FC = () => (
-
+const TransactionMessage: React.FC<{ transactionReference: string, transactionAmont: string, transactionCurrency: string }> = ({ transactionReference, transactionAmont, transactionCurrency }) => (
   <View style={styles.textContainer}>
     <Text style={styles.successText}>Transaction Successful</Text>
     <Text style={styles.description}>
-      You have successfully sent <Text style={styles.bold}>0.00233 BTC</Text> to
+      You have successfully sent <Text style={styles.bold}>{transactionAmont} {transactionCurrency}</Text> to
     </Text>
-    <Text style={styles.walletAddress}>0xsdjfdn3jfkdnvksdfnsdkbj</Text>
+    <Text style={styles.walletAddress}>{transactionReference}</Text>
   </View>
 );
-
 // Button Component
 const TransactionButton: React.FC<{ onPress: () => void }> = ({ onPress }) => (
 
@@ -34,11 +32,12 @@ const TransactionButton: React.FC<{ onPress: () => void }> = ({ onPress }) => (
   </TouchableOpacity>
 );
 
-const TransactionSuccessfulModal: React.FC<{ visible: boolean; onClose: () => void }> = ({ visible, onClose }) => {
+const TransactionSuccessfulModal: React.FC<{ visible: boolean; onClose: () => void, transactionReference: string, transactionAmont: string, transactionCurrency: string }> = ({ visible, onClose, transactionAmont, transactionReference, transactionCurrency }) => {
   const close = useThemeColor({ light: images.cross_white, dark: images.cross_white }, 'close');
   const backgroundColorClose = useThemeColor({ light: '#FFFFFF', dark: '#FFFFFF' }, 'background');
 
   const backgroundColor = useThemeColor({ light: '#22A45D', dark: '#22A45D' }, 'background');
+  console.log("the last data", transactionAmont, transactionReference, transactionCurrency);
 
   return (
     <Modal visible={visible} transparent animationType="slide">
@@ -50,7 +49,7 @@ const TransactionSuccessfulModal: React.FC<{ visible: boolean; onClose: () => vo
         </TouchableOpacity>
 
         <SuccessIcon />
-        <TransactionMessage />
+        <TransactionMessage transactionReference={transactionReference} transactionAmont={transactionAmont} transactionCurrency={transactionCurrency} />
         <View style={styles.buttonContainer}>
           <TransactionButton onPress={() => console.log('View Transaction')} />
         </View>
@@ -100,13 +99,13 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   successText: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: 'bold',
     color: '#FFFFFF',
     marginBottom: 8,
   },
   description: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#FFFFFF',
     textAlign: 'center',
   },
@@ -114,7 +113,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   walletAddress: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: 'bold',
     color: '#E0E0E0',
     marginTop: 5,
@@ -128,7 +127,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   buttonText: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: 'bold',
     color: '#22A45D',
   },

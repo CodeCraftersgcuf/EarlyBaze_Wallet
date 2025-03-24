@@ -22,11 +22,19 @@ const SendReceive: React.FC = () => {
   // State for search query
   const [searchQuery, setSearchQuery] = useState('');
 
+  const [showPrice, setShowPrice] = useState(true);
+
+
   return (
     <View style={[styles.container, { backgroundColor }]}>
       {/* Custom Header */}
-      <Header title="Assets" onFilterPress={() => console.log('Filter pressed')} />
-
+      <Header
+        title="Assets"
+        onFilterPress={() => {
+          setShowPrice((prev) => !prev); // ✅ Toggle price visibility
+          console.log("Filter pressed: toggled showPrice ->", !showPrice);
+        }}
+      />
       {/* Search Bar */}
       <View style={styles.horPadding}>
         <SearchBar placeholder="Search Crypto" value={searchQuery} onChangeText={setSearchQuery} />
@@ -39,7 +47,7 @@ const SendReceive: React.FC = () => {
 
         {/* Asset List */}
 
-        <AssetList selectedTab={selectedTab} searchQuery={searchQuery} type={type} />
+        <AssetList selectedTab={selectedTab} searchQuery={searchQuery} type={type}  showPrice={showPrice}/>
       </View>
     </View>
   );

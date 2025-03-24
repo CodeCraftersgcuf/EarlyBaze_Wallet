@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',  // Keeps the image centered
     },
     name: {
-        fontSize: 32,
+        fontSize: 24,
         fontWeight: 'bold',
         color: '#FFFFFF',
         marginTop: 10,

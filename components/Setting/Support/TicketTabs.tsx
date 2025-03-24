@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   tabText: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: '600',
   },
 });

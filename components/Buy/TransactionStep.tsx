@@ -126,13 +126,13 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   stepNumberText: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: 'bold',
     color: '#22A45D',
   },
   checkIcon: {
-    width: 16,
-    height: 16,
+    width: 14,
+    height: 14,
   },
   transactionBox: {
     flex: 1,
@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   stepTitle: {
-    fontSize: 16,
+    fontSize: 13,
     fontWeight: 'normal', // Default
   },
   boldTitle: {
@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   stepDescription: {
-    fontSize: 14,
+    fontSize: 11,
     fontWeight: 'medium',
     marginVertical: 5,
   },
@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   viewSummaryText: {
-    fontSize: 14,
+    fontSize: 12,
     borderWidth: 1,
     borderColor: '#25AE7A',
     borderRadius: 30,
@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   dateText: {
-    fontSize: 12,
+    fontSize: 10,
     marginTop: 5,
     fontWeight: 'bold',
     alignSelf: 'flex-end',

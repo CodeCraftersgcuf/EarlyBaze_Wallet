@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
     height: 15,
   },
   transactionType: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: 'bold',
   },
   statusContainer: {
@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
     marginRight: 5,
   },
   transactionStatus: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: '500',
   },
   rightContainer: {
@@ -146,11 +146,11 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   amount: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: 'bold',
   },
   date: {
-    fontSize: 12,
+    fontSize: 10,
     color: '#888',
   },
 });

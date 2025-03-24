@@ -28,7 +28,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ sender, text, time, isUser })
 const styles = StyleSheet.create({
     container: {
         marginBottom: 16,
-        paddingHorizontal: 10,
+        paddingHorizontal: 12,
     },
     userContainer: {
         alignSelf: 'flex-end',
@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
         color: '#25AE7A',
     },
     bubble: {
-        padding: 12,
+        padding: 14,
         borderRadius: 18,
         maxWidth: '75%',
         position: 'relative',

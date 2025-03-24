@@ -40,20 +40,20 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   iconContainer: {
-    width: 60,
-    height: 60,
+    width: 50,
+    height: 50,
     borderRadius: 50,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 8,
   },
   icon: {
-    width: 30,
-    height: 30,
+    width: 25,
+    height: 25,
     resizeMode: 'contain',
   },
   title: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: 'bold',
   },
 });

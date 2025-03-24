@@ -11,102 +11,105 @@ import { getFromStorage } from "@/utils/storage";
 import { getUserAssets } from "@/utils/queries/appQueries";
 import LoadingIndicator from "@/components/LoadingIndicator";
 
-const AssetList: React.FC<{ selectedTab: 'All Assets' | 'My Assets'; searchQuery: string; type: string }> = ({
+const AssetList: React.FC<{
+    selectedTab: 'All Assets' | 'My Assets'; searchQuery: string; type: string, showPrice: boolean; // ✅ Add this
+}> = ({
     selectedTab,
     searchQuery,
     type,
+    showPrice,
 }) => {
-    console.log("Type from SendReceive:", type);
-    const backgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#000000' }, 'background');
-    const router = useRouter();
-    const [token, setToken] = useState<string | null>(null);
+        console.log("Type from SendReceive:", type);
+        const backgroundColor = useThemeColor({ light: '#FFFFFF', dark: '#000000' }, 'background');
+        const router = useRouter();
+        const [token, setToken] = useState<string | null>(null);
 
-    // Fetch the token when the component mounts
-    useEffect(() => {
-        const fetchUserData = async () => {
-            const fetchedToken = await getFromStorage("authToken");
-            setToken(fetchedToken);
-            console.log("🔹 Retrieved Token:", fetchedToken);
-        };
+        // Fetch the token when the component mounts
+        useEffect(() => {
+            const fetchUserData = async () => {
+                const fetchedToken = await getFromStorage("authToken");
+                setToken(fetchedToken);
+                console.log("🔹 Retrieved Token:", fetchedToken);
+            };
 
-        fetchUserData();
-    }, []);
+            fetchUserData();
+        }, []);
 
-    const { data: userAssets, error: userAssetsError, isLoading: userAssetsLoading } = useQuery({
-        queryKey: ["userAssets"],
-        queryFn: () => getUserAssets({ token }),
-        enabled: !!token, // Only run the query when the token is available
-    });
+        const { data: userAssets, error: userAssetsError, isLoading: userAssetsLoading } = useQuery({
+            queryKey: ["userAssets"],
+            queryFn: () => getUserAssets({ token }),
+            enabled: !!token, // Only run the query when the token is available
+        });
 
-    console.log("🔹 User Assets:", userAssets);
+        console.log("🔹 User Assets:", userAssets);
 
-    // Convert API data to match required structure
-    const formattedAssets = userAssets?.data?.map((asset: any) => ({
-        id: asset.id.toString(),
-        name: asset.currency,
-        fullName: asset.blockchain.charAt(0).toUpperCase() + asset.blockchain.slice(1), // Capitalize blockchain name
-        balance: asset.available_balance,
-        price: asset.wallet_currency?.price ? `$${asset.wallet_currency.price}` : "N/A", // Get price or use "N/A"
-        icon: asset.wallet_currency?.symbol
-            ? `https://earlybaze.hmstech.xyz/storage/${asset.wallet_currency.symbol}`
-            : icons.bitCoin, // Use API icon if available, else default
-    })) || [];
+        // Convert API data to match required structure
+        const formattedAssets = userAssets?.data?.map((asset: any) => ({
+            id: asset.id.toString(),
+            name: asset.currency,
+            fullName: asset.blockchain.charAt(0).toUpperCase() + asset.blockchain.slice(1),
+            balance: asset.available_balance,
+            price: showPrice && asset.wallet_currency?.price ? `$${asset.wallet_currency.price}` : "******", // ✅ Hide or show based on toggle
+            icon: asset.wallet_currency?.symbol
+                ? `https://earlybaze.hmstech.xyz/storage/${asset.wallet_currency.symbol}`
+                : icons.bitCoin,
+        })) || [];
 
 
-    // Filter assets based on selection & search query
-    let filteredData = selectedTab === 'All Assets' ? formattedAssets : formattedAssets.filter((asset) => Number(asset.balance) > 0);
-    if (searchQuery) {
-        filteredData = filteredData.filter(
-            (asset) =>
-                asset.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                asset.fullName.toLowerCase().includes(searchQuery.toLowerCase())
+        // Filter assets based on selection & search query
+        let filteredData = selectedTab === 'All Assets' ? formattedAssets : formattedAssets.filter((asset) => Number(asset.balance) > 0);
+        if (searchQuery) {
+            filteredData = filteredData.filter(
+                (asset) =>
+                    asset.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    asset.fullName.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+        }
+
+        return (
+            <View style={[styles.mainContainer, { backgroundColor }]}>
+                {userAssetsLoading ? (
+                    <LoadingIndicator /> // ✅ Show the loading indicator
+                ) : filteredData.length === 0 ? (
+                    <View style={styles.noDataContainer}>
+                        <Text style={styles.noDataText}>No Assets Available</Text>
+                    </View>
+                ) : (
+                    <FlatList
+                        data={filteredData}
+                        keyExtractor={(item) => item.id}
+                        numColumns={2} // Ensures two items per row
+                        renderItem={({ item }) => (
+                            <TouchableOpacity
+                                style={styles.cardContainer}
+                                onPress={() => {
+                                    if (type === 'receive') {
+                                        router.push({
+                                            pathname: '/Receive',
+                                            params: { assetName: item.name, fullName: item.fullName, icon: item.icon },
+                                        });
+                                    } else if (type === 'send' && Number(item.balance) > 0) {
+                                        router.push({
+                                            pathname: '/Send',
+                                            params: { assestId: item.id, assetName: item.name, fullName: item.fullName, icon: item.icon },
+                                        });
+                                    } else if (type === 'send' && Number(item.balance) === 0) {
+                                        console.log(`❌ Cannot send ${item.name} - Balance is zero`);
+                                    } else {
+                                        console.log(`Normal action for ${item.name}`);
+                                    }
+                                }}
+                            >
+                                <AssetCard {...item} />
+                            </TouchableOpacity>
+                        )}
+                        contentContainerStyle={styles.list}
+                    />
+                )}
+            </View>
         );
-    }
 
-    return (
-        <View style={[styles.mainContainer, { backgroundColor }]}>
-            {userAssetsLoading ? (
-                <LoadingIndicator /> // ✅ Show the loading indicator
-            ) : filteredData.length === 0 ? (
-                <View style={styles.noDataContainer}>
-                    <Text style={styles.noDataText}>No Assets Available</Text>
-                </View>
-            ) : (
-                <FlatList
-                    data={filteredData}
-                    keyExtractor={(item) => item.id}
-                    numColumns={2} // Ensures two items per row
-                    renderItem={({ item }) => (
-                        <TouchableOpacity
-                            style={styles.cardContainer}
-                            onPress={() => {
-                                if (type === 'receive') {
-                                    router.push({
-                                        pathname: '/Receive',
-                                        params: { assetName: item.name, fullName: item.fullName, icon: item.icon },
-                                    });
-                                } else if (type === 'send' && Number(item.balance) > 0) {
-                                    router.push({
-                                        pathname: '/Send',
-                                        params: { assestId: item.id, assetName: item.name, fullName: item.fullName, icon: item.icon },
-                                    });
-                                } else if (type === 'send' && Number(item.balance) === 0) {
-                                    console.log(`❌ Cannot send ${item.name} - Balance is zero`);
-                                } else {
-                                    console.log(`Normal action for ${item.name}`);
-                                }
-                            }}
-                        >
-                            <AssetCard {...item} />
-                        </TouchableOpacity>
-                    )}
-                    contentContainerStyle={styles.list}
-                />
-            )}
-        </View>
-    );
-
-};
+    };
 
 const styles = StyleSheet.create({
     mainContainer: {

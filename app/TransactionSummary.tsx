@@ -38,6 +38,8 @@ const TransactionSummary: React.FC = () => {
   const [transactionReference, setTransactionReference] = useState<string | null>(null);
   const [isVerificationVisible, setVerificationVisible] = useState(false);
   const [isSuccessModalVisible, setSuccessModalVisible] = useState(false);
+  const [transactionAmount, setTransactionAmount] = useState<string | null>(null);
+  const [transactionCurrency, setTransactionCurrency] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -160,13 +162,16 @@ const TransactionSummary: React.FC = () => {
         }}
         onSuccess={(data) => {
           console.log("The data is:", data);
-          setTransactionReference(data);
+          setTransactionReference(data.reference);
+          setTransactionAmount(data.amount);
+          setTransactionCurrency(data.currency)
           setSuccessModalVisible(true); // ✅ Show success modal on transfer success
-        }}
+      }}
+      
         requestData={{ currency, network, amount, email, token }}
       />
 
-      <TransactionSuccessfulModal visible={isSuccessModalVisible} onClose={() => setSuccessModalVisible(false)} />
+      <TransactionSuccessfulModal visible={isSuccessModalVisible} onClose={() => setSuccessModalVisible(false)} transactionReference={transactionReference} transactionAmont={transactionAmount} transactionCurrency={transactionCurrency} />
     </ScrollView>
   );
 };

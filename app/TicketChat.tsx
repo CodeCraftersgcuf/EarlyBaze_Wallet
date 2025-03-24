@@ -169,7 +169,7 @@ const TicketChat: React.FC = () => {
                         onChangeText={setMessageText}
                     />
                     <TouchableOpacity onPress={sendMessage}>
-                        <Ionicons name="send" size={22} color="#333" style={styles.icon} />
+                        <Ionicons name="send" size={20} color="#333" style={styles.icon} />
                     </TouchableOpacity>
                 </View>
             </KeyboardAvoidingView>
@@ -199,7 +199,7 @@ const styles = StyleSheet.create({
     },
     input: {
         flex: 1,
-        fontSize: 16,
+        fontSize: 14,
         paddingHorizontal: 10,
     },
     icon: {

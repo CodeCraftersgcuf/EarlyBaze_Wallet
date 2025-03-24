@@ -54,12 +54,12 @@ const styles = StyleSheet.create({
   },
   tab: {
     flex: 1,
-    paddingVertical: 10,
+    paddingVertical: 9,
     alignItems: 'center',
     borderRadius: 10,
   },
   tabText: {
-    fontSize: 12,
+    fontSize: 10,
     fontWeight: 'bold',
   },
   activeTabText: {

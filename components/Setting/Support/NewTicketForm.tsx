@@ -142,13 +142,13 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   title: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
     alignSelf: 'center',
   },
   label: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: 'bold',
     marginBottom: 6,
   },
